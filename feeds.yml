@@ -46,6 +46,13 @@ Business:
 - name: VentureBeat AI
   url: https://venturebeat.com/category/ai/feed/
   general: true
+# 日本語メディア（追加）
+- name: Ledge.ai
+  url: https://ledge.ai/feed/
+  general: true
+- name: AINOW
+  url: https://ainow.ai/feed/
+  general: true
 - name: MIT Technology Review AI
   url: https://www.technologyreview.com/feed/
   general: true
@@ -197,6 +204,13 @@ Tools:
 - name: The Verge
   url: https://www.theverge.com/rss/index.xml
   general: true
+# 研究系の追加RSS
+- name: Google Research Blog
+  url: https://research.google/blog/rss/
+- name: Keras Blog
+  url: https://keras.io/feed.xml
+- name: Lightning AI Blog
+  url: https://lightning.ai/pages/blog/feed/
 # - name: 'Google News: AIツール・フレームワーク'
 #   url: https://news.google.com/rss/search?q=AI+tools&hl=en&gl=US
 #   general: true
@@ -261,6 +275,17 @@ Tools:
   business_category: implementation
 Posts:
 # 確実に動作する研究・論文フィード
+- name: arXiv cs.AI
+  url: https://arxiv.org/rss/cs.AI
+- name: arXiv cs.LG
+  url: https://arxiv.org/rss/cs.LG
+- name: arXiv cs.CL
+  url: https://arxiv.org/rss/cs.CL
+- name: arXiv stat.ML
+  url: https://arxiv.org/rss/stat.ML
+# コミュニティ・ディスカッション拡充
+- name: Hacker News (AI newest)
+  url: https://hnrss.org/newest?q=AI
 - name: Reddit MachineLearning Papers
   url: https://www.reddit.com/r/MachineLearning/.rss?limit=50
   general: true

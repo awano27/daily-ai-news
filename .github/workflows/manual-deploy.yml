@@ -2,6 +2,15 @@ name: Manual Deploy AI News to GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      hours_lookback:
+        description: 'Hours to look back for news'
+        required: false
+        default: '24'
+      max_items_per_category:
+        description: 'Max items per category'
+        required: false
+        default: '25'
 
 permissions:
   contents: write
@@ -36,8 +45,8 @@ jobs:
       run: |
         echo "TRANSLATE_TO_JA=1" >> $GITHUB_ENV
         echo "TRANSLATE_ENGINE=google" >> $GITHUB_ENV
-        echo "HOURS_LOOKBACK=24" >> $GITHUB_ENV
-        echo "MAX_ITEMS_PER_CATEGORY=25" >> $GITHUB_ENV
+        echo "HOURS_LOOKBACK=${{ github.event.inputs.hours_lookback || '24' }}" >> $GITHUB_ENV
+        echo "MAX_ITEMS_PER_CATEGORY=${{ github.event.inputs.max_items_per_category || '25' }}" >> $GITHUB_ENV
 
     - name: Build AI News Site
       timeout-minutes: 10
