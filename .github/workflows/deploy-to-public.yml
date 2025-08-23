@@ -1,19 +1,8 @@
 name: Deploy to Public Pages Repo
 
 on:
-  # 手動実行とビルド成功後の自動実行
+  # 一本化のため自動実行は停止。必要時のみ手動実行
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'index.html'
-      - 'dashboard.html'
-      - '**.html'
-  workflow_run:
-    workflows: ["Enhanced Daily AI News Build (Gemini URL Context)", "Daily build (JA summaries fixed)"]
-    types:
-      - completed
 
 jobs:
   deploy-to-public:

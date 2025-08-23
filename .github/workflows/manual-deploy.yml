@@ -1,0 +1,92 @@
+name: Manual Deploy AI News to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages-manual"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0
+
+    - name: Set environment variables
+      run: |
+        echo "TRANSLATE_TO_JA=1" >> $GITHUB_ENV
+        echo "TRANSLATE_ENGINE=google" >> $GITHUB_ENV
+        echo "HOURS_LOOKBACK=24" >> $GITHUB_ENV
+        echo "MAX_ITEMS_PER_CATEGORY=25" >> $GITHUB_ENV
+
+    - name: Build AI News Site
+      timeout-minutes: 10
+      run: |
+        echo "🔨 Building AI News site with enhanced ranking..."
+        python build_simple_ranking.py || python build.py
+
+        echo "📊 Verifying build output..."
+        if [ -f "index.html" ]; then
+          file_size=$(stat -c%s index.html)
+          echo "✅ index.html generated ($file_size bytes)"
+
+          if [ "$file_size" -gt 10000 ]; then
+            echo "✅ Build verification passed"
+          else
+            echo "⚠️ Build file seems small but continuing..."
+          fi
+        else
+          echo "❌ index.html not generated!"
+          exit 1
+        fi
+
+    - name: Prepare Pages artifact
+      run: |
+        echo "📦 Preparing Pages artifact (_site)"
+        rm -rf _site || true
+        mkdir -p _site
+        cp -v index.html _site/
+        cp -v style.css _site/ || true
+        # Disable Jekyll on Pages
+        touch _site/.nojekyll
+        ls -la _site
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '_site'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: Display results
+      run: |
+        echo "🎉 Deployment completed!"
+        echo "🌐 Site URL: ${{ steps.deployment.outputs.page_url }}"
+        echo "📅 Expected: Current date with enhanced features"
+        echo "🖱️ Expected: Working tab functionality"
+

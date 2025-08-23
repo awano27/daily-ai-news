@@ -1,8 +1,8 @@
 name: Enhanced Daily AI News Build (Gemini URL Context)
 on:
   schedule:
-    - cron: "0 22 * * *"   # 07:00 JST (daily automatic update)
-  workflow_dispatch:        # Manual execution only
+    - cron: "55 21 * * *"   # 06:55 JST（先行ビルド）
+  workflow_dispatch:        # 手動実行
 permissions: 
   contents: write
   pages: write
@@ -61,5 +61,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "🤖 Enhanced daily AI news update with Gemini URL Context [skip ci]" || echo "no changes"
+          git commit -m "🤖 Enhanced daily AI news update with Gemini URL Context" || echo "no changes"
           git push
