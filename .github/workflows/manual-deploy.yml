@@ -11,6 +11,10 @@ on:
         description: 'Max items per category'
         required: false
         default: '25'
+      top_picks_count:
+        description: 'Top Picks count (homepage)'
+        required: false
+        default: '10'
 
 permissions:
   contents: write
@@ -47,6 +51,7 @@ jobs:
         echo "TRANSLATE_ENGINE=google" >> $GITHUB_ENV
         echo "HOURS_LOOKBACK=${{ github.event.inputs.hours_lookback || '24' }}" >> $GITHUB_ENV
         echo "MAX_ITEMS_PER_CATEGORY=${{ github.event.inputs.max_items_per_category || '25' }}" >> $GITHUB_ENV
+        echo "TOP_PICKS_COUNT=${{ github.event.inputs.top_picks_count || '10' }}" >> $GITHUB_ENV
 
     - name: Build AI News Site
       timeout-minutes: 10
