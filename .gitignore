@@ -1,8 +1,13 @@
 # Cache files
 _cache/
+__pycache__/
+_backup/
+_sources/
 
 # Generated files
-index.html
+*.html
+*.json
+*.csv
 
 # OS-specific
 .DS_Store
@@ -10,3 +15,7 @@ index.html
 # Environment files
 .env
 .env.*
+
+# Platform-specific scripts
+*.bat
+*.ps1
