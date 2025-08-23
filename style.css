@@ -46,520 +46,300 @@ body{
   max-width:1000px;
   margin:0 auto;
   padding:var(--spacing-lg) var(--spacing-md);
-  /* digital.gov: 重要情報を上部に集約するためのグリッド */
   display:flex;
   flex-direction:column;
   gap:var(--spacing-lg);
 }
+
+/* ヘッダー */
 .site-header{
-  background:var(--gradient);
-  color:white;
-  padding:var(--spacing-lg) var(--spacing-md);
-  box-shadow:var(--shadow-lg);
-  display:flex;justify-content:space-between;align-items:center;
-  border-bottom: 3px solid var(--brand-hover);
-}
-.site-footer{
-  border-top:1px solid var(--line);
-  color:var(--muted);
-  padding:20px 16px;
-  background:#f9fafb;
-  margin-top:40px;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.brand{font-weight:700;font-size:20px}
-.updated{
-  color:rgba(255,255,255,0.95);
-  font-size:var(--font-size-sm);
-  font-weight:500;
-  /* digital.gov: アイコンで情報を補完 */
-}
-.updated::before{
-  content:'🕒 ';
-  margin-right:var(--spacing-xs);
-}
-/* Digital.gov: 情報階層を上部に集約 */
-.priority-header{
-  background:var(--gradient-subtle);
-  border:2px solid var(--brand-light);
-  border-radius:var(--border-radius);
-  padding:var(--spacing-xl);
-  margin-bottom:var(--spacing-2xl);
-  text-align:center;
-  position:relative;
-}
-
-.priority-header::before{
-  content:'📊 ';
-  font-size:var(--font-size-2xl);
-  position:absolute;
-  top:var(--spacing-sm);
-  left:var(--spacing-md);
-}
-
-.page-title{
-  margin:0 0 var(--spacing-sm) 0;
-  font-size:var(--font-size-4xl);
-  font-weight:800;
-  color:var(--fg);
-  line-height:1.2;
-}
-
-.lead{
-  color:var(--muted);
-  margin:var(--spacing-md) 0 var(--spacing-lg) 0;
-  font-size:var(--font-size-base);
-  line-height:1.6;
-  max-width:600px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-/* 重要情報グリッド */
-.key-stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
-  gap:var(--spacing-sm);
-  margin-top:var(--spacing-lg);
-}
-
-.key-stat{
-  background:white;
-  border:1px solid var(--brand-light);
-  border-radius:var(--spacing-sm);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   padding:var(--spacing-md);
-  text-align:center;
+  background:var(--bg-subtle);
+  border-bottom:1px solid var(--line);
+  margin-bottom:var(--spacing-lg);
 }
-
-.key-stat-icon{
-  font-size:var(--font-size-lg);
-  margin-bottom:var(--spacing-xs);
-  display:block;
-}
-
-.key-stat-value{
+.brand{
   font-size:var(--font-size-xl);
   font-weight:700;
   color:var(--brand);
-  margin-bottom:var(--spacing-xs);
-  display:block;
 }
-
-.key-stat-label{
-  font-size:var(--font-size-xs);
+.updated{
   color:var(--muted);
-  font-weight:600;
+  font-size:var(--font-size-sm);
 }
 
-/* Digital.gov: KPIエリアを第二階層として明確化 */
+/* タイトル */
+.page-title{
+  font-size:var(--font-size-3xl);
+  font-weight:700;
+  margin:0 0 var(--spacing-md) 0;
+  text-align:center;
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.lead{
+  font-size:var(--font-size-lg);
+  color:var(--muted);
+  text-align:center;
+  margin-bottom:var(--spacing-xl);
+  line-height:1.7;
+}
+
+/* KPI Grid */
 .kpi-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
   gap:var(--spacing-md);
-  margin:var(--spacing-2xl) 0;
-  padding:var(--spacing-xl);
-  background:var(--bg-subtle);
-  border-radius:var(--border-radius);
-  border:2px solid var(--line);
-  position:relative;
+  margin-bottom:var(--spacing-xl);
 }
-
-.kpi-grid::before{
-  content:'📈 データ概要';
-  position:absolute;
-  top:var(--spacing-sm);
-  left:var(--spacing-md);
-  font-size:var(--font-size-sm);
+.kpi-card{
+  background:var(--bg-subtle);
+  padding:var(--spacing-md);
+  border-radius:var(--border-radius);
+  text-align:center;
+  border:1px solid var(--line);
+}
+.kpi-value{
+  font-size:var(--font-size-2xl);
   font-weight:700;
   color:var(--brand);
 }
-
-.kpi-card{
-  background:white;
-  border:2px solid var(--brand-light);
-  border-radius:var(--border-radius);
-  padding:var(--spacing-lg);
-  box-shadow:var(--shadow);
-  transition:all 0.2s ease;
-  text-align:center;
-  position:relative;
-  min-height:120px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-
-.kpi-card:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow-lg);
-  border-color:var(--brand);
-}
-
-.kpi-card:focus-within{
-  outline:3px solid var(--brand-light);
-  outline-offset:2px;
-}
-
-.kpi-value{
-  font-size:var(--font-size-3xl);
-  font-weight:800;
-  color:var(--brand);
-  margin-bottom:var(--spacing-xs);
-  line-height:1;
-}
-
 .kpi-label{
-  color:var(--fg);
-  font-weight:600;
-  margin-bottom:var(--spacing-xs);
   font-size:var(--font-size-sm);
-  line-height:1.2;
+  color:var(--muted);
+  margin-top:var(--spacing-xs);
 }
 .kpi-note{
-  color:var(--muted);
   font-size:var(--font-size-xs);
-  font-weight:500;
-  margin-top:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:var(--spacing-xs);
+  color:var(--neutral);
+  margin-top:var(--spacing-xs);
 }
 
-.kpi-note::before{
-  content:attr(data-icon);
-  font-style:normal;
-}
-
-/* Digital.gov: タブナビゲーション - 完全アクセシブル */
+/* タブ */
 .tabs{
   display:flex;
-  gap:var(--spacing-xs);
-  background:var(--bg-subtle);
-  border:2px solid var(--line);
-  border-radius:var(--border-radius);
-  padding:var(--spacing-xs);
-  margin:var(--spacing-2xl) 0 var(--spacing-lg) 0;
-  box-shadow:var(--shadow);
-  position:relative;
-  role:tablist;
+  border-bottom:2px solid var(--line);
+  margin-bottom:var(--spacing-lg);
+  gap:var(--spacing-sm);
 }
-
-.tabs::before{
-  content:'📑 カテゴリ選択';
-  position:absolute;
-  top:calc(-1 * var(--spacing-lg));
-  left:0;
-  font-size:var(--font-size-sm);
-  font-weight:700;
-  color:var(--brand);
-}
-
 .tab{
-  appearance:none;
-  background:transparent;
-  border:2px solid transparent;
-  border-radius:calc(var(--border-radius) - 2px);
+  background:none;
+  border:none;
   padding:var(--spacing-md) var(--spacing-lg);
-  cursor:pointer;
-  color:var(--fg);
-  font-weight:600;
   font-size:var(--font-size-base);
-  transition:all 0.2s ease;
-  flex:1;
-  text-align:center;
-  min-height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:var(--spacing-xs);
-  position:relative;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:all 0.3s ease;
+  color:var(--muted);
 }
-
-.tab[aria-selected="true"]{
-  background:var(--brand);
-  color:white;
-  border-color:var(--brand-dark);
-  box-shadow:var(--shadow);
-  font-weight:700;
-}
-
-.tab[aria-selected="true"]::after{
-  content:'✓';
-  position:absolute;
-  top:-8px;
-  right:-8px;
-  background:var(--success);
-  color:white;
-  border-radius:50%;
-  width:20px;
-  height:20px;
-  font-size:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.tab:hover:not([aria-selected="true"]){
-  background:white;
+.tab.active{
   color:var(--brand);
-  border-color:var(--brand-light);
-  box-shadow:var(--shadow);
+  border-bottom-color:var(--brand);
+  font-weight:600;
+}
+.tab:hover{
+  color:var(--brand-hover);
+  background:var(--bg-subtle);
+  border-radius:var(--border-radius) var(--border-radius) 0 0;
 }
 
-.tab:focus{
-  outline:3px solid var(--brand-light);
-  outline-offset:2px;
-  z-index:1;
-}
-
-/* キーボードナビゲーション表示 */
-.tab:focus::before{
-  content:'→';
-  position:absolute;
-  left:-12px;
-  color:var(--brand);
-  font-weight:800;
-}
-
-/* 検索ボックスエリア */
-.search-container{
-  display:flex;
-  justify-content:flex-end;
-  margin:0 0 20px 0;
-}
-#searchBox{
-  width:100%;
-  max-width:400px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:8px;
-  font-size:16px;
-}
-
+/* タブパネル */
 .tab-panel{
-  padding:16px 0;
+  display:block;
+}
+.tab-panel.hidden{
   display:none;
 }
 
-.tab-panel.active{
-  display:block;
+/* 検索・フィルター */
+.search-container{
+  margin-bottom:var(--spacing-lg);
 }
-.hidden{display:none}
-
-/* Digital.gov: 記事カード - 近接の法則と意味伝達強化 */
-.card{
-  border:2px solid var(--line);
-  border-radius:var(--border-radius);
-  padding:var(--spacing-lg);
-  margin:var(--spacing-lg) 0;
-  background:white;
-  box-shadow:var(--shadow);
-  transition:all 0.2s ease;
-  position:relative;
+.search-header{
   display:flex;
   flex-direction:column;
   gap:var(--spacing-sm);
+  margin-bottom:var(--spacing-md);
+}
+#searchBox{
+  padding:var(--spacing-md);
+  border:1px solid var(--line);
+  border-radius:var(--border-radius);
+  font-size:var(--font-size-base);
+  width:100%;
+}
+#searchBox:focus{
+  outline:none;
+  border-color:var(--brand);
+  box-shadow:var(--focus-ring);
+}
+.search-info{
+  font-size:var(--font-size-sm);
+  color:var(--muted);
+  text-align:center;
+}
+.filter-controls{
+  display:flex;
+  gap:var(--spacing-sm);
+  flex-wrap:wrap;
+}
+.filter-controls select{
+  padding:var(--spacing-sm) var(--spacing-md);
+  border:1px solid var(--line);
+  border-radius:var(--border-radius);
+  background:var(--bg);
 }
 
-.card::before{
-  content:attr(data-category-icon);
-  position:absolute;
-  top:var(--spacing-sm);
-  right:var(--spacing-sm);
-  font-size:var(--font-size-lg);
-  opacity:0.6;
-}
+/* カード */
+.card{
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:var(--border-radius);
+  margin-bottom:var(--spacing-md);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:all 0.3s ease;
 }
 .card:hover{
-  transform:translateY(-2px);
   box-shadow:var(--shadow-lg);
-  border-color:var(--brand);
+  transform:translateY(-2px);
 }
-.card-header{margin-bottom:8px}
+.card-header{
+  padding:var(--spacing-md);
+  background:var(--bg-subtle);
+  border-bottom:1px solid var(--line);
+}
 .card-title{
+  font-size:var(--font-size-lg);
+  font-weight:600;
   color:var(--brand);
   text-decoration:none;
-  font-weight:700;
-  font-size:18px;
-  line-height:1.4;
   display:block;
-  transition:color 0.2s ease;
-  margin-bottom:var(--spacing-sm);
+  line-height:1.4;
 }
-.card-title:hover{color:var(--brand-hover)}
-.card-title:focus{
-  outline:3px solid var(--brand-light);
-  outline-offset:2px;
-  border-radius:4px;
+.card-title:hover{
+  color:var(--brand-hover);
+  text-decoration:underline;
+}
+.card-body{
+  padding:var(--spacing-md);
 }
 .card-summary{
-  margin:var(--spacing-md) 0;
   color:var(--fg);
-  line-height:1.7;
-  font-size:15px;
-  font-weight:500;
+  line-height:1.6;
+  margin:0 0 var(--spacing-md) 0;
 }
-/* Digital.gov: フッター - 関連要素の近接配置 */
 .card-footer{
-  margin-top:auto;
-  padding-top:var(--spacing-md);
-  border-top:2px solid var(--bg-emphasis);
+  padding:var(--spacing-md);
+  background:var(--bg-muted);
+  border-top:1px solid var(--line);
+  font-size:var(--font-size-sm);
   color:var(--muted);
-  font-size:var(--font-size-xs);
-  font-weight:500;
-  display:flex;
-  flex-direction:column;
-  gap:var(--spacing-xs);
 }
-
-.card-footer::before{
-  content:'🔗 情報源';
-  font-weight:700;
-  color:var(--brand);
-  font-size:var(--font-size-xs);
-}
-
 .card-footer a{
   color:var(--brand);
   text-decoration:none;
-  font-weight:600;
-  word-break:break-all;
-  padding:var(--spacing-xs);
-  border-radius:var(--spacing-xs);
-  transition:all 0.2s ease;
 }
-
 .card-footer a:hover{
-  color:var(--brand-hover);
   text-decoration:underline;
-  background:var(--brand-weak);
 }
 
-.card-footer a:focus{
-  outline:2px solid var(--brand-light);
-  outline-offset:2px;
-}
-/* チップ - 色だけでなくアイコンで意味を伝達 */
+/* チップ */
 .chips{
   display:flex;
   gap:var(--spacing-sm);
   flex-wrap:wrap;
-  margin-top:var(--spacing-md);
-  padding-top:var(--spacing-sm);
-  border-top:1px solid var(--line);
 }
 .chip{
   background:var(--chip);
-  border:2px solid var(--line);
-  border-radius:999px;
-  padding:6px 12px;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:4px;
+  color:var(--brand);
+  padding:var(--spacing-xs) var(--spacing-sm);
+  border-radius:var(--border-radius);
+  font-size:var(--font-size-xs);
+  border:1px solid var(--line);
 }
 .chip.ghost{
-  background:var(--brand-weak);
-  color:var(--brand);
-  border-color:var(--brand-light);
-}
-.chip::before{
-  content:'';
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:currentColor;
-  opacity:0.6;
-}
-.empty{
-  padding:var(--spacing-xl);
-  border:2px dashed var(--line);
-  border-radius:var(--border-radius);
+  background:transparent;
   color:var(--muted);
-  margin:var(--spacing-lg) 0;
-  text-align:center;
-  font-style:italic;
-  background:var(--chip);
-}
-/* 注意書き - 視認性向上 */
-.note{
-  color:var(--fg);
-  font-size:14px;
-  font-weight:500;
-  margin:var(--spacing-xl) 0;
-  padding:var(--spacing-lg);
-  background:var(--brand-weak);
-  border:2px solid var(--brand-light);
-  border-radius:var(--border-radius);
-  border-left:4px solid var(--brand);
 }
 
-/* レスポンシブデザイン - モバイルファースト改善 */
+/* フッター */
+.site-footer{
+  margin-top:var(--spacing-2xl);
+  padding:var(--spacing-lg);
+  background:var(--bg-subtle);
+  border-top:1px solid var(--line);
+  text-align:center;
+  font-size:var(--font-size-sm);
+  color:var(--muted);
+}
+.site-footer a{
+  color:var(--brand);
+  text-decoration:none;
+}
+.site-footer a:hover{
+  text-decoration:underline;
+}
+
+/* ノート */
+.note{
+  background:var(--bg-emphasis);
+  border:1px solid var(--line);
+  border-radius:var(--border-radius);
+  padding:var(--spacing-md);
+  margin-top:var(--spacing-xl);
+  font-size:var(--font-size-sm);
+  color:var(--muted);
+  text-align:center;
+}
+
+/* レスポンシブ */
 @media (max-width: 768px) {
-  .kpi-grid{
-    grid-template-columns:1fr;
-    gap:var(--spacing-sm);
-    margin:var(--spacing-lg) 0;
+  .container{
+    padding:var(--spacing-md) var(--spacing-sm);
   }
-  .container{padding:var(--spacing-md) var(--spacing-sm)}
-  .site-header{padding:var(--spacing-md) var(--spacing-sm)}
-  .card{
-    padding:var(--spacing-md);
-    margin:var(--spacing-sm) 0;
+  .site-header{
+    flex-direction:column;
+    gap:var(--spacing-sm);
+    text-align:center;
   }
   .tabs{
     flex-direction:column;
-    gap:var(--spacing-xs);
   }
   .tab{
-    padding:var(--spacing-md) var(--spacing-md);
-    min-height:44px;
+    border-bottom:none;
+    border-left:3px solid transparent;
   }
-  .page-title{font-size:28px}
-  .lead{font-size:15px}
-  .card-title{font-size:16px}
-}
-@media (max-width: 840px){ 
-  .kpi-grid{grid-template-columns:repeat(2,1fr)} 
+  .tab.active{
+    border-left-color:var(--brand);
+    background:var(--bg-subtle);
+  }
+  .kpi-grid{
+    grid-template-columns:1fr;
+  }
+  .filter-controls{
+    flex-direction:column;
+  }
+  .chips{
+    justify-content:center;
+  }
 }
 
-/* Navigation */
-/* ナビゲーション - アクセシビリティ強化 */
-.nav-links {
-  display: flex;
-  gap: var(--spacing-md);
-  align-items: center;
+/* アクセシビリティ */
+.tab:focus{
+  outline:none;
+  box-shadow:var(--focus-ring);
 }
-.nav-link {
-  color: white;
-  text-decoration: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(255,255,255,0.15);
-  border: 2px solid transparent;
-  border-radius: var(--spacing-sm);
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
+#searchBox:focus{
+  outline:none;
+  box-shadow:var(--focus-ring);
 }
-.nav-link:hover {
-  background: rgba(255,255,255,0.25);
-  border-color: rgba(255,255,255,0.3);
-  transform: translateY(-1px);
-}
-.nav-link:focus {
-  outline: 3px solid rgba(255,255,255,0.5);
-  outline-offset: 2px;
-}
-.site-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
+.card-title:focus{
+  outline:none;
+  box-shadow:var(--focus-ring);
 }
