@@ -39,7 +39,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0
+        pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0 python-dateutil
 
     - name: Set environment variables
       run: |
@@ -51,9 +51,9 @@ jobs:
     - name: Build AI News Site
       timeout-minutes: 10
       run: |
-        echo "🔨 Building AI News site (try enhanced first, fallback to simple)..."
-        # 優先: 機能豊富なビルド。失敗時はシンプル版へフォールバック
-        python build.py || python build_simple_ranking.py
+        echo "🔨 Building AI News site (prefer simple, fallback to enhanced)..."
+        # まずシンプル版で確実に生成、失敗時のみ拡張版へ
+        python build_simple_ranking.py || python build.py
 
         echo "📊 Verifying build output..."
         if [ -f "index.html" ]; then
