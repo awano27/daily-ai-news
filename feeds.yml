@@ -71,6 +71,15 @@ Business:
 - name: TechCrunch Japan
   url: https://techcrunch.com/category/artificial-intelligence/feed/
   general: true
+- name: TechCrunch Japan（AI）
+  url: https://jp.techcrunch.com/tag/ai/feed/
+  general: true
+- name: CNET Japan
+  url: https://japan.cnet.com/rss/index.rdf
+  general: true
+- name: GIGAZINE
+  url: https://gigazine.net/news/rss_2.0/
+  general: true
 
 # ビジネス戦略・経営系（経営層向け価値提供）
 - name: Harvard Business Review AI
@@ -211,6 +220,8 @@ Tools:
   url: https://keras.io/feed.xml
 - name: Lightning AI Blog
   url: https://lightning.ai/pages/blog/feed/
+- name: Publickey（日本語）
+  url: https://www.publickey1.jp/atom.xml
 # - name: 'Google News: AIツール・フレームワーク'
 #   url: https://news.google.com/rss/search?q=AI+tools&hl=en&gl=US
 #   general: true
@@ -275,6 +286,12 @@ Tools:
   business_category: implementation
 Posts:
 # 確実に動作する研究・論文フィード
+- name: Qiita AI タグ
+  url: https://qiita.com/tags/AI/feed
+- name: Zenn AI トピック
+  url: https://zenn.dev/topics/ai/feed
+- name: はてなブックマーク IT
+  url: https://b.hatena.ne.jp/hotentry/it.rss
 - name: arXiv cs.AI
   url: https://arxiv.org/rss/cs.AI
 - name: arXiv cs.LG
