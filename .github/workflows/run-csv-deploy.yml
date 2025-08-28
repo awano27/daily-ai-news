@@ -1,0 +1,85 @@
+﻿name: Build from CSV and Deploy to Public Pages
+
+on:
+  schedule:
+    - cron: "0 22 * * *"   # 07:00 JST
+  workflow_dispatch:
+    inputs:
+      csv_url:
+        description: "CSV URL (Google Sheets export)"
+        required: false
+        default: "https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "csv-to-public-pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tokyo
+      TRANSLATE_TO_JA: "1"
+      TRANSLATE_ENGINE: "google"
+      HOURS_LOOKBACK: "24"
+      MAX_ITEMS_PER_CATEGORY: "25"
+      X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0
+
+      - name: Build AI News Site from CSV
+        timeout-minutes: 10
+        run: |
+          echo "🔨 Building AI News site (CSV: $X_POSTS_CSV)"
+          python build_simple_ranking.py
+
+          echo "📊 Verifying build output..."
+          if [ -f "index.html" ]; then
+            file_size=$(stat -c%s index.html || stat -f%z index.html)
+            echo "✅ index.html generated (${file_size} bytes)"
+          else
+            echo "❌ index.html not generated!"
+            exit 1
+          fi
+
+      - name: Prepare outputs
+        run: |
+          rm -rf outputs || true
+          mkdir -p outputs
+          cp -v index.html outputs/
+          cp -v style.css outputs/ || true
+          touch outputs/.nojekyll
+          ls -la outputs
+
+      - name: Deploy to public repository
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          external_repository: awano27/daily-ai-news-pages
+          publish_branch: gh-pages
+          publish_dir: ./outputs
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy from CSV: ${{ github.sha }}'
+          keep_files: false
+          enable_jekyll: false
+
+      - name: Summary
+        run: |
+          echo "🎉 Deployment completed!"
+          echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
