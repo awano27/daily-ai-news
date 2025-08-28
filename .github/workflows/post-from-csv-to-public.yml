@@ -66,10 +66,15 @@ jobs:
           touch outputs/.nojekyll
           ls -la outputs
 
+      - name: Check token presence
+        run: |
+          echo HAS_TOKEN=${{ secrets.PERSONAL_TOKEN != '' }}
+
       - name: Deploy to public repository
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          github_token: ${{ secrets.PERSONAL_TOKEN }}
           external_repository: awano27/daily-ai-news-pages
           publish_branch: gh-pages
           publish_dir: ./outputs
