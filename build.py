@@ -25,6 +25,54 @@ import yaml
 import feedparser
 import requests
 import random
+
+# ---------------- Mojibake Repair Utilities ----------------
+def repair_mojibake(text: str) -> str:
+    """Attempt to repair common mojibake (garbled) text.
+    Tries several re-encode/decode strategies and picks the one with more Japanese characters
+    and fewer replacement characters. Always returns normalized (NFKC) single-line text.
+    """
+    if not text:
+        return text
+    try:
+        import unicodedata, re
+        candidates = [text]
+        # Try common mis-decode patterns
+        try:
+            candidates.append(bytes(text, 'latin-1', errors='ignore').decode('utf-8', errors='ignore'))
+        except Exception:
+            pass
+        try:
+            candidates.append(bytes(text, 'cp1252', errors='ignore').decode('utf-8', errors='ignore'))
+        except Exception:
+            pass
+        try:
+            candidates.append(bytes(text, 'latin-1', errors='ignore').decode('cp932', errors='ignore'))
+        except Exception:
+            pass
+        try:
+            candidates.append(bytes(text, 'cp932', errors='ignore').decode('utf-8', errors='ignore'))
+        except Exception:
+            pass
+
+        def score(t: str) -> int:
+            jp = sum(1 for ch in t if ('\u3040' <= ch <= '\u30ff') or ('\u4e00' <= ch <= '\u9fff'))
+            bad = t.count('\ufffd') + t.count('�')
+            ctrl = sum(1 for ch in t if ord(ch) < 32 and ch not in '\n\r\t')
+            return jp * 2 - bad * 2 - ctrl
+
+        best = max(candidates, key=score)
+        best = unicodedata.normalize('NFKC', best)
+        # Replace common broken punctuation
+        for k, v in {
+            'â€“': '–', 'â€”': '—', 'â€˜': "'", 'â€™': "'",
+            'â€œ': '"', 'â€': '"', 'â€¢': '•', 'â€¦': '…'
+        }.items():
+            best = best.replace(k, v)
+        best = re.sub(r"\s+", " ", best).strip()
+        return best
+    except Exception:
+        return text
 # Enhanced X Processing Integration
 try:
     from enhanced_x_processor import EnhancedXProcessor
@@ -114,8 +162,8 @@ def load_cache():
     return {}
 
 def save_cache(cache):
-    """Save cache (fixed)"""
-    backup_file = Noneキャッシュ保存（改善版）"""
+    """キャッシュ保存（改善版）"""
+    backup_file = None
     try:
         CACHE_DIR.mkdir(exist_ok=True)
 
@@ -354,6 +402,7 @@ def _extract_x_data_from_csv(raw: bytes) -> list[dict]:
                 text = ''.join(char for char in text if char.isprintable() or char in '\n\r\t')
                 
                 # 連続する空白を正規化
+                text = repair_mojibake(text)
                 text = re.sub(r'\s+', ' ', text).strip()
                 
                 # URL抽出を改善（テキストからも検索）
