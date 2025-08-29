@@ -127,7 +127,7 @@ def load_translation_cache():
     return {}
 
 def save_translation_cache(cache):
-    """鄙ｻ險ｳ繧ｭ繝｣繝・す繝･繧剃ｿ晏ｭ・""
+    """鄙ｻ險ｳ繧ｭ繝｣繝・す繝･繧剃ｿ晏ｭ・"""
     cache_dir = Path('_cache')
     cache_dir.mkdir(exist_ok=True)
     cache_file = cache_dir / 'translations.json'
@@ -135,7 +135,7 @@ def save_translation_cache(cache):
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
 def translate_text(text, target_lang='ja', cache=None):
-    """繝・く繧ｹ繝医ｒ鄙ｻ險ｳ・医く繝｣繝・す繝･蟇ｾ蠢懶ｼ・""
+    """繝・く繧ｹ繝医ｒ鄙ｻ險ｳ・医く繝｣繝・す繝･蟇ｾ蠢懶ｼ・"""
     if not TRANSLATE_AVAILABLE or not TRANSLATE_TO_JA:
         return text
     
