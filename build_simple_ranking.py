@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
-Simple Enhanced Daily AI News - 確実に動作するランキングシステム
-元の build.py をベースに、情報量を維持しつつランキング機能を追加
+Simple Enhanced Daily AI News - 遒ｺ螳溘↓蜍穂ｽ懊☆繧九Λ繝ｳ繧ｭ繝ｳ繧ｰ繧ｷ繧ｹ繝・Β
+蜈・・ build.py 繧偵・繝ｼ繧ｹ縺ｫ縲∵ュ蝣ｱ驥上ｒ邯ｭ謖√＠縺､縺､繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ讖溯・繧定ｿｽ蜉
 
 HTML Structure Fix Applied: 2025-08-23
 - Enhanced card template with priority system
@@ -22,66 +22,61 @@ import requests
 import random
 from bs4 import BeautifulSoup
 
-# 基本設定
-HOURS_LOOKBACK = int(os.getenv('HOURS_LOOKBACK', '24'))
+# 蝓ｺ譛ｬ險ｭ螳・HOURS_LOOKBACK = int(os.getenv('HOURS_LOOKBACK', '24'))
 MAX_ITEMS_PER_CATEGORY = int(os.getenv('MAX_ITEMS_PER_CATEGORY', '25'))
 TOP_PICKS_COUNT = int(os.getenv('TOP_PICKS_COUNT', '10'))
 TRANSLATE_TO_JA = os.getenv('TRANSLATE_TO_JA', '1') == '1'
 TRANSLATE_ENGINE = os.getenv('TRANSLATE_ENGINE', 'google')
 X_POSTS_CSV = os.getenv('X_POSTS_CSV', 'https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0')
 
-# 翻訳機能
+# 鄙ｻ險ｳ讖溯・
 try:
     from deep_translator import GoogleTranslator, MyMemoryTranslator
     TRANSLATE_AVAILABLE = True
-    print("✅ 翻訳機能: 利用可能")
+    print("笨・鄙ｻ險ｳ讖溯・: 蛻ｩ逕ｨ蜿ｯ閭ｽ")
 except ImportError:
-    print("⚠️ 翻訳機能: deep-translator未インストール")
+    print("笞・・鄙ｻ險ｳ讖溯・: deep-translator譛ｪ繧､繝ｳ繧ｹ繝医・繝ｫ")
     TRANSLATE_AVAILABLE = False
 
 class SimpleEngineerRanking:
-    """AIエンジニア/業務効率化 有用度ランキング"""
+    """AI繧ｨ繝ｳ繧ｸ繝九い/讌ｭ蜍吝柑邇・喧 譛臥畑蠎ｦ繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ"""
     
-    # エンジニア重要キーワード（重み付き）
-    TECH_KEYWORDS = {
-        # 高優先度 (3.0倍)
+    # 繧ｨ繝ｳ繧ｸ繝九い驥崎ｦ√く繝ｼ繝ｯ繝ｼ繝会ｼ磯㍾縺ｿ莉倥″・・    TECH_KEYWORDS = {
+        # 鬮伜━蜈亥ｺｦ (3.0蛟・
         'code': 3.0, 'api': 3.0, 'sdk': 3.0, 'github': 3.0, 'implementation': 3.0,
         'tutorial': 3.0, 'framework': 3.0, 'library': 3.0, 'sample': 2.8,
         
-        # AI/ML (2.5倍)
+        # AI/ML (2.5蛟・
         'pytorch': 2.5, 'tensorflow': 2.5, 'huggingface': 2.5, 'gpt': 2.5, 
         'llm': 2.5, 'openai': 2.5, 'anthropic': 2.5, 'model': 2.5, 'ai': 2.5,
         
-        # インフラ (2.0倍)
+        # 繧､繝ｳ繝輔Λ (2.0蛟・
         'docker': 2.0, 'kubernetes': 2.0, 'aws': 2.0, 'azure': 2.0, 'gcp': 2.0,
         'deployment': 2.0, 'production': 2.0, 'mlops': 2.0,
         
-        # パフォーマンス (1.8倍)
+        # 繝代ヵ繧ｩ繝ｼ繝槭Φ繧ｹ (1.8蛟・
         'performance': 1.8, 'benchmark': 1.8, 'optimization': 1.8, 'speed': 1.8,
         'memory': 1.8, 'gpu': 1.8, 'cuda': 1.8,
         
-        # 研究 (1.5倍) 
+        # 遐皮ｩｶ (1.5蛟・ 
         'research': 1.5, 'paper': 1.5, 'arxiv': 1.5, 'algorithm': 1.5,
         'method': 1.5, 'evaluation': 1.5
     }
 
-    # 業務効率化・実務活用のキーワード（重み付き）
-    EFFICIENCY_KEYWORDS = {
-        # 強い意図（3.0倍）
-        'automation': 3.0, 'automate': 3.0, 'workflow': 3.0, 'rpa': 3.0,
+    # 讌ｭ蜍吝柑邇・喧繝ｻ螳溷漁豢ｻ逕ｨ縺ｮ繧ｭ繝ｼ繝ｯ繝ｼ繝会ｼ磯㍾縺ｿ莉倥″・・    EFFICIENCY_KEYWORDS = {
+        # 蠑ｷ縺・э蝗ｳ・・.0蛟搾ｼ・        'automation': 3.0, 'automate': 3.0, 'workflow': 3.0, 'rpa': 3.0,
         'copilot': 3.0, 'prompt': 2.6, 'prompt engineering': 2.8,
         'zapier': 2.8, 'make.com': 2.4, 'notion': 2.2, 'slack': 2.0,
         'excel': 2.4, 'spreadsheet': 2.2, 'power automate': 2.6,
         'powerapps': 2.2, 'power bi': 2.2, 'apps script': 2.4, 'gas': 2.4,
 
-        # 日本語キーワード（2.0-3.0倍）
-        '自動化': 3.0, '効率化': 2.8, '業務効率': 2.6, '省力化': 2.4,
-        'ワークフロー': 2.6, '手順': 2.0, 'テンプレート': 2.0, '導入事例': 2.4,
-        '活用事例': 2.4, 'コツ': 2.0, '使い方': 2.2, '時短': 2.2,
-        'スクリプト': 2.2, 'マクロ': 2.2,
+        # 譌･譛ｬ隱槭く繝ｼ繝ｯ繝ｼ繝会ｼ・.0-3.0蛟搾ｼ・        '閾ｪ蜍募喧': 3.0, '蜉ｹ邇・喧': 2.8, '讌ｭ蜍吝柑邇・: 2.6, '逵∝鴨蛹・: 2.4,
+        '繝ｯ繝ｼ繧ｯ繝輔Ο繝ｼ': 2.6, '謇矩・: 2.0, '繝・Φ繝励Ξ繝ｼ繝・: 2.0, '蟆主・莠倶ｾ・: 2.4,
+        '豢ｻ逕ｨ莠倶ｾ・: 2.4, '繧ｳ繝・: 2.0, '菴ｿ縺・婿': 2.2, '譎ら洒': 2.2,
+        '繧ｹ繧ｯ繝ｪ繝励ヨ': 2.2, '繝槭け繝ｭ': 2.2,
     }
     
-    # 信頼できるソース
+    # 菫｡鬆ｼ縺ｧ縺阪ｋ繧ｽ繝ｼ繧ｹ
     TRUSTED_DOMAINS = [
         'arxiv.org', 'github.com', 'pytorch.org', 'tensorflow.org', 
         'huggingface.co', 'openai.com', 'anthropic.com', 'deepmind.com',
@@ -93,7 +88,7 @@ class SimpleEngineerRanking:
     
     @classmethod
     def calculate_score(cls, item):
-        """AIエンジニア/業務効率化の有用度スコア (0-10)"""
+        """AI繧ｨ繝ｳ繧ｸ繝九い/讌ｭ蜍吝柑邇・喧縺ｮ譛臥畑蠎ｦ繧ｹ繧ｳ繧｢ (0-10)"""
         title = item.get('title', '').lower()
         summary = item.get('summary', '').lower()
         url = item.get('url', '').lower()
@@ -101,7 +96,7 @@ class SimpleEngineerRanking:
         content = f"{title} {summary}"
         score = 0.0
         
-        # キーワードマッチング
+        # 繧ｭ繝ｼ繝ｯ繝ｼ繝峨・繝・メ繝ｳ繧ｰ
         for keyword, weight in cls.TECH_KEYWORDS.items():
             if keyword in content:
                 score += weight
@@ -113,27 +108,27 @@ class SimpleEngineerRanking:
                 if keyword in title:
                     score += weight * 0.6
         
-        # 信頼できるソースボーナス
+        # 菫｡鬆ｼ縺ｧ縺阪ｋ繧ｽ繝ｼ繧ｹ繝懊・繝翫せ
         domain = urlparse(url).netloc.lower()
         for trusted in cls.TRUSTED_DOMAINS:
             if trusted in domain:
                 score *= 1.25
                 break
         
-        # 実装/ハウツー/コードの特別ボーナス
+        # 螳溯｣・繝上え繝・・/繧ｳ繝ｼ繝峨・迚ｹ蛻･繝懊・繝翫せ
         howto_indicators = [
             'how to', 'step-by-step', 'guide', 'tutorial', 'best practices',
-            'チュートリアル', '手順', '入門', '使い方', '導入事例', '活用事例'
+            '繝√Η繝ｼ繝医Μ繧｢繝ｫ', '謇矩・, '蜈･髢', '菴ｿ縺・婿', '蟆主・莠倶ｾ・, '豢ｻ逕ｨ莠倶ｾ・
         ]
         code_indicators = ['```', 'code example', 'implementation', 'github.com', 'gist.github.com']
         if any(x in content for x in howto_indicators + code_indicators):
             score *= 1.15
         
-        # 10点満点に正規化
+        # 10轤ｹ貅轤ｹ縺ｫ豁｣隕丞喧
         return min(score, 10.0)
 
 def load_translation_cache():
-    """翻訳キャッシュを読み込み"""
+    """鄙ｻ險ｳ繧ｭ繝｣繝・す繝･繧定ｪｭ縺ｿ霎ｼ縺ｿ"""
     cache_file = Path('_cache/translations.json')
     if cache_file.exists():
         try:
@@ -144,7 +139,7 @@ def load_translation_cache():
     return {}
 
 def save_translation_cache(cache):
-    """翻訳キャッシュを保存"""
+    """鄙ｻ險ｳ繧ｭ繝｣繝・す繝･繧剃ｿ晏ｭ・""
     cache_dir = Path('_cache')
     cache_dir.mkdir(exist_ok=True)
     cache_file = cache_dir / 'translations.json'
@@ -152,14 +147,14 @@ def save_translation_cache(cache):
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
 def translate_text(text, target_lang='ja', cache=None):
-    """テキストを翻訳（キャッシュ対応）"""
+    """繝・く繧ｹ繝医ｒ鄙ｻ險ｳ・医く繝｣繝・す繝･蟇ｾ蠢懶ｼ・""
     if not TRANSLATE_AVAILABLE or not TRANSLATE_TO_JA:
         return text
     
     if cache is None:
         cache = {}
     
-    # キャッシュチェック
+    # 繧ｭ繝｣繝・す繝･繝√ぉ繝・け
     cache_key = f"{text[:100]}_{target_lang}"
     if cache_key in cache:
         return cache[cache_key]
@@ -170,21 +165,19 @@ def translate_text(text, target_lang='ja', cache=None):
         else:
             translator = MyMemoryTranslator(source='auto', target=target_lang)
         
-        result = translator.translate(text[:500])  # 長いテキストは切り詰め
-        cache[cache_key] = result
+        result = translator.translate(text[:500])  # 髟ｷ縺・ユ繧ｭ繧ｹ繝医・蛻・ｊ隧ｰ繧・        cache[cache_key] = result
         return result
     except:
         return text
 
 def load_feeds_config():
-    """フィード設定を読み込み"""
+    """繝輔ぅ繝ｼ繝芽ｨｭ螳壹ｒ隱ｭ縺ｿ霎ｼ縺ｿ"""
     feeds_file = Path('feeds.yml')
     if feeds_file.exists():
         with open(feeds_file, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
     
-    # デフォルト設定
-    return {
+    # 繝・ヵ繧ｩ繝ｫ繝郁ｨｭ螳・    return {
         'business': [
             {'url': 'https://techcrunch.com/feed/', 'name': 'TechCrunch'},
             {'url': 'https://aws.amazon.com/blogs/machine-learning/feed/', 'name': 'AWS ML Blog'},
@@ -203,18 +196,17 @@ def load_feeds_config():
     }
 
 def is_recent(published_date, hours_back=24):
-    """指定時間内の記事かチェック"""
+    """謖・ｮ壽凾髢灘・縺ｮ險倅ｺ九°繝√ぉ繝・け"""
     if not published_date:
         return True
     
     try:
         if isinstance(published_date, str):
-            # ISO形式や一般的な形式をパース
+            # ISO蠖｢蠑上ｄ荳闊ｬ逧・↑蠖｢蠑上ｒ繝代・繧ｹ
             from dateutil import parser
             pub_time = parser.parse(published_date)
         else:
-            # struct_time の場合
-            pub_time = datetime(*published_date[:6], tzinfo=timezone.utc)
+            # struct_time 縺ｮ蝣ｴ蜷・            pub_time = datetime(*published_date[:6], tzinfo=timezone.utc)
         
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours_back)
         return pub_time > cutoff_time
@@ -222,27 +214,24 @@ def is_recent(published_date, hours_back=24):
         return True
 
 def fetch_feed_items(url, source_name, max_items=25):
-    """フィードから記事を取得"""
+    """繝輔ぅ繝ｼ繝峨°繧芽ｨ倅ｺ九ｒ蜿門ｾ・""
     try:
-        print(f"📡 取得中: {source_name} ({url})")
+        print(f"藤 蜿門ｾ嶺ｸｭ: {source_name} ({url})")
         
-        # User-Agentを設定
-        headers = {
+        # User-Agent繧定ｨｭ螳・        headers = {
             'User-Agent': 'Mozilla/5.0 (compatible; AI-News-Bot/1.0)'
         }
         
-        # タイムアウト付きで取得
-        import urllib.request
+        # 繧ｿ繧､繝繧｢繧ｦ繝井ｻ倥″縺ｧ蜿門ｾ・        import urllib.request
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=30) as response:
             feed_data = response.read()
         
-        # feedparserで解析
-        feed = feedparser.parse(feed_data)
+        # feedparser縺ｧ隗｣譫・        feed = feedparser.parse(feed_data)
         items = []
         
         for entry in feed.entries[:max_items]:
-            # 最近の記事のみ
+            # 譛霑代・險倅ｺ九・縺ｿ
             if not is_recent(entry.get('published_parsed'), HOURS_LOOKBACK):
                 continue
             
@@ -255,29 +244,28 @@ def fetch_feed_items(url, source_name, max_items=25):
                 'engineer_score': 0.0
             }
             
-            # HTMLタグを除去
+            # HTML繧ｿ繧ｰ繧帝勁蜴ｻ
             item['summary'] = re.sub(r'<[^>]+>', '', item['summary'])
             item['summary'] = html.unescape(item['summary']).strip()
             
-            # エンジニア関連度スコア計算
-            item['engineer_score'] = SimpleEngineerRanking.calculate_score(item)
+            # 繧ｨ繝ｳ繧ｸ繝九い髢｢騾｣蠎ｦ繧ｹ繧ｳ繧｢險育ｮ・            item['engineer_score'] = SimpleEngineerRanking.calculate_score(item)
             
             items.append(item)
         
-        print(f"✅ {source_name}: {len(items)}件取得")
+        print(f"笨・{source_name}: {len(items)}莉ｶ蜿門ｾ・)
         return items
         
     except Exception as e:
-        print(f"❌ {source_name} エラー: {e}")
+        print(f"笶・{source_name} 繧ｨ繝ｩ繝ｼ: {e}")
         return []
 
 def _clean_tweet_text(text: str) -> str:
     if not text:
         return ""
-    text = re.sub(r"https?://\S+", "", text)  # URLs削除
-    text = re.sub(r"\s+", " ", text).strip()  # 余分な空白を圧縮
-    text = re.sub(r"(#[\w一-龥ぁ-んァ-ンー]+\s*)+$", "", text)  # 末尾のハッシュタグ群を削除
-    text = re.sub(r"(@[\w_]+\s*)+$", "", text)  # 末尾のメンション群を削除
+    text = re.sub(r"https?://\S+", "", text)  # URLs蜑企勁
+    text = re.sub(r"\s+", " ", text).strip()  # 菴吝・縺ｪ遨ｺ逋ｽ繧貞悸邵ｮ
+    text = re.sub(r"(#[\w荳-鮴･縺・繧薙ぃ-繝ｳ繝ｼ]+\s*)+$", "", text)  # 譛ｫ蟆ｾ縺ｮ繝上ャ繧ｷ繝･繧ｿ繧ｰ鄒､繧貞炎髯､
+    text = re.sub(r"(@[\w_]+\s*)+$", "", text)  # 譛ｫ蟆ｾ縺ｮ繝｡繝ｳ繧ｷ繝ｧ繝ｳ鄒､繧貞炎髯､
     return text.strip()
 
 def _extract_external_url(text: str) -> str | None:
@@ -325,18 +313,18 @@ def _username_from_status_url(x_status_url: str) -> str | None:
 def _guess_tag(text: str) -> str | None:
     t = (text or '').lower()
     jp = (text or '')
-    # 実装/チュートリアル系
-    if any(k in t for k in ['how to', 'tutorial', 'guide', 'step-by-step']) or any(k in jp for k in ['使い方', '手順', '入門', 'チュートリアル']):
-        return '実装'
-    # 業務効率化/自動化系
-    if any(k in t for k in ['workflow', 'automation', 'automate', 'copilot', 'zapier', 'notion', 'excel', 'apps script', 'power automate', 'prompt']) or any(k in jp for k in ['効率化', '自動化', '時短']):
-        return '効率化'
-    # 研究/論文系
-    if any(k in t for k in ['arxiv', 'paper', 'research']) or any(k in jp for k in ['論文', '研究']):
-        return '研究'
-    # リリース/発表
-    if any(k in t for k in ['release', 'launch', 'announce', 'announced']) or any(k in jp for k in ['発表', 'リリース']):
-        return '発表'
+    # 螳溯｣・繝√Η繝ｼ繝医Μ繧｢繝ｫ邉ｻ
+    if any(k in t for k in ['how to', 'tutorial', 'guide', 'step-by-step']) or any(k in jp for k in ['菴ｿ縺・婿', '謇矩・, '蜈･髢', '繝√Η繝ｼ繝医Μ繧｢繝ｫ']):
+        return '螳溯｣・
+    # 讌ｭ蜍吝柑邇・喧/閾ｪ蜍募喧邉ｻ
+    if any(k in t for k in ['workflow', 'automation', 'automate', 'copilot', 'zapier', 'notion', 'excel', 'apps script', 'power automate', 'prompt']) or any(k in jp for k in ['蜉ｹ邇・喧', '閾ｪ蜍募喧', '譎ら洒']):
+        return '蜉ｹ邇・喧'
+    # 遐皮ｩｶ/隲匁枚邉ｻ
+    if any(k in t for k in ['arxiv', 'paper', 'research']) or any(k in jp for k in ['隲匁枚', '遐皮ｩｶ']):
+        return '遐皮ｩｶ'
+    # 繝ｪ繝ｪ繝ｼ繧ｹ/逋ｺ陦ｨ
+    if any(k in t for k in ['release', 'launch', 'announce', 'announced']) or any(k in jp for k in ['逋ｺ陦ｨ', '繝ｪ繝ｪ繝ｼ繧ｹ']):
+        return '逋ｺ陦ｨ'
     return None
 
 def _build_readable_summary(cleaned: str, og_title: str | None, domain: str | None) -> str:
@@ -346,132 +334,124 @@ def _build_readable_summary(cleaned: str, og_title: str | None, domain: str | No
         parts.append(f"[{tag}]")
     if og_title:
         parts.append(og_title.strip())
-    # 投稿要約は重複しないときのみ添える
+    # 謚慕ｨｿ隕∫ｴ・・驥崎､・＠縺ｪ縺・→縺阪・縺ｿ豺ｻ縺医ｋ
     if cleaned:
         if not og_title or og_title.lower() not in cleaned.lower():
-            # 短く整形
+            # 遏ｭ縺乗紛蠖｢
             brief = cleaned.strip()
             if len(brief) > 140:
                 brief = brief[:140] + '...'
-            parts.append(f"投稿要約: {brief}")
+            parts.append(f"謚慕ｨｿ隕∫ｴ・ {brief}")
     if domain:
-        parts.append(f"出典: {domain}")
-    # 仕上げ（全角区切りで視認性向上）
-    summary = ' ｜ '.join(p for p in parts if p)
-    # 最終長さ上限
+        parts.append(f"蜃ｺ蜈ｸ: {domain}")
+    # 莉穂ｸ翫￡・亥・隗貞玄蛻・ｊ縺ｧ隕冶ｪ肴ｧ蜷台ｸ奇ｼ・    summary = ' ・・'.join(p for p in parts if p)
+    # 譛邨る聞縺穂ｸ企剞
     if len(summary) > 280:
         summary = summary[:277] + '...'
     return summary
 
 def fetch_x_posts():
-    """X(Twitter)投稿を取得"""
+    """X(Twitter)謚慕ｨｿ繧貞叙蠕・""
     try:
-        print(f"📱 X投稿取得中: {X_POSTS_CSV}")
+        print(f"導 X謚慕ｨｿ蜿門ｾ嶺ｸｭ: {X_POSTS_CSV}")
         
         response = requests.get(X_POSTS_CSV, timeout=30)
-        print(f"🌐 HTTP Response: {response.status_code}")
+        print(f"倹 HTTP Response: {response.status_code}")
         if response.status_code != 200:
-            print(f"❌ HTTP Status: {response.status_code}")
+            print(f"笶・HTTP Status: {response.status_code}")
             return []
         
         content = response.text.strip()
-        print(f"📄 受信データサイズ: {len(content)} 文字")
-        print(f"📄 データ先頭100文字: {content[:100]}")
+        print(f"塘 蜿嶺ｿ｡繝・・繧ｿ繧ｵ繧､繧ｺ: {len(content)} 譁・ｭ・)
+        print(f"塘 繝・・繧ｿ蜈磯ｭ100譁・ｭ・ {content[:100]}")
         
-        # CSVかテキストかを判定
-        if content.startswith('"Timestamp"') or ',' in content[:200]:
-            print("📋 CSV形式として処理中...")
+        # CSV縺九ユ繧ｭ繧ｹ繝医°繧貞愛螳・        if content.startswith('"Timestamp"') or ',' in content[:200]:
+            print("搭 CSV蠖｢蠑上→縺励※蜃ｦ逅・ｸｭ...")
             return fetch_x_posts_from_csv(content)
         else:
-            print("📄 テキスト形式として処理中...")
+            print("塘 繝・く繧ｹ繝亥ｽ｢蠑上→縺励※蜃ｦ逅・ｸｭ...")
             return fetch_x_posts_from_text(content)
             
     except Exception as e:
-        print(f"❌ X投稿取得エラー: {e}")
+        print(f"笶・X謚慕ｨｿ蜿門ｾ励お繝ｩ繝ｼ: {e}")
         import traceback
         traceback.print_exc()
         return []
 
 def fetch_x_posts_from_csv(csv_content):
-    """CSV形式のXポストを処理"""
+    """CSV蠖｢蠑上・X繝昴せ繝医ｒ蜃ｦ逅・""
     try:
-        # CSVファイルに列名がない場合に対応（インデックスベースで処理）
-        lines = csv_content.strip().split('\n')
+        # CSV繝輔ぃ繧､繝ｫ縺ｫ蛻怜錐縺後↑縺・ｴ蜷医↓蟇ｾ蠢懶ｼ医う繝ｳ繝・ャ繧ｯ繧ｹ繝吶・繧ｹ縺ｧ蜃ｦ逅・ｼ・        lines = csv_content.strip().split('\n')
         posts = []
         og_cache: dict[str, str] = {}
         
-        print(f"🔍 DEBUG: CSV行数: {len(lines)}")
-        print(f"🔍 DEBUG: 最初の3行:")
+        print(f"剥 DEBUG: CSV陦梧焚: {len(lines)}")
+        print(f"剥 DEBUG: 譛蛻昴・3陦・")
         for i, line in enumerate(lines[:3]):
-            print(f"  行{i}: {line[:100]}...")
+            print(f"  陦鶏i}: {line[:100]}...")
         
         for i, line in enumerate(lines):
             try:
-                # CSVを手動で解析（列名なしを想定）
-                parts = list(csv.reader([line]))[0]
+                # CSV繧呈焔蜍輔〒隗｣譫撰ｼ亥・蜷阪↑縺励ｒ諠ｳ螳夲ｼ・                parts = list(csv.reader([line]))[0]
                 
-                if len(parts) < 3:  # 最低3列必要
-                    continue
+                if len(parts) < 3:  # 譛菴・蛻怜ｿ・ｦ・                    continue
                 
-                # CSV形式: [timestamp, username, content, image_url, tweet_url]
+                # CSV蠖｢蠑・ [timestamp, username, content, image_url, tweet_url]
                 timestamp_str = parts[0].strip()
-                username = parts[1].strip().lstrip('@')  # @記号を除去
+                username = parts[1].strip().lstrip('@')  # @險伜捷繧帝勁蜴ｻ
                 tweet_content = parts[2].strip()
                 
-                # ツイートURLは4列目または5列目
+                # 繝・う繝ｼ繝・RL縺ｯ4蛻礼岼縺ｾ縺溘・5蛻礼岼
                 tweet_url = ''
                 if len(parts) > 4:
                     tweet_url = parts[4].strip()
                 elif len(parts) > 3:
                     tweet_url = parts[3].strip()
                 
-                print(f"🔍 DEBUG: 行{i+1} - ユーザー: @{username}, コンテンツ: {tweet_content[:50]}..., URL: {tweet_url}")
+                print(f"剥 DEBUG: 陦鶏i+1} - 繝ｦ繝ｼ繧ｶ繝ｼ: @{username}, 繧ｳ繝ｳ繝・Φ繝・ {tweet_content[:50]}..., URL: {tweet_url}")
                 
                 if not tweet_content or not username:
                     continue
                 
-                # 日付チェック
+                # 譌･莉倥メ繧ｧ繝・け
                 try:
                     from dateutil import parser
                     post_date = parser.parse(timestamp_str)
                     if not is_recent(post_date.strftime('%Y-%m-%d %H:%M:%S'), HOURS_LOOKBACK):
-                        print(f"🔍 DEBUG: 古い投稿をスキップ: {timestamp_str}")
+                        print(f"剥 DEBUG: 蜿､縺・兜遞ｿ繧偵せ繧ｭ繝・・: {timestamp_str}")
                         continue
                 except Exception as e:
-                    print(f"⚠️ 日付解析エラー: {timestamp_str} - {e}")
+                    print(f"笞・・譌･莉倩ｧ｣譫舌お繝ｩ繝ｼ: {timestamp_str} - {e}")
                     continue
 
-                # テキストクリーニング
+                # 繝・く繧ｹ繝医け繝ｪ繝ｼ繝九Φ繧ｰ
                 cleaned = _clean_tweet_text(tweet_content)
                 
-                # 外部URLを抽出
+                # 螟夜ΚURL繧呈歓蜃ｺ
                 ext_url = _extract_external_url(tweet_content)
                 
-                # ツイートURL自体を外部URLとして使用（他に適切なURLがない場合）
-                if not ext_url and tweet_url:
-                    # TwitterのURLではない場合のみ使用
+                # 繝・う繝ｼ繝・RL閾ｪ菴薙ｒ螟夜ΚURL縺ｨ縺励※菴ｿ逕ｨ・井ｻ悶↓驕ｩ蛻・↑URL縺後↑縺・ｴ蜷茨ｼ・                if not ext_url and tweet_url:
+                    # Twitter縺ｮURL縺ｧ縺ｯ縺ｪ縺・ｴ蜷医・縺ｿ菴ｿ逕ｨ
                     if 'twitter.com' not in tweet_url and 'x.com' not in tweet_url:
                         ext_url = tweet_url
 
                 domain = urlparse(ext_url).netloc if ext_url else ''
                 og_title = None
                 
-                # OGタイトル取得
-                if ext_url:
+                # OG繧ｿ繧､繝医Ν蜿門ｾ・                if ext_url:
                     og_title = og_cache.get(ext_url)
                     if og_title is None:
                         og_title = _fetch_og_title(ext_url)
                         if og_title:
                             og_cache[ext_url] = og_title
 
-                # タイトル生成
+                # 繧ｿ繧､繝医Ν逕滓・
                 if og_title:
-                    title = f"🐦 @{username}: {og_title}"
+                    title = f"凄 @{username}: {og_title}"
                 else:
-                    title = f"🐦 @{username}: {cleaned[:80]}" if len(cleaned) > 80 else f"🐦 @{username}: {cleaned}"
+                    title = f"凄 @{username}: {cleaned[:80]}" if len(cleaned) > 80 else f"凄 @{username}: {cleaned}"
 
-                # 要約生成
-                summary = _build_readable_summary(cleaned, og_title, domain)
+                # 隕∫ｴ・函謌・                summary = _build_readable_summary(cleaned, og_title, domain)
                 if not summary:
                     summary = cleaned[:200] + '...' if len(cleaned) > 200 else cleaned
 
@@ -487,36 +467,35 @@ def fetch_x_posts_from_csv(csv_content):
                     'engineer_score': SimpleEngineerRanking.calculate_score(score_payload)
                 })
                 
-                print(f"✅ X投稿処理完了: @{username} - スコア: {SimpleEngineerRanking.calculate_score(score_payload):.1f}")
+                print(f"笨・X謚慕ｨｿ蜃ｦ逅・ｮ御ｺ・ @{username} - 繧ｹ繧ｳ繧｢: {SimpleEngineerRanking.calculate_score(score_payload):.1f}")
                 
             except Exception as e:
-                print(f"⚠️ 行{i+1}の処理エラー: {e}")
+                print(f"笞・・陦鶏i+1}縺ｮ蜃ｦ逅・お繝ｩ繝ｼ: {e}")
                 continue
         
-        print(f"✅ CSV形式X投稿: {len(posts)}件取得")
+        print(f"笨・CSV蠖｢蠑醜謚慕ｨｿ: {len(posts)}莉ｶ蜿門ｾ・)
         return posts[:MAX_ITEMS_PER_CATEGORY]
         
     except Exception as e:
-        print(f"❌ CSV処理エラー: {e}")
+        print(f"笶・CSV蜃ｦ逅・お繝ｩ繝ｼ: {e}")
         import traceback
         traceback.print_exc()
         return []
 
 def fetch_x_posts_from_text(text_content):
-    """テキスト形式のXポストを処理"""
+    """繝・く繧ｹ繝亥ｽ｢蠑上・X繝昴せ繝医ｒ蜃ｦ逅・""
     try:
         import re
         
-        # 日付パターンでポストを分割
+        # 譌･莉倥ヱ繧ｿ繝ｼ繝ｳ縺ｧ繝昴せ繝医ｒ蛻・牡
         posts = []
         
-        # August XX, 2025 形式の日付を検索
+        # August XX, 2025 蠖｢蠑上・譌･莉倥ｒ讀懃ｴ｢
         date_pattern = r'(August \d{1,2}, 2025 at \d{1,2}:\d{2}[AP]M)'
         username_pattern = r'@([a-zA-Z0-9_]+)'
         url_pattern = r'https?://[^\s,"]+'
         
-        # テキストを行で分割して処理
-        lines = text_content.split('\n')
+        # 繝・く繧ｹ繝医ｒ陦後〒蛻・牡縺励※蜃ｦ逅・        lines = text_content.split('\n')
         current_post = {}
         
         for line in lines:
@@ -524,15 +503,13 @@ def fetch_x_posts_from_text(text_content):
             if not line:
                 continue
             
-            # 日付を検出
+            # 譌･莉倥ｒ讀懷・
             date_match = re.search(date_pattern, line)
             if date_match:
-                # 前のポストを保存
-                if current_post.get('content'):
+                # 蜑阪・繝昴せ繝医ｒ菫晏ｭ・                if current_post.get('content'):
                     posts.append(current_post.copy())
                 
-                # 新しいポストを開始
-                current_post = {
+                # 譁ｰ縺励＞繝昴せ繝医ｒ髢句ｧ・                current_post = {
                     'timestamp': date_match.group(1),
                     'content': '',
                     'urls': [],
@@ -540,37 +517,34 @@ def fetch_x_posts_from_text(text_content):
                 }
                 continue
             
-            # ユーザー名を検出
+            # 繝ｦ繝ｼ繧ｶ繝ｼ蜷阪ｒ讀懷・
             username_match = re.search(username_pattern, line)
             if username_match and not current_post.get('username'):
                 current_post['username'] = username_match.group(1)
             
-            # URLを検出
+            # URL繧呈､懷・
             url_matches = re.findall(url_pattern, line)
             for url in url_matches:
                 if url not in current_post['urls']:
                     current_post['urls'].append(url)
             
-            # コンテンツを蓄積
-            if not re.search(date_pattern, line):  # 日付行以外
-                if current_post.get('content'):
+            # 繧ｳ繝ｳ繝・Φ繝・ｒ闢・ｩ・            if not re.search(date_pattern, line):  # 譌･莉倩｡御ｻ･螟・                if current_post.get('content'):
                     current_post['content'] += ' ' + line
                 else:
                     current_post['content'] = line
         
-        # 最後のポストを追加
+        # 譛蠕後・繝昴せ繝医ｒ霑ｽ蜉
         if current_post.get('content'):
             posts.append(current_post)
         
-        # ポストオブジェクトに変換
+        # 繝昴せ繝医が繝悶ず繧ｧ繧ｯ繝医↓螟画鋤
         converted_posts = []
         og_cache: dict[str, str] = {}
         for post_data in posts[:MAX_ITEMS_PER_CATEGORY]:
             if not post_data.get('content'):
                 continue
             
-            # 日付チェック（最近48時間以内）
-            try:
+            # 譌･莉倥メ繧ｧ繝・け・域怙霑・8譎る俣莉･蜀・ｼ・            try:
                 from dateutil import parser
                 post_date = parser.parse(post_data['timestamp'])
                 if not is_recent(post_date.strftime('%Y-%m-%d %H:%M:%S'), HOURS_LOOKBACK):
@@ -595,7 +569,7 @@ def fetch_x_posts_from_text(text_content):
                         og_cache[ext_url] = og_title
 
             if og_title:
-                title = f"{og_title}（{domain}）"
+                title = f"{og_title}・・domain}・・
             else:
                 title = cleaned if len(cleaned) <= 100 else (cleaned[:100] + '...')
 
@@ -612,17 +586,17 @@ def fetch_x_posts_from_text(text_content):
                 'engineer_score': SimpleEngineerRanking.calculate_score(score_payload)
             })
         
-        print(f"✅ テキスト形式X投稿: {len(converted_posts)}件取得")
+        print(f"笨・繝・く繧ｹ繝亥ｽ｢蠑醜謚慕ｨｿ: {len(converted_posts)}莉ｶ蜿門ｾ・)
         return converted_posts
         
     except Exception as e:
-        print(f"❌ テキスト処理エラー: {e}")
+        print(f"笶・繝・く繧ｹ繝亥・逅・お繝ｩ繝ｼ: {e}")
         import traceback
         traceback.print_exc()
         return []
 
 def format_time_ago(published_str):
-    """経過時間を日本語で表示"""
+    """邨碁℃譎る俣繧呈律譛ｬ隱槭〒陦ｨ遉ｺ"""
     if not published_str:
         return ""
     
@@ -638,47 +612,47 @@ def format_time_ago(published_str):
         hours = diff.total_seconds() / 3600
         
         if hours < 1:
-            return "1時間未満"
+            return "1譎る俣譛ｪ貅"
         elif hours < 24:
-            return f"{int(hours)}時間前"
+            return f"{int(hours)}譎る俣蜑・
         else:
-            return f"{int(hours // 24)}日前"
+            return f"{int(hours // 24)}譌･蜑・
     except:
         return ""
 
 def generate_css():
-    """CSSファイルを生成"""
+    """CSS繝輔ぃ繧､繝ｫ繧堤函謌・""
     css_content = '''/* Digital.gov compliance deployed at 2025-08-23 */
 :root{
-  /* Digital.gov準拠: WCAG AAA対応カラーシステム */
+  /* Digital.gov貅匁侠: WCAG AAA蟇ｾ蠢懊き繝ｩ繝ｼ繧ｷ繧ｹ繝・Β */
   --fg:#0f172a; --bg:#ffffff; --muted:#475569; --line:#e2e8f0;
   --brand:#1e40af; --brand-weak:#f1f5f9; --chip:#f8fafc;
   --brand-hover:#1e3a8a; --brand-light:#bfdbfe; --brand-dark:#1e3a8a;
   --success:#15803d; --warning:#ca8a04; --danger:#dc2626;
   --info:#0369a1; --neutral:#64748b;
   
-  /* 段階的背景色（彩度を下げた背景） */
+  /* 谿ｵ髫守噪閭梧勹濶ｲ・亥ｽｩ蠎ｦ繧剃ｸ九￡縺溯レ譎ｯ・・*/
   --bg-subtle:#f8fafc; --bg-muted:#f1f5f9; --bg-emphasis:#e2e8f0;
   
-  /* グラデーション（彩度調整済み） */
+  /* 繧ｰ繝ｩ繝・・繧ｷ繝ｧ繝ｳ・亥ｽｩ蠎ｦ隱ｿ謨ｴ貂医∩・・*/
   --gradient:linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
   --gradient-subtle:linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   
-  /* シャドウ */
+  /* 繧ｷ繝｣繝峨え */
   --shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg:0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   
-  /* レイアウト変数 */
+  /* 繝ｬ繧､繧｢繧ｦ繝亥､画焚 */
   --border-radius: 12px;
   --spacing-xs: 4px; --spacing-sm: 8px; --spacing-md: 16px; 
   --spacing-lg: 24px; --spacing-xl: 32px; --spacing-2xl: 48px;
   
-  /* タイポグラフィ */
+  /* 繧ｿ繧､繝昴げ繝ｩ繝輔ぅ */
   --font-size-xs: 12px; --font-size-sm: 14px; --font-size-base: 16px;
   --font-size-lg: 18px; --font-size-xl: 20px; --font-size-2xl: 24px;
   --font-size-3xl: 32px; --font-size-4xl: 36px;
   
-  /* フォーカス表示 */
+  /* 繝輔か繝ｼ繧ｫ繧ｹ陦ｨ遉ｺ */
   --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.5);
   --focus-ring-offset: 2px;
 }
@@ -701,7 +675,7 @@ body{
   gap:var(--spacing-lg);
 }
 
-/* ヘッダー */
+/* 繝倥ャ繝繝ｼ */
 .site-header{
   display:flex;
   justify-content:space-between;
@@ -721,7 +695,7 @@ body{
   font-size:var(--font-size-sm);
 }
 
-/* メインコンテンツ */
+/* 繝｡繧､繝ｳ繧ｳ繝ｳ繝・Φ繝・*/
 .page-title{
   font-size:var(--font-size-3xl);
   font-weight:800;
@@ -742,7 +716,7 @@ body{
   margin-right:auto;
 }
 
-/* KPIグリッド */
+/* KPI繧ｰ繝ｪ繝・ラ */
 .kpi-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
@@ -772,7 +746,7 @@ body{
   margin-top:var(--spacing-xs);
 }
 
-/* フィルターコントロール */
+/* 繝輔ぅ繝ｫ繧ｿ繝ｼ繧ｳ繝ｳ繝医Ο繝ｼ繝ｫ */
 .filters{
   display:flex;
   flex-wrap:wrap;
@@ -806,7 +780,7 @@ body{
   box-shadow:var(--focus-ring);
 }
 
-/* タブナビゲーション */
+/* 繧ｿ繝悶リ繝薙ご繝ｼ繧ｷ繝ｧ繝ｳ */
 .tabs{
   display:flex;
   border-bottom:2px solid var(--line);
@@ -839,7 +813,7 @@ body{
   box-shadow:var(--focus-ring);
 }
 
-/* タブコンテンツ */
+/* 繧ｿ繝悶さ繝ｳ繝・Φ繝・*/
 .tab-content{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
@@ -852,7 +826,7 @@ body{
   display:none;
 }
 
-/* カード */
+/* 繧ｫ繝ｼ繝・*/
 .enhanced-card{
   background:var(--bg);
   border:1px solid var(--line);
@@ -937,7 +911,7 @@ body{
   color:var(--muted);
 }
 
-/* レスポンシブ */
+/* 繝ｬ繧ｹ繝昴Φ繧ｷ繝・*/
 @media (max-width: 768px) {
   .container{
     padding:var(--spacing-md) var(--spacing-sm);
@@ -968,7 +942,7 @@ body{
   }
 }
 
-/* アクセシビリティ */
+/* 繧｢繧ｯ繧ｻ繧ｷ繝薙Μ繝・ぅ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -978,7 +952,7 @@ body{
   }
 }
 
-/* ハイコントラストモード対応 */
+/* 繝上う繧ｳ繝ｳ繝医Λ繧ｹ繝医Δ繝ｼ繝牙ｯｾ蠢・*/
 @media (prefers-contrast: high) {
   :root {
     --line: #000000;
@@ -989,7 +963,7 @@ body{
   }
 }
 
-/* ダークモード対応 */
+/* 繝繝ｼ繧ｯ繝｢繝ｼ繝牙ｯｾ蠢・*/
 @media (prefers-color-scheme: dark) {
   :root {
     --fg: #f1f5f9;
@@ -1005,30 +979,29 @@ body{
     return css_content
 
 def main():
-    """メイン処理"""
-    print("🚀 Simple Enhanced Daily AI News Builder")
+    """繝｡繧､繝ｳ蜃ｦ逅・""
+    print("噫 Simple Enhanced Daily AI News Builder")
     print("=" * 50)
     
-    # JST時間を取得
-    jst = timezone(timedelta(hours=9))
+    # JST譎る俣繧貞叙蠕・    jst = timezone(timedelta(hours=9))
     now = datetime.now(jst).strftime('%Y-%m-%d %H:%M JST')
     
-    print(f"📅 生成日時: {now}")
-    print(f"⏰ 過去 {HOURS_LOOKBACK} 時間の記事を収集")
-    print(f"📊 カテゴリ別最大 {MAX_ITEMS_PER_CATEGORY} 件")
-    print(f"🌍 翻訳: {'有効' if TRANSLATE_TO_JA else '無効'}")
+    print(f"套 逕滓・譌･譎・ {now}")
+    print(f"竢ｰ 驕主悉 {HOURS_LOOKBACK} 譎る俣縺ｮ險倅ｺ九ｒ蜿朱寔")
+    print(f"投 繧ｫ繝・ざ繝ｪ蛻･譛螟ｧ {MAX_ITEMS_PER_CATEGORY} 莉ｶ")
+    print(f"訣 鄙ｻ險ｳ: {'譛牙柑' if TRANSLATE_TO_JA else '辟｡蜉ｹ'}")
     
-    # 翻訳キャッシュ読み込み
+    # 鄙ｻ險ｳ繧ｭ繝｣繝・す繝･隱ｭ縺ｿ霎ｼ縺ｿ
     translation_cache = load_translation_cache()
     
-    # フィード設定読み込み
+    # 繝輔ぅ繝ｼ繝芽ｨｭ螳夊ｪｭ縺ｿ霎ｼ縺ｿ
     feeds_config = load_feeds_config()
     
-    # 各カテゴリのデータ収集
+    # 蜷・き繝・ざ繝ｪ縺ｮ繝・・繧ｿ蜿朱寔
     all_categories = {}
     
     for category, feeds in feeds_config.items():
-        print(f"\n📂 {category.upper()} カテゴリ処理中...")
+        print(f"\n唐 {category.upper()} 繧ｫ繝・ざ繝ｪ蜃ｦ逅・ｸｭ...")
         
         category_items = []
         for feed_config in feeds:
@@ -1039,38 +1012,34 @@ def main():
             )
             category_items.extend(items)
         
-        # X投稿も追加（postsカテゴリのみ）
-        if category == 'posts':
-            print(f"🔍 DEBUG: postsカテゴリでX投稿取得開始...")
-            print(f"🔍 DEBUG: X_POSTS_CSV環境変数 = {X_POSTS_CSV}")
-            print(f"🔍 DEBUG: HOURS_LOOKBACK = {HOURS_LOOKBACK}")
+        # X謚慕ｨｿ繧りｿｽ蜉・・osts繧ｫ繝・ざ繝ｪ縺ｮ縺ｿ・・        if category == 'posts':
+            print(f"剥 DEBUG: posts繧ｫ繝・ざ繝ｪ縺ｧX謚慕ｨｿ蜿門ｾ鈴幕蟋・..")
+            print(f"剥 DEBUG: X_POSTS_CSV迺ｰ蠅・､画焚 = {X_POSTS_CSV}")
+            print(f"剥 DEBUG: HOURS_LOOKBACK = {HOURS_LOOKBACK}")
             
             x_items = fetch_x_posts()
-            print(f"🔍 DEBUG: X投稿取得完了 - {len(x_items)}件")
+            print(f"剥 DEBUG: X謚慕ｨｿ蜿門ｾ怜ｮ御ｺ・- {len(x_items)}莉ｶ")
             
             if x_items:
-                # Xポストのスコアを強制的に高くして優先表示
+                # X繝昴せ繝医・繧ｹ繧ｳ繧｢繧貞ｼｷ蛻ｶ逧・↓鬮倥￥縺励※蜆ｪ蜈郁｡ｨ遉ｺ
                 for i, item in enumerate(x_items):
-                    item['engineer_score'] = 10.0  # 最高スコア設定
-                    print(f"🔍 DEBUG: Xポスト[{i+1}] - タイトル: {item['title'][:50]}... (スコア: {item['engineer_score']})")
-                    print(f"🔍 DEBUG: Xポスト[{i+1}] - URL: {item.get('url', 'N/A')}")
+                    item['engineer_score'] = 10.0  # 譛鬮倥せ繧ｳ繧｢險ｭ螳・                    print(f"剥 DEBUG: X繝昴せ繝・{i+1}] - 繧ｿ繧､繝医Ν: {item['title'][:50]}... (繧ｹ繧ｳ繧｢: {item['engineer_score']})")
+                    print(f"剥 DEBUG: X繝昴せ繝・{i+1}] - URL: {item.get('url', 'N/A')}")
                 
-                # Xポストを category_items に追加
+                # X繝昴せ繝医ｒ category_items 縺ｫ霑ｽ蜉
                 category_items.extend(x_items)
-                print(f"🔍 DEBUG: Xポスト統合後の総記事数: {len(category_items)}件")
+                print(f"剥 DEBUG: X繝昴せ繝育ｵｱ蜷亥ｾ後・邱剰ｨ倅ｺ区焚: {len(category_items)}莉ｶ")
             else:
-                print(f"⚠️ DEBUG: X投稿が取得されませんでした - 原因調査が必要")
+                print(f"笞・・DEBUG: X謚慕ｨｿ縺悟叙蠕励＆繧後∪縺帙ｓ縺ｧ縺励◆ - 蜴溷屏隱ｿ譟ｻ縺悟ｿ・ｦ・)
         
-        # エンジニア関連度でソート
-        category_items.sort(key=lambda x: x['engineer_score'], reverse=True)
+        # 繧ｨ繝ｳ繧ｸ繝九い髢｢騾｣蠎ｦ縺ｧ繧ｽ繝ｼ繝・        category_items.sort(key=lambda x: x['engineer_score'], reverse=True)
         category_items = category_items[:MAX_ITEMS_PER_CATEGORY]
         
-        # 翻訳処理
-        if TRANSLATE_TO_JA:
-            print(f"🌍 {category} カテゴリ翻訳中...")
+        # 鄙ｻ險ｳ蜃ｦ逅・        if TRANSLATE_TO_JA:
+            print(f"訣 {category} 繧ｫ繝・ざ繝ｪ鄙ｻ險ｳ荳ｭ...")
             for item in category_items:
                 if item['title'] and not all(ord(c) < 128 for c in item['title']):
-                    # すでに日本語の場合はスキップ
+                    # 縺吶〒縺ｫ譌･譛ｬ隱槭・蝣ｴ蜷医・繧ｹ繧ｭ繝・・
                     continue
                     
                 item['title_ja'] = translate_text(item['title'], 'ja', translation_cache)
@@ -1078,27 +1047,24 @@ def main():
                     item['summary_ja'] = translate_text(item['summary'], 'ja', translation_cache)
         
         all_categories[category.lower()] = category_items
-        print(f"✅ {category}: {len(category_items)}件 (平均スコア: {sum(item['engineer_score'] for item in category_items) / len(category_items):.1f})")
-        print(f"   → all_categories['{category.lower()}'] に保存")
+        print(f"笨・{category}: {len(category_items)}莉ｶ (蟷ｳ蝮・せ繧ｳ繧｢: {sum(item['engineer_score'] for item in category_items) / len(category_items):.1f})")
+        print(f"   竊・all_categories['{category.lower()}'] 縺ｫ菫晏ｭ・)
     
-    # 翻訳キャッシュ保存
-    if TRANSLATE_TO_JA:
+    # 鄙ｻ險ｳ繧ｭ繝｣繝・す繝･菫晏ｭ・    if TRANSLATE_TO_JA:
         save_translation_cache(translation_cache)
-        print("💾 翻訳キャッシュ保存完了")
+        print("沈 鄙ｻ險ｳ繧ｭ繝｣繝・す繝･菫晏ｭ伜ｮ御ｺ・)
     
-    # 統計情報
+    # 邨ｱ險域ュ蝣ｱ
     total_items = sum(len(items) for items in all_categories.values())
     high_priority = sum(1 for items in all_categories.values() for item in items if item['engineer_score'] >= 7.0)
     
-    print(f"\n📊 収集結果:")
-    print(f"   総記事数: {total_items}件")
-    print(f"   高優先度: {high_priority}件")
-    print(f"   情報源: {sum(len(feeds) for feeds in feeds_config.values())}個")
+    print(f"\n投 蜿朱寔邨先棡:")
+    print(f"   邱剰ｨ倅ｺ区焚: {total_items}莉ｶ")
+    print(f"   鬮伜━蜈亥ｺｦ: {high_priority}莉ｶ")
+    print(f"   諠・ｱ貅・ {sum(len(feeds) for feeds in feeds_config.values())}蛟・)
     
-    # Top Picks（全カテゴリ横断の上位）
-    all_items_flat = [it for items in all_categories.values() for it in items]
-    # URL重複除去（先に高スコアに並べてからユニーク化）
-    all_items_flat.sort(key=lambda x: x['engineer_score'], reverse=True)
+    # Top Picks・亥・繧ｫ繝・ざ繝ｪ讓ｪ譁ｭ縺ｮ荳贋ｽ搾ｼ・    all_items_flat = [it for items in all_categories.values() for it in items]
+    # URL驥崎､・勁蜴ｻ・亥・縺ｫ鬮倥せ繧ｳ繧｢縺ｫ荳ｦ縺ｹ縺ｦ縺九ｉ繝ｦ繝九・繧ｯ蛹厄ｼ・    all_items_flat.sort(key=lambda x: x['engineer_score'], reverse=True)
     seen = set()
     top_picks = []
     for it in all_items_flat:
@@ -1109,65 +1075,62 @@ def main():
         if len(top_picks) >= TOP_PICKS_COUNT:
             break
 
-    # HTMLテンプレート
-    html_template = f'''<!doctype html>
+    # HTML繝・Φ繝励Ξ繝ｼ繝・    html_template = f'''<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Daily AI News — {now}</title>
+  <title>Daily AI News 窶・{now}</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <header class="site-header">
-    <div class="brand">📰 Daily AI News</div>
-    <div class="updated">最終更新：{now}</div>
+    <div class="brand">堂 Daily AI News</div>
+    <div class="updated">譛邨よ峩譁ｰ・嘴now}</div>
   </header>
 
   <main class="container">
-    <h1 class="page-title">今日の最新AI情報</h1>
+    <h1 class="page-title">莉頑律縺ｮ譛譁ｰAI諠・ｱ</h1>
     <p class="lead">
-        有用度スコアでランキング表示（AIエンジニア/業務効率化向け）。実装可能性・効率化効果・学習価値を重視して自動ソート。
-        豊富な情報量（{total_items}件）を維持しつつ、重要度で整理表示。
-    </p>
+        譛臥畑蠎ｦ繧ｹ繧ｳ繧｢縺ｧ繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ陦ｨ遉ｺ・・I繧ｨ繝ｳ繧ｸ繝九い/讌ｭ蜍吝柑邇・喧蜷代￠・峨ょｮ溯｣・庄閭ｽ諤ｧ繝ｻ蜉ｹ邇・喧蜉ｹ譫懊・蟄ｦ鄙剃ｾ｡蛟､繧帝㍾隕悶＠縺ｦ閾ｪ蜍輔た繝ｼ繝医・        雎雁ｯ後↑諠・ｱ驥擾ｼ・total_items}莉ｶ・峨ｒ邯ｭ謖√＠縺､縺､縲・㍾隕∝ｺｦ縺ｧ謨ｴ逅・｡ｨ遉ｺ縲・    </p>
 
     <section class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-value">{total_items}件</div>
-        <div class="kpi-label">総記事数</div>
-        <div class="kpi-note">情報量維持</div>
+        <div class="kpi-value">{total_items}莉ｶ</div>
+        <div class="kpi-label">邱剰ｨ倅ｺ区焚</div>
+        <div class="kpi-note">諠・ｱ驥冗ｶｭ謖・/div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-value">{high_priority}件</div>
-        <div class="kpi-label">高優先度記事</div>
-        <div class="kpi-note">スコア7.0+</div>
+        <div class="kpi-value">{high_priority}莉ｶ</div>
+        <div class="kpi-label">鬮伜━蜈亥ｺｦ險倅ｺ・/div>
+        <div class="kpi-note">繧ｹ繧ｳ繧｢7.0+</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-value">{sum(len(feeds) for feeds in feeds_config.values())}個</div>
-        <div class="kpi-label">情報源</div>
-        <div class="kpi-note">多角的収集</div>
+        <div class="kpi-value">{sum(len(feeds) for feeds in feeds_config.values())}蛟・/div>
+        <div class="kpi-label">諠・ｱ貅・/div>
+        <div class="kpi-note">螟夊ｧ堤噪蜿朱寔</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-value">{HOURS_LOOKBACK}h</div>
-        <div class="kpi-label">収集範囲</div>
-        <div class="kpi-note">最新性重視</div>
+        <div class="kpi-label">蜿朱寔遽・峇</div>
+        <div class="kpi-note">譛譁ｰ諤ｧ驥崎ｦ・/div>
       </div>
     </section>
 
-    <!-- Top Picks: 有用度上位 -->
+    <!-- Top Picks: 譛臥畑蠎ｦ荳贋ｽ・-->
     <section class="top-picks" aria-label="Top Picks">
-      <h2 class="section-title">🏆 Top Picks — 有用度上位（上位 {min(TOP_PICKS_COUNT, len(top_picks))} 件）</h2>
+      <h2 class="section-title">醇 Top Picks 窶・譛臥畑蠎ｦ荳贋ｽ搾ｼ井ｸ贋ｽ・{min(TOP_PICKS_COUNT, len(top_picks))} 莉ｶ・・/h2>
       <div class="tab-content">
 '''
 
     for item in top_picks:
         score = item['engineer_score']
         if score >= 7.0:
-            priority = 'high'; priority_text = '高'
+            priority = 'high'; priority_text = '鬮・
         elif score >= 4.0:
-            priority = 'medium'; priority_text = '中'
+            priority = 'medium'; priority_text = '荳ｭ'
         else:
-            priority = 'low'; priority_text = '低'
+            priority = 'low'; priority_text = '菴・
 
         display_title = item.get('title_ja', item['title'])
         display_summary = item.get('summary_ja', item['summary'])
@@ -1187,7 +1150,7 @@ def main():
           </div>
           <div class="card-summary">{html.escape(display_summary[:200] + '...' if len(display_summary) > 200 else display_summary)}</div>
           <footer class="card-footer">
-            <span class="card-score">有用度: {score:.1f}</span>
+            <span class="card-score">譛臥畑蠎ｦ: {score:.1f}</span>
             <span class="card-time">{time_ago}</span>
           </footer>
         </article>
@@ -1199,47 +1162,45 @@ def main():
 
     <section class="filters">
       <div class="filter-group">
-        <label class="filter-label">検索:</label>
-        <input type="text" id="searchInput" class="filter-input" placeholder="キーワード検索..."/>
+        <label class="filter-label">讀懃ｴ｢:</label>
+        <input type="text" id="searchInput" class="filter-input" placeholder="繧ｭ繝ｼ繝ｯ繝ｼ繝画､懃ｴ｢..."/>
       </div>
       <div class="filter-group">
-        <label class="filter-label">重要度:</label>
+        <label class="filter-label">驥崎ｦ∝ｺｦ:</label>
         <select id="importanceFilter" class="filter-select">
-          <option value="all">すべて</option>
-          <option value="high">高 (7.0+)</option>
-          <option value="medium">中 (4.0-6.9)</option>
-          <option value="low">低 (0-3.9)</option>
+          <option value="all">縺吶∋縺ｦ</option>
+          <option value="high">鬮・(7.0+)</option>
+          <option value="medium">荳ｭ (4.0-6.9)</option>
+          <option value="low">菴・(0-3.9)</option>
         </select>
       </div>
       <div class="filter-group">
-        <label class="filter-label">並び順:</label>
+        <label class="filter-label">荳ｦ縺ｳ鬆・</label>
         <select id="sortBy" class="filter-select">
-          <option value="score">重要度順</option>
-          <option value="time">新着順</option>
-          <option value="source">情報源順</option>
+          <option value="score">驥崎ｦ∝ｺｦ鬆・/option>
+          <option value="time">譁ｰ逹鬆・/option>
+          <option value="source">諠・ｱ貅宣・/option>
         </select>
       </div>
     </section>
 
     <nav class="tabs">
       <button class="tab-button active" data-tab="business">
-        📈 Business ({len(all_categories.get('business', []))})
+        嶋 Business ({len(all_categories.get('business', []))})
       </button>
       <button class="tab-button" data-tab="tools">
-        🔧 Tools ({len(all_categories.get('tools', []))})
+        肌 Tools ({len(all_categories.get('tools', []))})
       </button>
       <button class="tab-button" data-tab="posts">
-        💬 Posts ({len(all_categories.get('posts', []))})
+        町 Posts ({len(all_categories.get('posts', []))})
       </button>
     </nav>
 '''
     
-    # 各カテゴリのコンテンツ生成（businessを最初に確実に表示）
-    category_order = ['business', 'tools', 'posts']
+    # 蜷・き繝・ざ繝ｪ縺ｮ繧ｳ繝ｳ繝・Φ繝・函謌撰ｼ・usiness繧呈怙蛻昴↓遒ｺ螳溘↓陦ｨ遉ｺ・・    category_order = ['business', 'tools', 'posts']
     for category_name in category_order:
-        # カテゴリが存在しない場合は空のリストとして扱う
-        items = all_categories.get(category_name, [])
-        print(f"DEBUG: {category_name} カテゴリ - {len(items)}件の記事")
+        # 繧ｫ繝・ざ繝ｪ縺悟ｭ伜惠縺励↑縺・ｴ蜷医・遨ｺ縺ｮ繝ｪ繧ｹ繝医→縺励※謇ｱ縺・        items = all_categories.get(category_name, [])
+        print(f"DEBUG: {category_name} 繧ｫ繝・ざ繝ｪ - {len(items)}莉ｶ縺ｮ險倅ｺ・)
         is_active = category_name == 'business'
         panel_class = 'tab-panel' if is_active else 'tab-panel hidden'
         
@@ -1249,23 +1210,22 @@ def main():
 '''
         
         for item in items:
-            # 優先度ラベル
+            # 蜆ｪ蜈亥ｺｦ繝ｩ繝吶Ν
             score = item['engineer_score']
             if score >= 7.0:
                 priority = 'high'
-                priority_text = '高'
+                priority_text = '鬮・
             elif score >= 4.0:
                 priority = 'medium' 
-                priority_text = '中'
+                priority_text = '荳ｭ'
             else:
                 priority = 'low'
-                priority_text = '低'
+                priority_text = '菴・
             
-            # タイトルと要約（翻訳版があれば使用）
-            display_title = item.get('title_ja', item['title'])
+            # 繧ｿ繧､繝医Ν縺ｨ隕∫ｴ・ｼ育ｿｻ險ｳ迚医′縺ゅｌ縺ｰ菴ｿ逕ｨ・・            display_title = item.get('title_ja', item['title'])
             display_summary = item.get('summary_ja', item['summary'])
             
-            # 時間表示
+            # 譎る俣陦ｨ遉ｺ
             time_ago = format_time_ago(item['published'])
             
             html_template += f'''
@@ -1282,7 +1242,7 @@ def main():
           </div>
           <div class="card-summary">{html.escape(display_summary[:200] + '...' if len(display_summary) > 200 else display_summary)}</div>
           <footer class="card-footer">
-            <span class="card-score">有用度: {score:.1f}</span>
+            <span class="card-score">譛臥畑蠎ｦ: {score:.1f}</span>
             <span class="card-time">{time_ago}</span>
           </footer>
         </article>
@@ -1293,12 +1253,12 @@ def main():
     </section>
 '''
     
-    # JavaScript追加
+    # JavaScript霑ｽ蜉
     html_template += '''
   </main>
 
 <script>
-// タブ切り替え機能
+// 繧ｿ繝門・繧頑崛縺域ｩ溯・
 class TabController {
   constructor() {
     this.activeTab = 'business';
@@ -1306,7 +1266,7 @@ class TabController {
   }
   
   init() {
-    // タブボタンのイベントリスナー
+    // 繧ｿ繝悶・繧ｿ繝ｳ縺ｮ繧､繝吶Φ繝医Μ繧ｹ繝翫・
     document.querySelectorAll('.tab-button').forEach(button => {
       button.addEventListener('click', (e) => {
         const tab = e.target.dataset.tab;
@@ -1314,40 +1274,39 @@ class TabController {
       });
     });
     
-    // フィルター機能
+    // 繝輔ぅ繝ｫ繧ｿ繝ｼ讖溯・
     this.setupFilters();
     
-    // 初期表示：businessタブを明示的に表示
+    // 蛻晄悄陦ｨ遉ｺ・喘usiness繧ｿ繝悶ｒ譏守､ｺ逧・↓陦ｨ遉ｺ
     this.switchTab('business');
   }
   
   switchTab(tabName) {
     if (this.activeTab === tabName) return;
     
-    // ボタンの状態更新
+    // 繝懊ち繝ｳ縺ｮ迥ｶ諷区峩譁ｰ
     document.querySelectorAll('.tab-button').forEach(btn => {
       btn.classList.remove('active');
     });
     document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
     
-    // パネルの表示切り替え（hidden class使用）
-    document.querySelectorAll('.tab-panel').forEach(panel => {
+    // 繝代ロ繝ｫ縺ｮ陦ｨ遉ｺ蛻・ｊ譖ｿ縺茨ｼ・idden class菴ｿ逕ｨ・・    document.querySelectorAll('.tab-panel').forEach(panel => {
       panel.classList.add('hidden');
     });
     document.querySelector(`[data-category="${tabName}"]`).classList.remove('hidden');
     
     this.activeTab = tabName;
-    this.updateTabCounts(); // タブカウント更新
-    this.applyFilters(); // フィルター再適用
+    this.updateTabCounts(); // 繧ｿ繝悶き繧ｦ繝ｳ繝域峩譁ｰ
+    this.applyFilters(); // 繝輔ぅ繝ｫ繧ｿ繝ｼ蜀埼←逕ｨ
   }
   
   updateTabCounts() {
-    // 各タブの記事数をカウントして表示更新
+    // 蜷・ち繝悶・險倅ｺ区焚繧偵き繧ｦ繝ｳ繝医＠縺ｦ陦ｨ遉ｺ譖ｴ譁ｰ
     const tabs = ['business', 'tools', 'posts'];
     const tabLabels = {
-      'business': '📈 Business',
-      'tools': '🔧 Tools', 
-      'posts': '💬 Posts'
+      'business': '嶋 Business',
+      'tools': '肌 Tools', 
+      'posts': '町 Posts'
     };
     
     tabs.forEach(tabName => {
@@ -1361,18 +1320,17 @@ class TabController {
   }
   
   setupFilters() {
-    // 検索フィルター
+    // 讀懃ｴ｢繝輔ぅ繝ｫ繧ｿ繝ｼ
     document.getElementById('searchInput').addEventListener('input', () => {
       this.applyFilters();
     });
     
-    // 重要度フィルター
+    // 驥崎ｦ∝ｺｦ繝輔ぅ繝ｫ繧ｿ繝ｼ
     document.getElementById('importanceFilter').addEventListener('change', () => {
       this.applyFilters();
     });
     
-    // ソート
-    document.getElementById('sortBy').addEventListener('change', () => {
+    // 繧ｽ繝ｼ繝・    document.getElementById('sortBy').addEventListener('change', () => {
       this.applySorting();
     });
   }
@@ -1381,14 +1339,13 @@ class TabController {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const importance = document.getElementById('importanceFilter').value;
     
-    // 現在アクティブなタブのカードのみ処理
-    const activePanel = document.querySelector(`[data-category="${this.activeTab}"]`);
+    // 迴ｾ蝨ｨ繧｢繧ｯ繝・ぅ繝悶↑繧ｿ繝悶・繧ｫ繝ｼ繝峨・縺ｿ蜃ｦ逅・    const activePanel = document.querySelector(`[data-category="${this.activeTab}"]`);
     const cards = activePanel.querySelectorAll('.enhanced-card');
     
     cards.forEach(card => {
       let showCard = true;
       
-      // 検索フィルター
+      // 讀懃ｴ｢繝輔ぅ繝ｫ繧ｿ繝ｼ
       if (searchTerm) {
         const title = card.querySelector('.card-title a').textContent.toLowerCase();
         const summary = card.querySelector('.card-summary').textContent.toLowerCase();
@@ -1399,7 +1356,7 @@ class TabController {
                   source.includes(searchTerm);
       }
       
-      // 重要度フィルター
+      // 驥崎ｦ∝ｺｦ繝輔ぅ繝ｫ繧ｿ繝ｼ
       if (showCard && importance !== 'all') {
         const score = parseFloat(card.dataset.score);
         if (importance === 'high' && score < 7.0) showCard = false;
@@ -1430,16 +1387,14 @@ class TabController {
       return 0;
     });
     
-    // DOM再構築
-    cards.forEach(card => container.appendChild(card));
+    // DOM蜀肴ｧ狗ｯ・    cards.forEach(card => container.appendChild(card));
     
-    // フィルター再適用
+    // 繝輔ぅ繝ｫ繧ｿ繝ｼ蜀埼←逕ｨ
     this.applyFilters();
   }
 }
 
-// 初期化
-document.addEventListener('DOMContentLoaded', () => {
+// 蛻晄悄蛹・document.addEventListener('DOMContentLoaded', () => {
   new TabController();
 });
 </script>
@@ -1448,20 +1403,23 @@ document.addEventListener('DOMContentLoaded', () => {
 </html>
 '''
     
-    # ファイル出力
-    output_file = Path('index.html')
+    # ナビの件数プレースホルダを実数に置換
+    html_template = html_template.replace("{len(all_categories.get('business', []))}", str(len(all_categories.get('business', []))))
+    html_template = html_template.replace("{len(all_categories.get('tools', []))}", str(len(all_categories.get('tools', []))))
+    html_template = html_template.replace("{len(all_categories.get('posts', []))}", str(len(all_categories.get('posts', []))))
+    # 繝輔ぃ繧､繝ｫ蜃ｺ蜉・    output_file = Path('index.html')
     output_file.write_text(html_template, encoding='utf-8')
     
-    # CSS生成
+    # CSS逕滓・
     css_content = generate_css()
     css_file = Path('style.css')
     css_file.write_text(css_content, encoding='utf-8')
-    print("✅ CSS file generated")
+    print("笨・CSS file generated")
     
-    print(f"✅ 生成完了: {output_file}")
-    print(f"📊 総記事数: {total_items}件")
-    print(f"🏆 高優先度: {high_priority}件")
-    print(f"⭐ 平均スコア: {sum(item['engineer_score'] for items in all_categories.values() for item in items) / total_items:.1f}")
+    print(f"笨・逕滓・螳御ｺ・ {output_file}")
+    print(f"投 邱剰ｨ倅ｺ区焚: {total_items}莉ｶ")
+    print(f"醇 鬮伜━蜈亥ｺｦ: {high_priority}莉ｶ")
+    print(f"箝・蟷ｳ蝮・せ繧ｳ繧｢: {sum(item['engineer_score'] for items in all_categories.values() for item in items) / total_items:.1f}")
     
     return True
 
@@ -1469,13 +1427,13 @@ if __name__ == "__main__":
     try:
         success = main()
         if success:
-            print("\n🎉 Daily AI News 生成成功!")
-            print("🌐 GitHub Pages にデプロイしてご確認ください")
+            print("\n脂 Daily AI News 逕滓・謌仙粥!")
+            print("倹 GitHub Pages 縺ｫ繝・・繝ｭ繧､縺励※縺皮｢ｺ隱阪￥縺縺輔＞")
         else:
             sys.exit(1)
     except KeyboardInterrupt:
-        print("\n⚠️ 処理が中断されました")
+        print("\n笞・・蜃ｦ逅・′荳ｭ譁ｭ縺輔ｌ縺ｾ縺励◆")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ エラーが発生しました: {e}")
+        print(f"\n笶・繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆: {e}")
         sys.exit(1)
