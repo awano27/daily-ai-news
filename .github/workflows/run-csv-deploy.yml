@@ -1,6 +1,8 @@
 ﻿name: Build from CSV and Deploy to Public Pages
 
 on:
+  push:
+    branches: [ main ]
   schedule:
     - cron: "0 22 * * *"   # 07:00 JST
   workflow_dispatch:
@@ -95,4 +97,5 @@ jobs:
         run: |
           echo "🎉 Deployment completed!"
           echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+
 
