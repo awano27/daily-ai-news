@@ -203,7 +203,7 @@ def is_recent(published_date, hours_back=24):
         return True
 
 def fetch_feed_items(url, source_name, max_items=25):
-    """繝輔ぅ繝ｼ繝峨°繧芽ｨ倅ｺ九ｒ蜿門ｾ・""
+    """繝輔ぅ繝ｼ繝峨°繧芽ｨ倅ｺ九ｒ蜿門ｾ・"""
     try:
         print(f"藤 蜿門ｾ嶺ｸｭ: {source_name} ({url})")
         
@@ -340,7 +340,7 @@ def _build_readable_summary(cleaned: str, og_title: str | None, domain: str | No
     return summary
 
 def fetch_x_posts():
-    """X(Twitter)謚慕ｨｿ繧貞叙蠕・""
+    """X(Twitter)謚慕ｨｿ繧貞叙蠕・"""
     try:
         print(f"導 X謚慕ｨｿ蜿門ｾ嶺ｸｭ: {X_POSTS_CSV}")
         
@@ -368,7 +368,7 @@ def fetch_x_posts():
         return []
 
 def fetch_x_posts_from_csv(csv_content):
-    """CSV蠖｢蠑上・X繝昴せ繝医ｒ蜃ｦ逅・""
+    """CSV蠖｢蠑上・X繝昴せ繝医ｒ蜃ｦ逅・"""
     try:
         # CSV繝輔ぃ繧､繝ｫ縺ｫ蛻怜錐縺後↑縺・ｴ蜷医↓蟇ｾ蠢懶ｼ医う繝ｳ繝・ャ繧ｯ繧ｹ繝吶・繧ｹ縺ｧ蜃ｦ逅・ｼ・        lines = csv_content.strip().split('\n')
         posts = []
@@ -472,7 +472,7 @@ def fetch_x_posts_from_csv(csv_content):
         return []
 
 def fetch_x_posts_from_text(text_content):
-    """繝・く繧ｹ繝亥ｽ｢蠑上・X繝昴せ繝医ｒ蜃ｦ逅・""
+    """繝・く繧ｹ繝亥ｽ｢蠑上・X繝昴せ繝医ｒ蜃ｦ逅・"""
     try:
         import re
         
@@ -610,7 +610,7 @@ def format_time_ago(published_str):
         return ""
 
 def generate_css():
-    """CSS繝輔ぃ繧､繝ｫ繧堤函謌・""
+    """CSS繝輔ぃ繧､繝ｫ繧堤函謌・"""
     css_content = '''/* Digital.gov compliance deployed at 2025-08-23 */
 :root{
   /* Digital.gov貅匁侠: WCAG AAA蟇ｾ蠢懊き繝ｩ繝ｼ繧ｷ繧ｹ繝・Β */
@@ -968,7 +968,7 @@ body{
     return css_content
 
 def main():
-    """繝｡繧､繝ｳ蜃ｦ逅・""
+    """繝｡繧､繝ｳ蜃ｦ逅・"""
     print("噫 Simple Enhanced Daily AI News Builder")
     print("=" * 50)
     
