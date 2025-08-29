@@ -766,7 +766,7 @@ PAGE_TMPL = """<!doctype html>
         // テキスト検索
         const titleEl = card.querySelector('.card-title');
         const summaryEl = card.querySelector('.card-summary');
-        const sourceEl = card.querySelector('.source-badge');
+        const sourceEl = card.querySelector('.chip');
         const title = titleEl ? titleEl.textContent.toLowerCase() : '';
         const summary = summaryEl ? summaryEl.textContent.toLowerCase() : '';
         const source = sourceEl ? sourceEl.textContent.toLowerCase() : '';
@@ -881,7 +881,16 @@ EMPTY_TMPL = '<div class="empty">新着なし（期間を広げるかフィー�
 def ago_str(dt: datetime) -> str:
     delta = NOW - dt
     secs = int(delta.total_seconds())
+    if secs < 0:
+        secs = 0
     if secs < 60: return f"{secs}秒前"
+    mins = secs // 60
+    if mins < 60: return f"{mins}分前"
+    hrs = mins // 60
+    if hrs < 24: return f"{hrs}時間前"
+    days = hrs // 24
+    return f"{days}日前"
+
     mins = secs // 60
     if mins < 60: return f"{mins}分前"
     hrs = mins // 60
@@ -1697,6 +1706,8 @@ def main():
         cnt_posts=len(posts[:MAX_ITEMS_PER_CATEGORY]),
         sections="".join(sections_html)
     )
+    # Remove stray backslashes that broke markup
+    html_out = html_out.replace("\\", "")
 
     try:
         Path("news_detail.html").write_text(html_out, encoding="utf-8")
@@ -1713,6 +1724,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
