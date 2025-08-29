@@ -113,7 +113,9 @@ def load_cache():
         print(f"[ERROR] Failed to load cache: {e}")
     return {}
 
-def save_cache(cache):\n    backup_file = None\n    """キャッシュ保存（改善版）"""
+def save_cache(cache):
+    """Save cache (fixed)"""
+    backup_file = Noneキャッシュ保存（改善版）"""
     try:
         CACHE_DIR.mkdir(exist_ok=True)
 
@@ -144,7 +146,7 @@ def save_cache(cache):\n    backup_file = None\n    """キャッシュ保存（�
     except Exception as e:
         print(f"[ERROR] Failed to save cache: {e}")
         # バックアップから復元
-        if 'backup_file' in locals() and backup_file.exists():
+        if backup_file and backup_file.exists():
             backup_file.rename(CACHE_FILE)
             print("[INFO] Restored cache from backup")
 
@@ -1662,6 +1664,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
