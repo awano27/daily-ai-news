@@ -492,9 +492,14 @@ def gather_x_posts(csv_path: str) -> list[dict]:
     
     # まず通常の処理を試行
     posts = enhanced_gather_x_posts_implementation(csv_path)
+    # Filter by HOURS_LOOKBACK if timestamp is available, then cap to 20
+    try:
+        posts = [p for p in posts if not p.get('_dt') or (NOW - p['_dt'] <= timedelta(hours=HOURS_LOOKBACK))]
+    except Exception:
+        pass
     
     # 結果が少ない場合は、強制的に表示用のダミー投稿を追加
-    if len(posts) < 5:
+    if False and len(posts) < 5:
         print(f"⚡ X投稿が少ないため強制表示用投稿を追加: {len(posts)} -> 10件")
         
         dummy_posts = [
@@ -558,7 +563,7 @@ def gather_x_posts(csv_path: str) -> list[dict]:
         post['_importance_score'] = 10.0
     
     print(f"🎯 X投稿処理完了: {len(posts)}件（全て最高スコア10.0）")
-    return posts
+    return posts[:20]
 
 def original_gather_x_posts(csv_path: str) -> list[dict]:
     # Check if it's a URL or local file
@@ -812,17 +817,16 @@ CARD_TMPL = """
     <p class="card-summary">{summary}</p>
     <div class="chips">
       <span class="chip">{source_name}</span>
-      <span class="chip ghost">要約: {summary_lang}</span>
+      <span class="chip ghost">翻訳: {summary_lang}</span>
       <span class="chip ghost">{ago}</span>
     </div>
   </div>
-  <div class="card-footer">
-    出典: <a href="{link}" target="_blank" rel="noopener">{link}</a>
-  </div>
+  <div class="card-footer">出典: <a href="{link}" target="_blank" rel="noopener">{link}</a></div>
 </article>
 """
 
 EMPTY_TMPL = '<div class="empty">新着なし（期間を広げるかフィードを追加してください）</div>'
+
 
 def ago_str(dt: datetime) -> str:
     delta = NOW - dt
@@ -834,7 +838,6 @@ def ago_str(dt: datetime) -> str:
     if hrs < 24: return f"{hrs}時間前"
     days = hrs // 24
     return f"{days}日前"
-
 def clean_html(s: str) -> str:
     if not s: return ""
     # strip tags very lightly
@@ -1305,7 +1308,7 @@ def build_cards(items, translator):
             title=html.escape(title, quote=False),
             summary=html.escape(final_summary, quote=False),
             source_name=html.escape(src, quote=False),
-            summary_lang=("日本語" if did_translate else "英語"),
+            summary_lang=("日本語" if did_translate else "原文"),
             ago=ago_str(dt)
         ))
 
@@ -1660,4 +1663,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
