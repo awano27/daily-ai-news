@@ -48,7 +48,7 @@ jobs:
         timeout-minutes: 10
         run: |
           echo "🔨 Building AI News site (CSV: $X_POSTS_CSV)"
-          python build_simple_ranking.py
+          python build.py
 
           echo "📊 Verifying build output..."
           if [ -f "index.html" ]; then
@@ -108,3 +108,4 @@ jobs:
         run: |
           echo "🎉 Deployment completed!"
           echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+
