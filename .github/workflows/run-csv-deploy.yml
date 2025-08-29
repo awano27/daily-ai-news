@@ -28,8 +28,8 @@ jobs:
       TZ: Asia/Tokyo
       TRANSLATE_TO_JA: "1"
       TRANSLATE_ENGINE: "google"
-      HOURS_LOOKBACK: "72"
-      MAX_ITEMS_PER_CATEGORY: "25"
+      HOURS_LOOKBACK: "36"
+      MAX_ITEMS_PER_CATEGORY: "20"
       X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk9zTaFaUyY7HImC-G2mdSqCjdl0P4jLFd_NtVKuMvnTjQyjQJ0_MLGAUbOFKs7Hdmix3OP413Rui8/pub?output=csv' }}
     steps:
       - name: Checkout
@@ -114,5 +114,6 @@ jobs:
         run: |
           echo "🎉 Deployment completed!"
           echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+
 
 
