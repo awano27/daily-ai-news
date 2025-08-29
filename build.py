@@ -138,7 +138,7 @@ def save_cache(cache):\n    backup_file = None\n    """キャッシュ保存（�
             print(f"[WARN] Cache size mismatch: expected {cache_size}, got {saved_size}")
 
         # 古いバックアップ削除
-        if backup_file and backup_file.exists()
+        if backup_file and backup_file.exists():
             backup_file.unlink()
 
     except Exception as e:
@@ -1662,6 +1662,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
