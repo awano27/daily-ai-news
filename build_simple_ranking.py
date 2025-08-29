@@ -1395,6 +1395,10 @@ class TabController {
     html_template = html_template.replace("{len(all_categories.get('business', []))}", str(len(all_categories.get('business', []))))
     html_template = html_template.replace("{len(all_categories.get('tools', []))}", str(len(all_categories.get('tools', []))))
     html_template = html_template.replace("{len(all_categories.get('posts', []))}", str(len(all_categories.get('posts', []))))
+    # Replace nav tab count placeholders with actual counts
+    html_template = html_template.replace("{len(all_categories.get('business', []))}", str(len(all_categories.get('business', []))))
+    html_template = html_template.replace("{len(all_categories.get('tools', []))}", str(len(all_categories.get('tools', []))))
+    html_template = html_template.replace("{len(all_categories.get('posts', []))}", str(len(all_categories.get('posts', []))))
     # 繝輔ぃ繧､繝ｫ蜃ｺ蜉・    output_file = Path('index.html')
     output_file.write_text(html_template, encoding='utf-8')
     
