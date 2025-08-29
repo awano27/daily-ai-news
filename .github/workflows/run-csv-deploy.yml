@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0
+          pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0 python-dateutil>=2.8.0
 
       - name: Build AI News Site from CSV
         timeout-minutes: 10
@@ -65,6 +65,18 @@ jobs:
           cp -v style.css outputs/ || true
           touch outputs/.nojekyll
           ls -la outputs
+
+      
+
+      - name: Debug X CSV structure
+        env:
+          X_POSTS_CSV: ${{ env.X_POSTS_CSV }}
+        run: |
+          echo "🔍 X_POSTS_CSV=$X_POSTS_CSV"
+          curl -s "$X_POSTS_CSV" | head -3 || true
+          echo ""
+          echo "🔗 Looking for x.com URLs in CSV..."
+          curl -s "$X_POSTS_CSV" | grep -o "https://[^,]*x\.com[^,]*" | head -5 || echo "No x.com URLs found"
 
       - name: Deploy to public repository
         uses: peaceiris/actions-gh-pages@v4
