@@ -30,7 +30,7 @@ jobs:
       TRANSLATE_ENGINE: "google"
       HOURS_LOOKBACK: "72"
       MAX_ITEMS_PER_CATEGORY: "25"
-      X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0' }}
+      X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk9zTaFaUyY7HImC-G2mdSqCjdl0P4jLFd_NtVKuMvnTjQyjQJ0_MLGAUbOFKs7Hdmix3OP413Rui8/pub?output=csv' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,6 +80,12 @@ jobs:
           echo "🔗 Looking for x.com URLs in CSV..."
           curl -s -L -A "Mozilla/5.0" "$X_POSTS_CSV" | grep -o "https://[^,]*x\.com[^,]*" | head -5 || echo "No x.com URLs found"
 
+      - name: Verify X posts in HTML
+        run: |
+          echo "🔎 Checking X cards in generated HTML..."
+          count=$(grep -c 'X @' index.html || true)
+          echo "X cards in HTML: $count"
+          if [ "$count" -eq 0 ]; then echo "⚠️ No X cards found in HTML"; fi
       - name: Deploy to public repository
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -97,6 +103,7 @@ jobs:
         run: |
           echo "🎉 Deployment completed!"
           echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+
 
 
 
