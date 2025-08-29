@@ -165,7 +165,8 @@ def load_feeds_config():
         with open(feeds_file, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
     
-    # 繝・ヵ繧ｩ繝ｫ繝郁ｨｭ螳・    return {
+    # 繝・ヵ繧ｩ繝ｫ繝郁ｨｭ螳・
+    return {
         'business': [
             {'url': 'https://techcrunch.com/feed/', 'name': 'TechCrunch'},
             {'url': 'https://aws.amazon.com/blogs/machine-learning/feed/', 'name': 'AWS ML Blog'},
