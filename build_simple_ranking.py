@@ -41,39 +41,27 @@ except ImportError:
 class SimpleEngineerRanking:
     """AI繧ｨ繝ｳ繧ｸ繝九い/讌ｭ蜍吝柑邇・喧 譛臥畑蠎ｦ繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ"""
     
-    # 繧ｨ繝ｳ繧ｸ繝九い驥崎ｦ√く繝ｼ繝ｯ繝ｼ繝会ｼ磯㍾縺ｿ莉倥″・・    TECH_KEYWORDS = {
-        # 鬮伜━蜈亥ｺｦ (3.0蛟・
+    # エンジニア重要キーワード（重み付き）
+    TECH_KEYWORDS = {
         'code': 3.0, 'api': 3.0, 'sdk': 3.0, 'github': 3.0, 'implementation': 3.0,
         'tutorial': 3.0, 'framework': 3.0, 'library': 3.0, 'sample': 2.8,
-        
-        # AI/ML (2.5蛟・
-        'pytorch': 2.5, 'tensorflow': 2.5, 'huggingface': 2.5, 'gpt': 2.5, 
+        'pytorch': 2.5, 'tensorflow': 2.5, 'huggingface': 2.5, 'gpt': 2.5,
         'llm': 2.5, 'openai': 2.5, 'anthropic': 2.5, 'model': 2.5, 'ai': 2.5,
-        
-        # 繧､繝ｳ繝輔Λ (2.0蛟・
         'docker': 2.0, 'kubernetes': 2.0, 'aws': 2.0, 'azure': 2.0, 'gcp': 2.0,
         'deployment': 2.0, 'production': 2.0, 'mlops': 2.0,
-        
-        # 繝代ヵ繧ｩ繝ｼ繝槭Φ繧ｹ (1.8蛟・
         'performance': 1.8, 'benchmark': 1.8, 'optimization': 1.8, 'speed': 1.8,
         'memory': 1.8, 'gpu': 1.8, 'cuda': 1.8,
-        
-        # 遐皮ｩｶ (1.5蛟・ 
         'research': 1.5, 'paper': 1.5, 'arxiv': 1.5, 'algorithm': 1.5,
         'method': 1.5, 'evaluation': 1.5
     }
 
-    # 讌ｭ蜍吝柑邇・喧繝ｻ螳溷漁豢ｻ逕ｨ縺ｮ繧ｭ繝ｼ繝ｯ繝ｼ繝会ｼ磯㍾縺ｿ莉倥″・・    EFFICIENCY_KEYWORDS = {
-        # 蠑ｷ縺・э蝗ｳ・・.0蛟搾ｼ・        'automation': 3.0, 'automate': 3.0, 'workflow': 3.0, 'rpa': 3.0,
+    # 業務効率・実務活用のキーワード（重み付き）
+    EFFICIENCY_KEYWORDS = {
+        'automation': 3.0, 'automate': 3.0, 'workflow': 3.0, 'rpa': 3.0,
         'copilot': 3.0, 'prompt': 2.6, 'prompt engineering': 2.8,
         'zapier': 2.8, 'make.com': 2.4, 'notion': 2.2, 'slack': 2.0,
         'excel': 2.4, 'spreadsheet': 2.2, 'power automate': 2.6,
-        'powerapps': 2.2, 'power bi': 2.2, 'apps script': 2.4, 'gas': 2.4,
-
-        # 譌･譛ｬ隱槭く繝ｼ繝ｯ繝ｼ繝会ｼ・.0-3.0蛟搾ｼ・        '閾ｪ蜍募喧': 3.0, '蜉ｹ邇・喧': 2.8, '讌ｭ蜍吝柑邇・: 2.6, '逵∝鴨蛹・: 2.4,
-        '繝ｯ繝ｼ繧ｯ繝輔Ο繝ｼ': 2.6, '謇矩・: 2.0, '繝・Φ繝励Ξ繝ｼ繝・: 2.0, '蟆主・莠倶ｾ・: 2.4,
-        '豢ｻ逕ｨ莠倶ｾ・: 2.4, '繧ｳ繝・: 2.0, '菴ｿ縺・婿': 2.2, '譎ら洒': 2.2,
-        '繧ｹ繧ｯ繝ｪ繝励ヨ': 2.2, '繝槭け繝ｭ': 2.2,
+        'powerapps': 2.2, 'power bi': 2.2, 'apps script': 2.4, 'gas': 2.4
     }
     
     # 菫｡鬆ｼ縺ｧ縺阪ｋ繧ｽ繝ｼ繧ｹ
@@ -118,7 +106,7 @@ class SimpleEngineerRanking:
         # 螳溯｣・繝上え繝・・/繧ｳ繝ｼ繝峨・迚ｹ蛻･繝懊・繝翫せ
         howto_indicators = [
             'how to', 'step-by-step', 'guide', 'tutorial', 'best practices',
-            '繝√Η繝ｼ繝医Μ繧｢繝ｫ', '謇矩・, '蜈･髢', '菴ｿ縺・婿', '蟆主・莠倶ｾ・, '豢ｻ逕ｨ莠倶ｾ・
+            'チュートリアル', '手順', '入門', '使い方', '導入事例', '活用事例'
         ]
         code_indicators = ['```', 'code example', 'implementation', 'github.com', 'gist.github.com']
         if any(x in content for x in howto_indicators + code_indicators):
