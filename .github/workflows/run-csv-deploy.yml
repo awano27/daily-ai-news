@@ -80,13 +80,24 @@ jobs:
           echo "🔗 Looking for x.com URLs in CSV..."
           curl -s -L -A "Mozilla/5.0" "$X_POSTS_CSV" | grep -o "https://[^,]*x\.com[^,]*" | head -5 || echo "No x.com URLs found"
 
-      - name: Verify X posts in HTML
-        run: |
-          echo "🔎 Checking X cards in generated HTML..."
-          count=$(grep -c 'X @' index.html || true)
-          echo "X cards in HTML: $count"
-          if [ "$count" -eq 0 ]; then echo "⚠️ No X cards found in HTML"; fi
-      - name: Deploy to public repository
+      
+  param($m)
+  $head = $m.Groups[1].Value
+  $tail = $m.Groups[3].Value
+  $script = @'
+          echo "🔎 Checking X cards and titles in generated HTML..."
+          count_x_at=$(grep -c 'X @' index.html || true)
+          count_bird=$(grep -c '🐦 @' index.html || true)
+          echo "X @ cards: $count_x_at"
+          echo "🐦 @ titles: $count_bird"
+          if [ "$count_x_at" -eq 0 ] && [ "$count_bird" -eq 0 ]; then
+            echo '⚠️ No X markers found in HTML. Dumping samples:'
+            grep -n '@' index.html | head -10 || true
+            grep -n '🐦' index.html | head -10 || true
+          fi
+'@
+  return $head + $script + "\n      " + $tail.TrimStart()
+
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
@@ -103,6 +114,7 @@ jobs:
         run: |
           echo "🎉 Deployment completed!"
           echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+
 
 
 
