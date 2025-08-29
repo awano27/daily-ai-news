@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Daily AI News - static site generator (JST)
 - Summaries are translated to Japanese (no API key) using deep-translator.
@@ -629,17 +629,17 @@ PAGE_TMPL = """<!doctype html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Daily AI News — {updated_title}</title>
+  <title>Daily AI News · {updated_title}</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <header class="site-header">
     <div class="brand">📰 Daily AI News</div>
-    <div class="updated">最終更新：{updated_full}</div>
+    <div class="updated">最終更新: {updated_full}</div>
   </header>
 
   <main class="container">
-    <h1 class="page-title">今日の最新AI情報</h1>
+    <h1 class="page-title">今日の最新AIニュース</h1>
     <p class="lead">
         世界のAI業界の最新動向を24時間365日モニタリング。OpenAI、Google、Meta、Anthropicなど主要企業の公式発表から、
         arXiv論文、開発者コミュニティの技術討論まで幅広く収集。ビジネス（資金調達・M&A・戦略提携）、
@@ -649,34 +649,9 @@ PAGE_TMPL = """<!doctype html>
         直近{lookback}時間の重要ニュースを厳選配信。ダッシュボードでは業界全体像の俯瞰分析も提供。
     </p>
 
-    <section class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-value">{cnt_business}件</div>
-        <div class="kpi-label">ビジネスニュース</div>
-        <div class="kpi-note">重要度高め</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">{cnt_tools}件</div>
-        <div class="kpi-label">ツールニュース</div>
-        <div class="kpi-note">開発者向け</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">{cnt_posts}件</div>
-        <div class="kpi-label">SNS/論文ポスト</div>
-        <div class="kpi-note">検証系</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">{updated_full}</div>
-        <div class="kpi-label">最終更新</div>
-        <div class="kpi-note">JST</div>
-      </div>
-    </section>
+    \ \ \ \ <section\ class="kpi-grid">\n\ \ \ \ \ \ <div\ class="kpi-card">\n\ \ \ \ \ \ \ \ <div\ class="kpi-value">\{cnt_business}件</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-label">ビジネスニュース</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-note">重要度高め</div>\n\ \ \ \ \ \ </div>\n\ \ \ \ \ \ <div\ class="kpi-card">\n\ \ \ \ \ \ \ \ <div\ class="kpi-value">\{cnt_tools}件</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-label">ツールニュース</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-note">開発者向け</div>\n\ \ \ \ \ \ </div>\n\ \ \ \ \ \ <div\ class="kpi-card">\n\ \ \ \ \ \ \ \ <div\ class="kpi-value">\{cnt_posts}件</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-label">SNS/論文ポスト</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-note">検証系</div>\n\ \ \ \ \ \ </div>\n\ \ \ \ \ \ <div\ class="kpi-card">\n\ \ \ \ \ \ \ \ <div\ class="kpi-value">\{updated_full}</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-label">最終更新</div>\n\ \ \ \ \ \ \ \ <div\ class="kpi-note">JST</div>\n\ \ \ \ \ \ </div>\n\ \ \ \ </section>
 
-    <nav class="tabs" role="tablist">
-      <button class="tab active" data-target="#business" aria-selected="true">🏢 ビジネスニュース</button>
-      <button class="tab" data-target="#tools" aria-selected="false">⚡ ツールニュース</button>
-      <button class="tab" data-target="#posts" aria-selected="false">🧪 SNS/論文ポスト</button>
-    </nav>
+    \ \ \ \ <nav\ class="tabs"\ role="tablist">\n\ \ \ \ \ \ <button\ class="tab\ active"\ data-target="\#business"\ aria-selected="true">🏢\ ビジネスニュース</button>\n\ \ \ \ \ \ <button\ class="tab"\ data-target="\#tools"\ aria-selected="false">⚡\ ツールニュース</button>\n\ \ \ \ \ \ <button\ class="tab"\ data-target="\#posts"\ aria-selected="false">🧪\ SNS/論文ポスト</button>\n\ \ \ \ </nav>
 
     <!-- 改善版検索・フィルタリングUI -->
     <div class="search-container">
@@ -1685,3 +1660,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
