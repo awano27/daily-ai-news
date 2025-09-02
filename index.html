@@ -1770,7 +1770,34 @@ class TabController {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-  new TabController();
+  const controller = new TabController();
+
+  // タブのスワイプ切替（モバイル最適化）
+  const tabsOrder = ['business','tools','posts'];
+  const getActiveTab = () => document.querySelector('.tab-button.active')?.dataset.tab || 'business';
+  const switchRelative = (dir) => {
+    const current = getActiveTab();
+    const idx = tabsOrder.indexOf(current);
+    const next = tabsOrder[Math.min(Math.max(idx + dir, 0), tabsOrder.length - 1)];
+    if (next !== current) {
+      controller.switchTab(next);
+      try { document.querySelector(`[data-tab="${next}"]`)?.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}); } catch(e) {}
+    }
+  };
+
+  const area = document.querySelector('main') || document.body;
+  let startX = 0, startY = 0;
+  const threshold = 50, restraint = 80;
+  area.addEventListener('touchstart', (e) => {
+    const t = e.changedTouches[0]; startX = t.pageX; startY = t.pageY;
+  }, {passive:true});
+  area.addEventListener('touchend', (e) => {
+    const t = e.changedTouches[0];
+    const dx = t.pageX - startX; const dy = t.pageY - startY;
+    if (Math.abs(dx) > threshold && Math.abs(dy) < restraint) {
+      if (dx < 0) switchRelative(1); else switchRelative(-1);
+    }
+  }, {passive:true});
 });
 </script>
 
