@@ -51,9 +51,16 @@ jobs:
           echo "Building AI News site (CSV: $X_POSTS_CSV)"
           python build.py
 
+          echo "Generating enhanced dashboard landing page..."
+          if python generate_comprehensive_dashboard.py; then
+            echo "Dashboard generation completed."
+          else
+            echo "⚠️ Dashboard generation failed; the classic layout will be used." >&2
+          fi
+
           echo "Verifying build output..."
-          if [ -f "news_detail.html" ]; then
-            echo "Using news_detail.html as index.html"
+          if [ ! -f "index.html" ] && [ -f "news_detail.html" ]; then
+            echo "index.html missing – falling back to news_detail.html"
             cp -f news_detail.html index.html
           fi
 
@@ -70,6 +77,7 @@ jobs:
           mkdir -p outputs
           cp -v index.html outputs/
           cp -v style.css outputs/ || true
+          cp -v news_detail.html outputs/ || true
           touch outputs/.nojekyll
           ls -la outputs
 
