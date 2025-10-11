@@ -15,7 +15,7 @@ Env (optional):
   X_POSTS_CSV=_sources/x_favorites.csv # Path to X posts CSV
   TZ=Asia/Tokyo            # for timestamps
 """
-import os, re, sys, json, time, html, csv, io
+import os, re, sys, json, time, html, csv, io, textwrap
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
@@ -1264,6 +1264,18 @@ def calculate_sns_importance_score(item):
     
     return max(score, 0)  # 負のスコアは0に
 
+
+def is_high_priority_item(item: dict) -> bool:
+    """Return True when the item should be treated as a high-priority article."""
+    try:
+        score = item.get("_importance_score")
+        if score is None:
+            return False
+        return float(score) >= 7.0
+    except (TypeError, ValueError):
+        return False
+
+
 def calculate_source_trust(source_name):
     """ソースの信頼度を計算（0-100）"""
     trust_scores = {
@@ -1667,12 +1679,16 @@ def main():
         print(f"[WARN] Failed to initialize translator: {e}")
         translator = None
 
+    selected_business = business[:MAX_ITEMS_PER_CATEGORY]
+    selected_tools = tools[:MAX_ITEMS_PER_CATEGORY]
+    selected_posts = posts[:MAX_ITEMS_PER_CATEGORY]
+
     sections_html = []
     try:
         sections_html.append(SECTION_TMPL.format(
             sec_id="business",
             extra_class="",
-            cards=build_cards(business[:MAX_ITEMS_PER_CATEGORY], translator)
+            cards=build_cards(selected_business, translator)
         ))
     except Exception as e:
         print(f"[ERROR] Failed to build Business section: {e}")
@@ -1682,7 +1698,7 @@ def main():
         sections_html.append(SECTION_TMPL.format(
             sec_id="tools",
             extra_class="hidden",
-            cards=build_cards(tools[:MAX_ITEMS_PER_CATEGORY], translator)
+            cards=build_cards(selected_tools, translator)
         ))
     except Exception as e:
         print(f"[ERROR] Failed to build Tools section: {e}")
@@ -1692,16 +1708,16 @@ def main():
         sections_html.append(SECTION_TMPL.format(
             sec_id="posts",
             extra_class="hidden",
-            cards=build_cards(posts[:MAX_ITEMS_PER_CATEGORY], translator)
+            cards=build_cards(selected_posts, translator)
         ))
     except Exception as e:
         print(f"[ERROR] Failed to build Posts section: {e}")
         sections_html.append(SECTION_TMPL.format(sec_id="posts", extra_class="hidden", cards=EMPTY_TMPL))
 
     # 統計情報表示（改善版）
-    final_business = len(business[:MAX_ITEMS_PER_CATEGORY])
-    final_tools = len(tools[:MAX_ITEMS_PER_CATEGORY])
-    final_posts = len(posts[:MAX_ITEMS_PER_CATEGORY])
+    final_business = len(selected_business)
+    final_tools = len(selected_tools)
+    final_posts = len(selected_posts)
     total_final = final_business + final_tools + final_posts
     total_original = len(business) + len(tools) + len(posts)
 
@@ -1724,13 +1740,26 @@ def main():
         avg_time_per_item = processing_time / total_final
         print(f"   Average per item: {avg_time_per_item:.3f} seconds")
     print(f"{'='*60}\n")
+
+    displayed_items = selected_business + selected_tools + selected_posts
+    unique_sources = {
+        (item.get("_source") or "").strip()
+        for item in displayed_items
+        if item.get("_source")
+    }
+    high_priority_count = sum(1 for item in displayed_items if is_high_priority_item(item))
+    lookback_label = f"{HOURS_LOOKBACK}h"
+    page_title = f"Daily AI News — {NOW.strftime('%Y-%m-%d %H:%M JST')}"
+    generated_at = NOW.strftime("%Y-%m-%d %H:%M:%S JST")
+    legacy_sections_for_modern = textwrap.indent("\n".join(sections_html).strip(), "    ")
+
     html_out = PAGE_TMPL.format(
         updated_title=NOW.strftime("%Y-%m-%d %H:%M JST"),
         updated_full=NOW.strftime("%Y-%m-%d %H:%M JST"),
         lookback=HOURS_LOOKBACK,
-        cnt_business=len(business[:MAX_ITEMS_PER_CATEGORY]),
-        cnt_tools=len(tools[:MAX_ITEMS_PER_CATEGORY]),
-        cnt_posts=len(posts[:MAX_ITEMS_PER_CATEGORY]),
+        cnt_business=final_business,
+        cnt_tools=final_tools,
+        cnt_posts=final_posts,
         sections="".join(sections_html)
     )
     # Remove stray backslashes that broke markup
@@ -1742,7 +1771,41 @@ def main():
     except Exception as e:
         print(f"[ERROR] Failed to write news_detail.html: {e}")
         raise
-    
+
+    modern_template_path = Path("templates/modern_index_template.html")
+    modern_replacements = {
+        "%%PAGE_TITLE%%": page_title,
+        "%%GENERATED_AT%%": generated_at,
+        "%%UPDATED_FULL%%": NOW.strftime("%Y-%m-%d %H:%M JST"),
+        "%%LOOKBACK_HOURS%%": str(HOURS_LOOKBACK),
+        "%%LOOKBACK_LABEL%%": lookback_label,
+        "%%TOTAL_ITEMS%%": str(len(displayed_items)),
+        "%%HIGH_PRIORITY_ITEMS%%": str(high_priority_count),
+        "%%SOURCE_COUNT%%": str(len(unique_sources)),
+        "%%LEGACY_SECTIONS%%": legacy_sections_for_modern + ("\n" if legacy_sections_for_modern else "    <!-- 記事データなし -->\n"),
+    }
+
+    if modern_template_path.exists():
+        try:
+            modern_html = modern_template_path.read_text(encoding="utf-8")
+            for token, value in modern_replacements.items():
+                modern_html = modern_html.replace(token, value)
+            Path("index.html").write_text(modern_html, encoding="utf-8")
+            print(f"[SUCCESS] Wrote index.html ({len(modern_html)} bytes) using modern template")
+        except Exception as e:
+            print(f"[WARN] Failed to build modern index: {e}")
+            try:
+                Path("index.html").write_text(html_out, encoding="utf-8")
+                print("[INFO] Fallback: wrote legacy markup to index.html")
+            except Exception as fallback_error:
+                print(f"[ERROR] Failed to write fallback index.html: {fallback_error}")
+    else:
+        try:
+            Path("index.html").write_text(html_out, encoding="utf-8")
+            print("[WARN] Modern template not found; wrote legacy markup to index.html")
+        except Exception as fallback_error:
+            print(f"[ERROR] Failed to write fallback index.html: {fallback_error}")
+
     try:
         save_cache(TRANSLATION_CACHE)
         print(f"[SUCCESS] Saved {len(TRANSLATION_CACHE)} translations to cache")
