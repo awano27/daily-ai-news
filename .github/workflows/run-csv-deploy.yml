@@ -53,8 +53,12 @@ jobs:
 
           echo "Verifying build output..."
           if [ -f "news_detail.html" ]; then
-            echo "Using news_detail.html as index.html"
-            cp -f news_detail.html index.html
+            if [ ! -s "index.html" ]; then
+              echo "index.html missing or empty – falling back to news_detail.html"
+              cp -f news_detail.html index.html
+            else
+              echo "index.html already generated – keeping existing layout"
+            fi
           fi
 
           if [ -f "index.html" ]; then

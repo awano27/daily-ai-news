@@ -36,7 +36,10 @@ jobs:
           cp -f dashboard.html outputs/ 2>/dev/null || true
           
           # news_detail.html を index.html としてもコピー（メインページとして）
-          [ -f "news_detail.html" ] && cp news_detail.html outputs/index.html || true
+          if [ -f "news_detail.html" ] && [ ! -f "outputs/index.html" ]; then
+            echo "index.html not found in outputs – using news_detail.html fallback"
+            cp news_detail.html outputs/index.html
+          fi
           
           # 必要な静的ファイルをコピー（あれば）
           [ -d "assets" ] && cp -r assets outputs/ || true
