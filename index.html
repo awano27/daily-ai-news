@@ -1612,273 +1612,300 @@ The post How We Reduced LLM Costs by 90% with 5 Lines of Code appeared first on
           <footer class="card-footer">
             <span class="card-score">スコア: 8.5</span>
             <span class="card-time"></span>
-          </footer>
-        </article>
+        this.prepareCards();
+        this.updateHeaderOffset();
 
-  <script>
-    class DashboardUI {
-      constructor() {
-        this.root = document.documentElement;
-        this.themePreferenceKey = 'daily-ai-news-theme';
-        this.categoryLabels = { business: 'ビジネス', tools: '開発ツール', posts: 'コミュニティ' };
-        this.tabList = document.querySelector('[role="tablist"]');
-        this.tabButtons = Array.from(document.querySelectorAll('[role="tablist"] [role="tab"]'));
-        this.panels = new Map(this.tabButtons.map((btn) => [btn.dataset.tab, document.getElementById(`panel-${btn.dataset.tab}`)]));
-        this.activeTab = this.tabButtons.find((btn) => btn.getAttribute('aria-selected') === 'true')?.dataset.tab ?? this.tabButtons[0]?.dataset.tab ?? '';
-        this.filtersForm = document.querySelector('.filters-form');
-        this.searchInput = document.getElementById('searchInput');
-        this.importanceFilter = document.getElementById('importanceFilter');
-        this.freshnessFilter = document.getElementById('freshnessFilter');
-        this.sortSelect = document.getElementById('sortBy');
-        this.resultsRegion = document.getElementById('resultsCount');
-        this.themeToggle = document.getElementById('themeToggle');
-        this.themeToggleIcon = this.themeToggle?.querySelector('.toggle-icon') ?? null;
-        this.themeToggleLabel = this.themeToggle?.querySelector('.toggle-label') ?? null;
-        this.relativeTimeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
-        this.absoluteTimeFormatter = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Tokyo' });
-        this.baseTabLabels = new Map(this.tabButtons.map((btn) => [btn.dataset.tab, btn.textContent.trim().replace(/\s*\(.*\)$/, '')]));
-
-        this.enhanceCards();
-        this.initTheme();
-        this.bindEvents();
-        if (this.activeTab) {
-          this.switchTab(this.activeTab, { focus: false });
-        } else {
-          this.applySorting();
+      updateHeaderOffset() {
+        const header = document.querySelector('.site-header');
+        if (!header) return;
+        const height = header.getBoundingClientRect().height;
+        if (Number.isFinite(height)) {
+          this.root.style.setProperty('--header-height', `${Math.round(height)}px`);
         }
       }
 
-      initTheme() {
-        const stored = window.localStorage.getItem(this.themePreferenceKey);
-        if (stored === 'light' || stored === 'dark') {
-          this.applyTheme(stored);
-        } else {
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          this.applyTheme(prefersDark ? 'dark' : 'light');
-        }
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addEventListener('change', (event) => {
-          if (!window.localStorage.getItem(this.themePreferenceKey)) {
-            this.applyTheme(event.matches ? 'dark' : 'light');
-          }
-        });
-      applyTheme(theme) {
-        this.root.setAttribute('data-theme', theme);
-        const isDark = theme === 'dark';
-        if (this.themeToggle) {
-          this.themeToggle.setAttribute('aria-pressed', String(isDark));
-          if (this.themeToggleIcon) {
-            this.themeToggleIcon.textContent = isDark ? '🌙' : '🌞';
-          }
-          if (this.themeToggleLabel) {
-            this.themeToggleLabel.textContent = isDark ? 'ダーク' : 'ライト';
-          }
-        }
+      }
 
-      toggleTheme() {
-        const nextTheme = this.root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        window.localStorage.setItem(this.themePreferenceKey, nextTheme);
-        this.applyTheme(nextTheme);
-      enhanceCards() {
-        const cards = document.querySelectorAll('.enhanced-card');
-        cards.forEach((card) => {
-          if (card.dataset.enhanced === 'true') return;
+        const nextTheme = theme === 'dark' ? 'dark' : 'light';
+        this.root.setAttribute('data-theme', nextTheme);
+        const isDark = nextTheme === 'dark';
+      }
+        const current = this.root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const nextTheme = current === 'dark' ? 'light' : 'dark';
+      }
+      prepareCards() {
+        const cards = Array.from(document.querySelectorAll('.enhanced-card'));
+        this.cards = cards;
+        cards.forEach((card, index) => {
+          const priorityNode = card.querySelector('.card-priority');
+          const priorityText = priorityNode?.textContent.trim() ?? '';
+          const headerNode = card.querySelector('.card-header');
+          const linkNode = headerNode?.querySelector('a') ?? null;
+          const titleText = linkNode?.textContent.trim() ?? headerNode?.textContent.trim() ?? '記事';
+          const href = linkNode?.href ?? '';
+          const summaryNode = card.querySelector('.card-summary');
+          const summaryText = summaryNode?.textContent.trim() ?? '';
+          const shortSummary = summaryText.length > 160 ? `${summaryText.slice(0, 160)}…` : summaryText;
+          const sourceNode = card.querySelector('.card-source');
+          const sourceLabel = sourceNode?.textContent.trim() || card.dataset.source || '';
+          const scoreValue = Number.parseFloat(card.dataset.score ?? '0');
+          const level = this.getImportanceLevel(scoreValue);
+          const id = index + 1;
+          const readMoreId = `card-detail-${id}`;
+          const summaryId = `card-summary-${id}`;
+          const titleId = `card-title-${id}`;
+          const timeInfo = this.computeTimeInfo(card.dataset.time ?? '');
 
+          card.innerHTML = '';
+          card.classList.add('news-card');
           card.setAttribute('role', 'article');
-          card.tabIndex = 0;
+          card.setAttribute('aria-labelledby', titleId);
+          if (summaryText) {
+            card.setAttribute('aria-describedby', summaryId);
 
-          const parentPanel = card.closest('.tab-panel');
-          if (parentPanel?.dataset.category) {
-            card.dataset.category = parentPanel.dataset.category;
-          const badge = card.querySelector('.card-priority');
-          if (badge) {
-            badge.classList.add('card-badge');
-            const level = this.getImportanceLevel(Number.parseFloat(card.dataset.score ?? '0'));
-            if (level) {
-              badge.classList.add(`badge-${level}`);
-            badge.setAttribute('aria-label', `重要度 ${badge.textContent.trim()}`);
+          const wrapper = document.createElement('div');
+          wrapper.className = 'card-inner';
 
-          let body = card.querySelector('.card-body');
-          if (!body) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'card-body';
-            const contentNodes = Array.from(card.children).filter((node) => !(node.classList && (node.classList.contains('card-priority') || node.classList.contains('card-body') || node.classList.contains('card-media'))));
-            contentNodes.forEach((node) => wrapper.appendChild(node));
-            card.appendChild(wrapper);
-            body = wrapper;
+          const media = this.buildMedia(href, titleText, sourceLabel);
+          if (media) {
+            wrapper.appendChild(media);
+          const header = document.createElement('header');
+          header.className = 'card-header';
+
+          if (priorityText || Number.isFinite(scoreValue)) {
+            const badge = document.createElement('span');
+            badge.className = `card-badge badge-${level}`;
+            badge.textContent = priorityText || `重要度 ${scoreValue.toFixed(1)}`;
+            badge.setAttribute('aria-label', `重要度 ${scoreValue.toFixed(1)}`);
+            header.appendChild(badge);
+          const titleEl = document.createElement('h3');
+          titleEl.className = 'card-title';
+          titleEl.id = titleId;
+          const titleSpan = document.createElement('span');
+          titleSpan.textContent = titleText;
+          titleEl.appendChild(titleSpan);
+          header.appendChild(titleEl);
+
+          const meta = document.createElement('div');
+          meta.className = 'card-meta';
+
+          if (sourceLabel) {
+            const sourceItem = document.createElement('span');
+            sourceItem.className = 'card-meta-item';
+            sourceItem.textContent = sourceLabel;
+            meta.appendChild(sourceItem);
+          }
+          if (Number.isFinite(scoreValue)) {
+            const scoreItem = document.createElement('span');
+            scoreItem.className = 'card-meta-item';
+            scoreItem.textContent = `重要度: ${scoreValue.toFixed(1)}`;
+            meta.appendChild(scoreItem);
           }
 
-          if (!body) return;
+          if (timeInfo) {
+            const timeItem = document.createElement('span');
+            timeItem.className = 'card-meta-item';
+            const timeEl = document.createElement('time');
+            timeEl.className = 'card-time';
+            timeEl.dateTime = timeInfo.iso;
+            timeEl.textContent = `${timeInfo.absolute} · ${timeInfo.relative}`;
+            timeEl.setAttribute('aria-label', `${timeInfo.absolute}（${timeInfo.relative}）`);
+            timeItem.appendChild(timeEl);
+            meta.appendChild(timeItem);
+            card.dataset.publishedMs = String(timeInfo.timestamp);
+            card.dataset.absoluteDate = timeInfo.absolute;
+            card.dataset.relativeTime = timeInfo.relative;
+          } else if (card.dataset.time) {
+            const timeItem = document.createElement('span');
+            timeItem.className = 'card-meta-item';
+            timeItem.textContent = card.dataset.time;
+            meta.appendChild(timeItem);
+            card.dataset.absoluteDate = card.dataset.time;
+            delete card.dataset.publishedMs;
+            card.dataset.relativeTime = '';
+            delete card.dataset.publishedMs;
+            card.dataset.absoluteDate = '';
+            card.dataset.relativeTime = '';
+          header.appendChild(meta);
+          wrapper.appendChild(header);
 
-          const meta = body.querySelector('.card-meta');
-          let sourceLabel = card.dataset.source || '';
-          if (meta) {
-            const sourceNode = meta.querySelector('.card-source');
-            if (sourceNode) {
-              sourceLabel = sourceNode.textContent.trim();
-            }
-            meta.remove();
+          if (summaryText) {
+            const abstract = document.createElement('p');
+            abstract.className = 'card-abstract';
+            abstract.id = summaryId;
+            abstract.textContent = shortSummary;
+            wrapper.appendChild(abstract);
+          const actions = document.createElement('div');
+          actions.className = 'card-actions';
+
+          if (href) {
+            const linkButton = document.createElement('a');
+            linkButton.className = 'card-button card-button--primary';
+            linkButton.href = href;
+            linkButton.target = '_blank';
+            linkButton.rel = 'noopener';
+            linkButton.textContent = '原文を開く';
+            linkButton.setAttribute('aria-label', `${titleText}の原文を新しいタブで開く`);
+            actions.appendChild(linkButton);
           }
-          card.dataset.sourceLabel = sourceLabel || card.dataset.source || '';
-          card.dataset.sourceSearch = (card.dataset.sourceLabel || '').toLowerCase();
+          const toggle = document.createElement('button');
+          toggle.type = 'button';
+          toggle.className = 'card-button';
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-controls', readMoreId);
+          toggle.textContent = 'もっと読む';
+          toggle.setAttribute('aria-label', `${titleText}の詳細を表示`);
+          actions.appendChild(toggle);
 
-          const footer = body.querySelector('.card-footer');
-          let timeElement = footer?.querySelector('.card-time') || null;
-          if (footer) {
-            footer.classList.add('card-footer-info');
-            if (timeElement && timeElement.tagName.toLowerCase() !== 'time') {
-              const timeNode = document.createElement('time');
-              timeNode.className = 'card-time';
-              timeNode.textContent = timeElement.textContent;
-              footer.replaceChild(timeNode, timeElement);
-              timeElement = timeNode;
-            }
+          wrapper.appendChild(actions);
+
+          const details = document.createElement('div');
+          details.className = 'card-details';
+          details.id = readMoreId;
+          details.hidden = true;
+
+          if (summaryText) {
+            const fullSummary = document.createElement('p');
+            fullSummary.className = 'card-full-summary';
+            fullSummary.textContent = summaryText;
+            details.appendChild(fullSummary);
           }
 
-          const link = body.querySelector('.card-title a');
-          if (link) {
-            const sourceForLabel = card.dataset.sourceLabel || card.dataset.source || '';
-            link.setAttribute('aria-label', `${link.textContent.trim()}${sourceForLabel ? `（${sourceForLabel}）` : ''}を新しいタブで開く`);
+          const metaList = document.createElement('dl');
+          metaList.className = 'card-meta-list';
+
+          if (sourceLabel) {
+            const dt = document.createElement('dt');
+            dt.textContent = '出典';
+            const dd = document.createElement('dd');
+            dd.textContent = sourceLabel;
+            metaList.appendChild(dt);
+            metaList.appendChild(dd);
           }
 
-          if (link && !card.querySelector('.card-media')) {
-            const media = this.createMedia(link.href, card.dataset.sourceLabel || card.dataset.source || '');
-            if (media) {
-              card.insertBefore(media, body);
-            }
+          if (timeInfo) {
+            const dt = document.createElement('dt');
+            dt.textContent = '掲載日';
+            const dd = document.createElement('dd');
+            dd.textContent = timeInfo.absolute;
+            metaList.appendChild(dt);
+            metaList.appendChild(dd);
           }
 
-          this.updateCardTime(card);
-
-          const metaBar = this.buildMetaBar(card, link, sourceLabel);
-          const summary = body.querySelector('.card-summary');
-          if (summary) {
-            body.insertBefore(metaBar, summary);
-          } else {
-            body.insertBefore(metaBar, body.firstChild);
+          if (Number.isFinite(scoreValue)) {
+            const dt = document.createElement('dt');
+            dt.textContent = '重要度スコア';
+            const dd = document.createElement('dd');
+            dd.textContent = scoreValue.toFixed(1);
+            metaList.appendChild(dt);
+            metaList.appendChild(dd);
           }
 
-          if (footer) {
-            const scoreElement = footer.querySelector('.card-score');
-            if (scoreElement) {
-              scoreElement.classList.add('card-score');
-            }
-            const footerMeta = document.createElement('div');
-            footerMeta.className = 'card-footer-meta';
-            if (scoreElement) {
-              footerMeta.appendChild(scoreElement);
-            }
-            const updatedTime = footer.querySelector('.card-time');
-            if (updatedTime) {
-              footerMeta.appendChild(updatedTime);
-            }
-            footer.replaceChildren(footerMeta);
-            if (link) {
-              footer.appendChild(this.createReadMore(link));
-            }
+          if (card.dataset.category) {
+            const dt = document.createElement('dt');
+            dt.textContent = 'カテゴリ';
+            const dd = document.createElement('dd');
+            dd.textContent = `#${this.categoryLabels[card.dataset.category] || card.dataset.category}`;
+            metaList.appendChild(dt);
+            metaList.appendChild(dd);
           }
 
-          card.addEventListener('click', (event) => {
-            if (!(event.target instanceof Element)) return;
-            if (event.target.closest('a, button')) return;
-            link?.click();
-          });
+          if (metaList.children.length > 0) {
+            details.appendChild(metaList);
+          }
 
-          card.addEventListener('keydown', (event) => {
-            if ((event.key === 'Enter' || event.key === ' ') && link) {
-              event.preventDefault();
-              link.click();
-            }
-          });
+          wrapper.appendChild(details);
+          card.appendChild(wrapper);
 
-          card.dataset.enhanced = 'true';
-        });
-      }
+          const searchTokens = [titleText, summaryText, sourceLabel].join(' ').toLowerCase();
+          card.dataset.searchText = searchTokens;
+          card.dataset.sourceLabel = sourceLabel;
+          card.dataset.sourceSearch = sourceLabel.toLowerCase();
+          card.dataset.summaryFull = summaryText;
+          card.dataset.shortSummary = shortSummary;
 
-      createMedia(href, sourceLabel) {
+          toggle.addEventListener('click', () => {
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            const nextState = !expanded;
+            toggle.setAttribute('aria-expanded', String(nextState));
+            toggle.textContent = nextState ? '閉じる' : 'もっと読む';
+            toggle.setAttribute('aria-label', `${titleText}の詳細を${nextState ? '閉じる' : '表示'}`);
+            details.hidden = !nextState;
+
+        this.updateTabCounts();
+      buildMedia(href, titleText, sourceLabel) {
+        const figure = document.createElement('figure');
+        figure.className = 'card-media';
+        const readableSource = (sourceLabel || '').trim();
+        const caption = document.createElement('figcaption');
+        caption.textContent = readableSource || (href ? this.extractHostname(href) : '出典');
+
+        if (href) {
+          try {
+            const url = new URL(href);
+            const img = document.createElement('img');
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.src = `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(url.origin)}`;
+            img.alt = `${titleText || caption.textContent}のサムネイル`;
+            img.tabIndex = -1;
+            img.addEventListener('error', () => {
+              img.remove();
+              figure.classList.add('card-media--no-image');
+            });
+            figure.appendChild(img);
+          } catch (error) {
+          }
+          figure.classList.add('card-media--no-image');
+
+        figure.appendChild(caption);
+        return figure;
+
+      extractHostname(href) {
         try {
-          const url = new URL(href);
-          const figure = document.createElement('figure');
-          figure.className = 'card-media';
-          const img = document.createElement('img');
-          img.loading = 'lazy';
-          img.decoding = 'async';
-          img.src = `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(url.origin)}`;
-          const readableLabel = (sourceLabel || url.hostname).replace(/^www\./, '');
-          img.alt = `${readableLabel}のアイコン`;
-          img.addEventListener('error', () => {
-            img.remove();
-            figure.classList.add('card-media--no-image');
-          });
-          const caption = document.createElement('figcaption');
-          caption.textContent = readableLabel;
-          figure.appendChild(img);
-          figure.appendChild(caption);
-          return figure;
+          return new URL(href).hostname.replace(/^www\./, '');
         } catch (error) {
-          return null;
-      buildMetaBar(card, link, sourceLabel) {
-        const metaBar = document.createElement('div');
-        metaBar.className = 'card-meta-bar';
-        const sourceName = sourceLabel || card.dataset.source || link?.hostname || '出典';
-        if (link?.href) {
-          const sourceLink = document.createElement('a');
-          sourceLink.href = link.href;
-          sourceLink.target = '_blank';
-          sourceLink.rel = 'noopener';
-          sourceLink.className = 'source-link';
-          sourceLink.textContent = sourceName;
-          sourceLink.setAttribute('aria-label', `${sourceName}の出典ページを新しいタブで開く`);
-          metaBar.appendChild(sourceLink);
-        } else {
-          const sourceSpan = document.createElement('span');
-          sourceSpan.className = 'source-link';
-          sourceSpan.textContent = sourceName;
-          metaBar.appendChild(sourceSpan);
-        }
-        const tags = this.buildTags(card);
-        if (tags.children.length > 0) {
-          metaBar.appendChild(tags);
-        }
-        return metaBar;
-      }
-      buildTags(card) {
-        const list = document.createElement('ul');
-        list.className = 'card-tags';
-        const categoryKey = card.dataset.category;
-        if (categoryKey) {
-          const item = document.createElement('li');
-          item.textContent = `#${this.categoryLabels[categoryKey] || categoryKey}`;
-          list.appendChild(item);
-        }
-        const absoluteDate = card.dataset.absoluteDate;
-        if (absoluteDate) {
-          const dateItem = document.createElement('li');
-          dateItem.textContent = absoluteDate;
-          list.appendChild(dateItem);
-        }
-        return list;
+          return href;
 
-      createReadMore(link) {
-        const action = document.createElement('a');
-        action.className = 'card-button';
-        if (link?.href) {
-          action.href = link.href;
-          action.target = '_blank';
-          action.rel = 'noopener';
-        } else {
-          action.href = '#';
-          action.setAttribute('aria-disabled', 'true');
-          action.tabIndex = -1;
+      computeTimeInfo(rawTime) {
+        if (!rawTime) return null;
+          return null;
+        const published = new Date(parsed);
+        return {
+          timestamp: published.getTime(),
+          iso: published.toISOString(),
+          absolute: this.absoluteTimeFormatter.format(published),
+          relative: this.formatRelativeTime(published.getTime() - Date.now())
+        };
+
+
+
+        window.addEventListener('resize', () => this.updateHeaderOffset());
         }
-        const label = link?.textContent.trim() || '記事を読む';
-        action.textContent = '続きを読む';
-        action.setAttribute('aria-label', `${label}を読む`);
-        return action;
       }
-      updateCardTime(card) {
-        const rawTime = card.dataset.time;
-        const timeElement = card.querySelector('.card-time');
+
+      }
+
+          if (isActive && options.focus) {
+            button.focus();
+          }
+          panel.toggleAttribute('hidden', !isActive);
+      }
+
+        const cards = Array.from(container.querySelectorAll('.news-card'));
+      }
+        const panel = this.panels.get(this.activeTab);
+        if (!panel) return 0;
+        const cards = Array.from(panel.querySelectorAll('.news-card'));
+            show = (card.dataset.searchText || '').includes(searchTerm);
+          const count = panel ? panel.querySelectorAll('.news-card').length : 0;
+        }
+
+      }
+    }
+
+      if (document.querySelectorAll('.enhanced-card').length) {
+
         if (!timeElement) return;
         if (!rawTime) {
           timeElement.textContent = '';
