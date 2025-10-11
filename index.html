@@ -2242,6 +2242,8 @@ The post How We Reduced LLM Costs by 90% with 5 Lines of Code appeared first on
             });
 
             removeButton.addEventListener('keydown', (event) => {
+              visible = false;
+            }
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 state.keywords.splice(index, 1);
