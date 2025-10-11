@@ -22,7 +22,6 @@
         </div>
       </div>
       <div class="header-actions">
-        <div class="updated" aria-live="polite">最終更新：2025-08-23 18:49 JST</div>
         <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="テーマを切り替え">
           <span class="toggle-icon" aria-hidden="true">🌞</span>
           <span class="toggle-label">ライト</span>
@@ -34,11 +33,17 @@
   <main id="mainContent">
     <h1 class="page-title">今日の最新AI情報</h1>
     <p class="lead">
-        エンジニア関連度スコアでランキング表示。実装可能性・技術的価値・学習効果を重視した自動ソート。
-        豊富な情報量（75件）を維持しつつ、重要度で整理表示。
+      エンジニア関連度スコアでランキング表示。実装可能性・技術的価値・学習効果を重視した自動ソート。
+      豊富な情報量（75件）を維持しつつ、重要度で整理表示。
     </p>
 
-    <section class="kpi-grid metrics-grid" aria-label="主要指標">
+    <section class="status-overview" aria-label="更新状況と主要指標">
+      <div class="status-meta" aria-live="polite">
+        <span class="status-updated">最終更新：2025-08-23 18:49 JST</span>
+        <span class="status-window">対象期間：過去48時間</span>
+      </div>
+
+      <div class="kpi-grid metrics-grid" aria-label="主要指標">
       <article class="kpi-card metric-card" role="group" aria-label="総記事数">
         <div class="kpi-value metric-value">75件</div>
         <div class="kpi-label metric-label">総記事数</div>
@@ -59,6 +64,7 @@
         <div class="kpi-label metric-label">収集範囲</div>
         <div class="kpi-note metric-note">最新性重視</div>
       </article>
+      </div>
     </section>
 
     <section class="filters filter-bar" aria-label="記事フィルター">
@@ -99,13 +105,13 @@
 
     <nav class="tabs" role="tablist" aria-label="記事カテゴリ">
       <button class="tab-button" role="tab" id="tab-business" data-tab="business" aria-controls="panel-business" aria-selected="true" tabindex="0">
-        📈 Business (25)
+        📈 Business
       </button>
       <button class="tab-button" role="tab" id="tab-tools" data-tab="tools" aria-controls="panel-tools" aria-selected="false" tabindex="-1">
-        🔧 Tools (25)
+        🔧 Tools
       </button>
       <button class="tab-button" role="tab" id="tab-posts" data-tab="posts" aria-controls="panel-posts" aria-selected="false" tabindex="-1">
-        💬 Posts (25)
+        💬 Posts
       </button>
     </nav>
 
@@ -1978,96 +1984,368 @@ The post How We Reduced LLM Costs by 90% with 5 Lines of Code appeared first on
           this.switchTab(targetTab);
       initSwipeSupport() {
         if (!('ontouchstart' in window)) return;
-        const swipeArea = document.querySelector('main') || document.body;
-        const tabsOrder = this.tabButtons.map((btn) => btn.dataset.tab);
+  <script>
+    class DashboardUI {
+      constructor() {
+        this.root = document.documentElement;
+        this.themeToggle = document.getElementById('themeToggle');
+        this.searchInput = document.getElementById('searchInput');
+        this.importanceFilter = document.getElementById('importanceFilter');
+        this.freshnessFilter = document.getElementById('freshnessFilter');
+        this.sortSelect = document.getElementById('sortBy');
+        this.resultsRegion = document.getElementById('resultsCount');
+        this.tabButtons = Array.from(document.querySelectorAll('.tab-button'));
+        this.panels = new Map();
+        this.decodeTextarea = document.createElement('textarea');
+        this.translationByUrl = this.createTranslationMap();
+        this.baseTabLabels = new Map();
+        this.totalCounts = new Map();
+        this.tabsOrder = [];
+
+        this.tabButtons.forEach((button) => {
+          const tabName = button.dataset.tab;
+          if (!tabName) return;
+          const panel = document.getElementById(`panel-${tabName}`) || document.querySelector(`.tab-panel[data-category="${tabName}"]`);
+          if (panel) {
+            this.panels.set(tabName, panel);
+            this.totalCounts.set(tabName, panel.querySelectorAll('.enhanced-card').length);
+          }
+          this.baseTabLabels.set(tabName, button.textContent.trim());
+          this.tabsOrder.push(tabName);
+        });
+
+        this.prepareCards();
+        this.bindEvents();
+        this.initTheme();
+        const initialTab = this.tabButtons.find((btn) => btn.getAttribute('aria-selected') === 'true')?.dataset.tab || this.tabButtons[0]?.dataset.tab;
+        if (initialTab) {
+          this.switchTab(initialTab, { focus: false });
+        }
+        this.setupSwipe();
+      }
+
+      createTranslationMap() {
+        return new Map([
+          ['https://www.reddit.com/r/artificial/comments/1mxcciv/catch_up_with_the_ai_industry_august_22_2025/', 'OpenAIとRetro Bioが細胞の若返りで成果を上げたこと、95%の企業がAI投資でROIを得られていないという報告、GoogleのGeminiが炭素排出量を98%削減したこと、AppleのLLMが自律的に学習するようになったことなどをまとめています。'],
+          ['https://venturebeat.com/ai/opencuas-open-source-computer-use-agents-rival-proprietary-models-from-openai-and-anthropic/', 'このオープンソースのフレームワークは、専有システムに匹敵する強力なコンピューター利用エージェントを構築するためのデータと学習手順を提供します。'],
+          ['https://techcrunch.com/2025/08/21/openai-lawyers-question-metas-role-in-elon-musks-97b-takeover-bid/', 'OpenAIによると、イーロン・マスクがChatGPTの買収提案（970億ドル規模）についてMetaのマーク・ザッカーバーグCEOと協議したとされています。'],
+          ['https://venturebeat.com/ai/meta-is-partnering-with-midjourney-and-will-license-its-technology-for-future-models-and-products/', '資金規模などの詳細は不明で、Midjourneyが以前発表したエンタープライズ向けAPI計画にどのような影響があるのかが注目されています。'],
+          ['https://aibusiness.com/health-care/most-read-generative-ai-powers-parkinson-s-drug-development-nasa-google-testing-ai-for-medical-care-in-space', 'Oracleがエンタープライズ向けソフト全体にOpenAIのGPT-5を統合したことや、トランプ政権の出資計画を背景にソフトバンクが20億ドルを投じインテル株が急伸したことなどをまとめたダイジェストです。'],
+          ['https://github.com/RijinRaju/octanedb', 'OctaneDBはPython向けのオープンソース・ベクトルデータベースで、高次元データの超高速な類似検索に特化しており、AI/MLやセマンティック検索、大規模ドキュメントや埋め込み検索に最適です。'],
+          ['https://venturebeat.com/ai/chan-zuckerberg-initiatives-rbio-uses-virtual-cells-to-train-ai-bypassing-lab-work/', 'Chan Zuckerberg Initiativeが発表したAIモデル「rBio」は、実験室での実験なしに細胞生物学をシミュレートし、新薬開発と疾患研究を加速させます。'],
+          ['https://www.reddit.com/r/MachineLearning/comments/1mwxfxj/d_using_llms_to_extract_knowledge_graphs_from/', '大規模言語モデルで表やスプレッドシート、データベースから構造化知識を抽出し、それをナレッジグラフへ変換して活用するアプローチについての議論です。'],
+          ['https://towardsdatascience.com/how-we-reduced-llm-cost-by-90-with-5-lines-of-code/', 'クリーンなコードの裏に潜む非効率を見直し、数行を修正しただけでLLMのコストを90%削減できた学びを共有しています。\nこの投稿はToward Data Science掲載の「5行のコードでLLMコストを90%削減した方法」の抄訳です。'],
+          ['https://x.com/ctgptlb/status/1960344324035752352/photo/1', '投稿本文が文字化けしているため、原文表示を参照してください。'],
+          ['https://x.com/heyrimsha/status/1960396245710856691/photo/1', 'Googleが69ページにわたるプロンプトエンジニアリング講座を公開しました。https://t.co/FidH18MDE1'],
+          ['https://x.com/EXM7777/status/1960356531935031679/photo/1', 'ChatGPTで常に人間味のある文章を書くためのシステムプロンプトが共有されています。https://t.co/hlP1cBLZEz'],
+          ['https://x.com/claudeai/status/1960387088836169931/video/1', 'Claude CodeのGitHub連携が一般提供となり、簡素化されたAPIや即利用できるテンプレート、@-claude以外のGitHubイベントにも対応しました。https://t.co/wiehAvbeoy'],
+          ['https://x.com/hakky_kazumasa/status/1960361401450627174/photo/1', '投稿本文が文字化けしているため、原文のまま掲載しています。'],
+          ['https://www.reddit.com/r/deeplearning/comments/1mxl35o/ai_daily_rundown_aug_22_2025_google_analyzes/', '2025年8月22日のAIイノベーションを日次でまとめたポッドキャストの案内で、Geminiの環境負荷分析やOpenAI買収の噂などが紹介されています。詳しくは https://podcasts.apple.com/... から視聴できます。'],
+          ['https://www.reddit.com/r/deeplearning/comments/1mwoq5c/ai_daily_news_aug_21_2025_google_doubles_down_on/', '2025年8月21日のAIニュースをまとめたポッドキャストで、Googleの“AIフォン”戦略やNASAとIBMによる太陽解析モデル、Geminiの家庭向け展開などを取り上げています。']
+        ]);
+      }
+
+      prepareCards() {
+        this.cards = [];
+        this.panels.forEach((panel) => {
+          panel.querySelectorAll('.enhanced-card').forEach((card) => {
+            this.cards.push(card);
+            this.enhanceCard(card);
+          });
+        });
+      }
+
+      enhanceCard(card) {
+        const titleEl = card.querySelector('.card-title a');
+        const summaryEl = card.querySelector('.card-summary');
+        if (!summaryEl) return;
+
+        const link = titleEl?.href || '';
+        const decodedSummary = this.decodeEntities(summaryEl.textContent || '').trim();
+        const translation = this.translationByUrl.get(link);
+
+        if (translation) {
+          this.injectTranslatedSummary(summaryEl, translation, decodedSummary);
+          card.classList.add('has-translation');
+        } else {
+          this.injectPlainSummary(summaryEl, decodedSummary);
+        }
+
+        const sourceText = this.decodeEntities(card.querySelector('.card-source')?.textContent || '');
+        card.dataset.sourceLabel = sourceText;
+        card.dataset.sourceSearch = this.toSearchText(sourceText);
+
+        const searchParts = [
+          titleEl?.textContent || '',
+          decodedSummary,
+          translation || '',
+          sourceText
+        ];
+        card.dataset.searchBlob = this.toSearchText(searchParts.join(' '));
+
+        const score = Number.parseFloat(card.dataset.score ?? '0');
+        const importanceLevel = this.getImportanceLevel(score);
+        card.dataset.importanceLevel = importanceLevel;
+        card.classList.add(`importance-${importanceLevel}`);
+
+        const priorityNode = card.querySelector('.card-priority');
+        if (priorityNode) {
+          const label = this.getImportanceLabel(importanceLevel);
+          const formattedScore = Number.isFinite(score) ? score.toFixed(1) : '';
+          priorityNode.textContent = formattedScore ? `重要度: ${label} ${formattedScore}` : `重要度: ${label}`;
+          priorityNode.setAttribute('aria-label', formattedScore ? `重要度 ${label}、スコア ${formattedScore}` : `重要度 ${label}`);
+        }
+
+        const scoreNode = card.querySelector('.card-score');
+        if (scoreNode && Number.isFinite(score)) {
+          scoreNode.textContent = `スコア: ${score.toFixed(1)}`;
+        }
+
+        const timestamp = this.parseDate(card.dataset.time || '');
+        if (timestamp) {
+          card.dataset.publishedMs = String(timestamp);
+          this.updateTimeElement(card, timestamp);
+        }
+      }
+
+      injectTranslatedSummary(wrapper, translation, original) {
+        wrapper.innerHTML = '';
+        const ja = document.createElement('p');
+        ja.className = 'summary-text summary-ja';
+        ja.textContent = translation;
+        const note = document.createElement('span');
+        note.className = 'summary-note';
+        note.textContent = '翻訳: 原文';
+        ja.appendChild(document.createTextNode(' '));
+        ja.appendChild(note);
+
+        const en = document.createElement('p');
+        en.className = 'summary-text summary-original';
+        en.lang = 'en';
+        en.textContent = original;
+
+        wrapper.append(ja, en);
+      }
+
+      injectPlainSummary(wrapper, text) {
+        wrapper.innerHTML = '';
+        if (!text) return;
+        const paragraph = document.createElement('p');
+        paragraph.className = 'summary-text summary-ja';
+        paragraph.textContent = text;
+        wrapper.appendChild(paragraph);
+      }
+
+      bindEvents() {
+        this.searchInput?.addEventListener('input', () => this.applyFilters());
+        this.importanceFilter?.addEventListener('change', () => this.applyFilters());
+        this.freshnessFilter?.addEventListener('change', () => this.applyFilters());
+        this.sortSelect?.addEventListener('change', () => this.applySorting());
+
+        this.tabButtons.forEach((button, index) => {
+          button.addEventListener('click', () => this.switchTab(button.dataset.tab));
+          button.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+              event.preventDefault();
+              const direction = event.key === 'ArrowRight' ? 1 : -1;
+              this.focusTabByIndex(index + direction);
+            }
+          });
+        });
+      }
+
+      setupSwipe() {
+        const area = document.querySelector('main');
+        if (!area || this.tabsOrder.length < 2) return;
         let startX = 0;
         let startY = 0;
-        const threshold = 50;
+        const threshold = 60;
         const restraint = 80;
-
-        swipeArea.addEventListener('touchstart', (event) => {
+        area.addEventListener('touchstart', (event) => {
           const touch = event.changedTouches[0];
           startX = touch.pageX;
           startY = touch.pageY;
         }, { passive: true });
 
-        swipeArea.addEventListener('touchend', (event) => {
+        area.addEventListener('touchend', (event) => {
           const touch = event.changedTouches[0];
           const dx = touch.pageX - startX;
           const dy = touch.pageY - startY;
           if (Math.abs(dx) > threshold && Math.abs(dy) < restraint) {
-            const currentIndex = tabsOrder.indexOf(this.activeTab);
-            const nextIndex = dx < 0 ? Math.min(currentIndex + 1, tabsOrder.length - 1) : Math.max(currentIndex - 1, 0);
-            const nextTab = tabsOrder[nextIndex];
-            if (nextTab && nextTab !== this.activeTab) {
-              this.switchTab(nextTab, { focus: false });
-              document.querySelector(`[data-tab="${nextTab}"]`)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            }
+            const direction = dx < 0 ? 1 : -1;
+            this.switchRelative(direction);
           }
-        }, { passive: true });
-      switchTab(tabName, options = { focus: true }) {
-        if (!this.panels.has(tabName)) return;
-        this.activeTab = tabName;
-        this.tabButtons.forEach((button) => {
-          const isActive = button.dataset.tab === tabName;
-          button.setAttribute('aria-selected', String(isActive));
-          button.tabIndex = isActive ? 0 : -1;
-          button.classList.toggle('active', isActive);
-        });
+      }
 
-        this.panels.forEach((panel, key) => {
-          if (!panel) return;
-          const isActive = key === tabName;
-          panel.setAttribute('aria-hidden', String(!isActive));
-        });
-
-        if (options.focus) {
-          const activeButton = this.tabButtons.find((btn) => btn.dataset.tab === tabName);
-          activeButton?.focus();
+      switchRelative(step) {
+        const currentIndex = this.tabsOrder.indexOf(this.activeTab);
+        const nextIndex = Math.min(Math.max(currentIndex + step, 0), this.tabsOrder.length - 1);
+        const nextTab = this.tabsOrder[nextIndex];
+        if (nextTab && nextTab !== this.activeTab) {
+          this.switchTab(nextTab);
         }
-        this.applySorting();
-        this.updateTabCounts();
-      applySorting() {
-        const sortBy = this.sortSelect?.value || 'score';
-        const panel = this.panels.get(this.activeTab);
-        if (!panel) return;
-        const container = panel.querySelector('.tab-content');
-        if (!container) return;
-        const cards = Array.from(container.querySelectorAll('.enhanced-card'));
+      }
 
-        const comparators = {
-          score: (a, b) => Number.parseFloat(b.dataset.score ?? '0') - Number.parseFloat(a.dataset.score ?? '0'),
-          time: (a, b) => (Number.parseFloat(b.dataset.publishedMs ?? '0') || 0) - (Number.parseFloat(a.dataset.publishedMs ?? '0') || 0),
-          source: (a, b) => (a.dataset.sourceLabel || '').localeCompare(b.dataset.sourceLabel || '', 'ja')
+      focusTabByIndex(index) {
+        if (index < 0 || index >= this.tabButtons.length) return;
+        const button = this.tabButtons[index];
+        if (button) {
+          button.focus();
+          this.switchTab(button.dataset.tab, { focus: false });
+        }
+      }
+
+        if (!tabName || !this.panels.has(tabName)) return;
+          panel.hidden = !isActive;
+
+      }
+
+
+      }
+        if (!panel) return;
+        const searchTerm = this.toSearchText(this.searchInput?.value || '');
+            const haystack = card.dataset.searchBlob || '';
+            show = haystack.includes(searchTerm);
+            const level = card.dataset.importanceLevel;
+            if (importance === 'high' && level !== 'high') show = false;
+            if (importance === 'medium' && level !== 'medium') show = false;
+            if (importance === 'low' && level !== 'low') show = false;
+              const hours = (now - published) / 3_600_000;
+          if (show) visibleCount += 1;
+      updateResultsCount(count) {
+        if (!this.resultsRegion) return;
+        const label = this.baseTabLabels.get(this.activeTab) || this.activeTab || '';
+        const total = this.totalCounts.get(this.activeTab) ?? count;
+        this.resultsRegion.textContent = `${label}：${count}件表示中（全${total}件）`;
+      updateTimeElement(card, timestamp) {
+        const original = new Date(timestamp);
+        const relative = this.formatRelativeTime(timestamp);
+        let timeEl = card.querySelector('.card-time');
+        if (!timeEl) return;
+        if (timeEl.tagName.toLowerCase() !== 'time') {
+          const replacement = document.createElement('time');
+          replacement.className = timeEl.className;
+          timeEl.replaceWith(replacement);
+          timeEl = replacement;
+        }
+        timeEl.dateTime = original.toISOString();
+        timeEl.textContent = relative;
+        timeEl.setAttribute('aria-label', this.formatAbsoluteTime(timestamp));
+      }
+
+      parseDate(value) {
+        if (!value) return null;
+        const parsed = Date.parse(value);
+        return Number.isNaN(parsed) ? null : parsed;
+      }
+
+      formatRelativeTime(timestamp) {
+        const diffMs = Date.now() - timestamp;
+        const diffMinutes = Math.round(diffMs / 60_000);
+        if (diffMinutes < 1) return 'たった今';
+        if (diffMinutes < 60) return `${diffMinutes}分前`;
+        const diffHours = Math.round(diffMinutes / 60);
+        if (diffHours < 24) return `${diffHours}時間前`;
+        const diffDays = Math.round(diffHours / 24);
+        if (diffDays < 7) return `${diffDays}日前`;
+        return this.formatAbsoluteTime(timestamp);
+      }
+
+      formatAbsoluteTime(timestamp) {
+        try {
+          return new Intl.DateTimeFormat('ja-JP', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          }).format(new Date(timestamp));
+        } catch (error) {
+          return '';
+        }
+      }
+
+      decodeEntities(text) {
+        if (!text || !text.includes('&')) return text;
+        let current = text;
+        for (let i = 0; i < 3; i += 1) {
+          this.decodeTextarea.innerHTML = current;
+          const decoded = this.decodeTextarea.value;
+          if (decoded === current) break;
+          current = decoded;
+        }
+        return current;
+      }
+
+      toSearchText(text) {
+        return text.replace(/\s+/g, ' ').trim().toLowerCase();
+
+      }
+
+      getImportanceLabel(level) {
+        if (level === 'high') return '高';
+        if (level === 'low') return '低';
+        return '中';
+      }
+
+      initTheme() {
+        if (!this.themeToggle) return;
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        let stored = null;
+        try {
+          stored = localStorage.getItem('daily-ai-news-theme');
+        } catch (error) {
+          stored = null;
+        }
+
+        if (stored === 'dark' || stored === 'light') {
+          this.applyTheme(stored);
+        } else {
+          this.applyTheme(mediaQuery.matches ? 'dark' : 'light');
+        }
+
+        this.themeToggle.addEventListener('click', () => {
+          const nextTheme = (this.root.dataset.theme === 'dark') ? 'light' : 'dark';
+          this.applyTheme(nextTheme);
+          try {
+            localStorage.setItem('daily-ai-news-theme', nextTheme);
+          } catch (error) {
+            // ローカルストレージが利用できない場合は無視
+          }
+        });
+
+        const handleSchemeChange = (event) => {
+          let saved = null;
+          try {
+            saved = localStorage.getItem('daily-ai-news-theme');
+          } catch (error) {
+            saved = null;
+          }
+          if (!saved) {
+            this.applyTheme(event.matches ? 'dark' : 'light');
+          }
         };
 
-        const comparator = comparators[sortBy] || comparators.score;
-        cards.sort(comparator);
-        cards.forEach((card) => container.appendChild(card));
-        this.applyFilters();
+        if (typeof mediaQuery.addEventListener === 'function') {
+          mediaQuery.addEventListener('change', handleSchemeChange);
+        } else if (typeof mediaQuery.addListener === 'function') {
+          mediaQuery.addListener(handleSchemeChange);
+        }
+      }
 
-      applyFilters() {
-        const panel = this.panels.get(this.activeTab);
-        if (!panel) return 0;
-        const cards = Array.from(panel.querySelectorAll('.enhanced-card'));
-        const searchTerm = (this.searchInput?.value || '').trim().toLowerCase();
-        const importance = this.importanceFilter?.value || 'all';
-        const freshness = this.freshnessFilter?.value || 'all';
-        const now = Date.now();
-        let visibleCount = 0;
+      applyTheme(theme) {
+        this.root.dataset.theme = theme;
+        if (!this.themeToggle) return;
+        const isDark = theme === 'dark';
+        this.themeToggle.setAttribute('aria-pressed', String(isDark));
+        const icon = this.themeToggle.querySelector('.toggle-icon');
+        const label = this.themeToggle.querySelector('.toggle-label');
+        if (icon) icon.textContent = isDark ? '🌙' : '🌞';
+        if (label) label.textContent = isDark ? 'ダーク' : 'ライト';
+      }
+    }
 
-        cards.forEach((card) => {
-          let show = true;
-
-          if (searchTerm) {
-            const title = card.querySelector('.card-title a')?.textContent.toLowerCase() || '';
-            const summary = card.querySelector('.card-summary')?.textContent.toLowerCase() || '';
-            const source = card.dataset.sourceSearch || '';
-            show = title.includes(searchTerm) || summary.includes(searchTerm) || source.includes(searchTerm);
-          }
-
-          if (show && importance !== 'all') {
-            const score = Number.parseFloat(card.dataset.score ?? '0');
             if (importance === 'high' && score < 7) show = false;
             if (importance === 'medium' && (score < 4 || score >= 7)) show = false;
             if (importance === 'low' && score >= 4) show = false;
