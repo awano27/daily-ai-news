@@ -1,85 +1,115 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-theme="light">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Daily AI News — 2025-08-23 18:49 JST</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
   <!-- Last update: 2025-08-27 23:18:43 -->
 </head>
 <body>
-  <header class="site-header">
-    <div class="brand">📰 Daily AI News</div>
-    <div class="updated">最終更新：2025-08-23 18:49 JST</div>
+  <a class="skip-link" href="#mainContent">本文へスキップ</a>
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <div class="brand-area" aria-label="Daily AI News">
+        <div class="brand-logo" aria-hidden="true">📰</div>
+        <div class="brand-copy">
+          <span class="brand-name">Daily AI News</span>
+          <span class="brand-tagline">AIの最前線を日本語でスピーディに把握</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="updated" aria-live="polite">最終更新：2025-08-23 18:49 JST</div>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="テーマを切り替え">
+          <span class="toggle-icon" aria-hidden="true">🌞</span>
+          <span class="toggle-label">ライト</span>
+        </button>
+      </div>
+    </div>
   </header>
 
-  <main class="container">
+  <main id="mainContent">
     <h1 class="page-title">今日の最新AI情報</h1>
     <p class="lead">
         エンジニア関連度スコアでランキング表示。実装可能性・技術的価値・学習効果を重視した自動ソート。
         豊富な情報量（75件）を維持しつつ、重要度で整理表示。
     </p>
 
-    <section class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-value">75件</div>
-        <div class="kpi-label">総記事数</div>
-        <div class="kpi-note">情報量維持</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">75件</div>
-        <div class="kpi-label">高優先度記事</div>
-        <div class="kpi-note">スコア7.0+</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">70個</div>
-        <div class="kpi-label">情報源</div>
-        <div class="kpi-note">多角的収集</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">48h</div>
-        <div class="kpi-label">収集範囲</div>
-        <div class="kpi-note">最新性重視</div>
-      </div>
+    <section class="kpi-grid metrics-grid" aria-label="主要指標">
+      <article class="kpi-card metric-card" role="group" aria-label="総記事数">
+        <div class="kpi-value metric-value">75件</div>
+        <div class="kpi-label metric-label">総記事数</div>
+        <div class="kpi-note metric-note">情報量維持</div>
+      </article>
+      <article class="kpi-card metric-card" role="group" aria-label="高優先度記事">
+        <div class="kpi-value metric-value">75件</div>
+        <div class="kpi-label metric-label">高優先度記事</div>
+        <div class="kpi-note metric-note">スコア7.0+</div>
+      </article>
+      <article class="kpi-card metric-card" role="group" aria-label="情報源">
+        <div class="kpi-value metric-value">70個</div>
+        <div class="kpi-label metric-label">情報源</div>
+        <div class="kpi-note metric-note">多角的収集</div>
+      </article>
+      <article class="kpi-card metric-card" role="group" aria-label="収集範囲">
+        <div class="kpi-value metric-value">48h</div>
+        <div class="kpi-label metric-label">収集範囲</div>
+        <div class="kpi-note metric-note">最新性重視</div>
+      </article>
     </section>
 
-    <section class="filters">
-      <div class="filter-group">
-        <label class="filter-label">検索:</label>
-        <input type="text" id="searchInput" class="filter-input" placeholder="キーワード検索..."/>
-      </div>
-      <div class="filter-group">
-        <label class="filter-label">重要度:</label>
-        <select id="importanceFilter" class="filter-select">
-          <option value="all">すべて</option>
-          <option value="high">高 (7.0+)</option>
-          <option value="medium">中 (4.0-6.9)</option>
-          <option value="low">低 (0-3.9)</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label class="filter-label">並び順:</label>
-        <select id="sortBy" class="filter-select">
-          <option value="score">重要度順</option>
-          <option value="time">新着順</option>
-          <option value="source">情報源順</option>
-        </select>
-      </div>
+    <section class="filters filter-bar" aria-label="記事フィルター">
+      <form class="filters-form" role="search">
+        <div class="filter-group">
+          <label class="filter-label" for="searchInput">キーワード検索</label>
+          <input type="search" id="searchInput" class="filter-input" placeholder="例：LLM、OpenAI、ビジネス" aria-label="記事を検索"/>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="importanceFilter">重要度</label>
+          <select id="importanceFilter" class="filter-select" aria-label="重要度で絞り込み">
+            <option value="all">すべて</option>
+            <option value="high">高 (7.0+)</option>
+            <option value="medium">中 (4.0-6.9)</option>
+            <option value="low">低 (0-3.9)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="freshnessFilter">鮮度</label>
+          <select id="freshnessFilter" class="filter-select" aria-label="掲載からの時間で絞り込み">
+            <option value="all">すべての期間</option>
+            <option value="24h">24時間以内</option>
+            <option value="72h">3日以内</option>
+            <option value="168h">7日以内</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="sortBy">並び順</label>
+          <select id="sortBy" class="filter-select" aria-label="記事の並び順を選択">
+            <option value="score">重要度順</option>
+            <option value="time">新着順</option>
+            <option value="source">情報源順</option>
+          </select>
+        </div>
+      </form>
+      <div class="filter-results" id="resultsCount" aria-live="polite"></div>
     </section>
 
-    <nav class="tabs">
-      <button class="tab-button active" data-tab="business">
+    <nav class="tabs" role="tablist" aria-label="記事カテゴリ">
+      <button class="tab-button" role="tab" id="tab-business" data-tab="business" aria-controls="panel-business" aria-selected="true" tabindex="0">
         📈 Business (25)
       </button>
-      <button class="tab-button" data-tab="tools">
+      <button class="tab-button" role="tab" id="tab-tools" data-tab="tools" aria-controls="panel-tools" aria-selected="false" tabindex="-1">
         🔧 Tools (25)
       </button>
-      <button class="tab-button" data-tab="posts">
+      <button class="tab-button" role="tab" id="tab-posts" data-tab="posts" aria-controls="panel-posts" aria-selected="false" tabindex="-1">
         💬 Posts (25)
       </button>
     </nav>
 
-    <section class="tab-panel" data-category="business">
+    <section class="tab-panel" id="panel-business" role="tabpanel" aria-labelledby="tab-business" data-category="business" aria-hidden="false">
       <div class="tab-content">
 
         <article class="enhanced-card" data-score="10.0" data-source="OpenAI Blog" data-time="Fri, 22 Aug 2025 08:30:00 GMT">
@@ -537,7 +567,7 @@
       </div>
     </section>
 
-    <section class="tab-panel hidden" data-category="tools">
+    <section class="tab-panel" id="panel-tools" role="tabpanel" aria-labelledby="tab-tools" data-category="tools" aria-hidden="true">
       <div class="tab-content">
 
         <article class="enhanced-card" data-score="10.0" data-source="TechCrunch" data-time="Fri, 22 Aug 2025 00:31:38 +0000">
@@ -998,7 +1028,7 @@ The post How We Reduced LLM Costs by 90% with 5 Lines of Code appeared first on
       </div>
     </section>
 
-    <section class="tab-panel hidden" data-category="posts">
+    <section class="tab-panel" id="panel-posts" role="tabpanel" aria-labelledby="tab-posts" data-category="posts" aria-hidden="true">
       <div class="tab-content">
 
         <article class="enhanced-card" data-score="10.0" data-source="X / SNS (CSV実データ)" data-time="2025-08-28T08:08:36.871886">
@@ -1604,151 +1634,398 @@ The post How We Reduced LLM Costs by 90% with 5 Lines of Code appeared first on
           </footer>
         </article>
 
-        <article class="enhanced-card" data-score="8.1" data-source="Reddit MachineLearning Papers" data-time="2025-08-23T08:46:29+00:00">
-          <div class="card-priority high">高 8.1</div>
-          <header class="card-header">
-            <h3 class="card-title">
-              <a href="https://www.reddit.com/r/MachineLearning/comments/1mxw9c1/p_i_built_a_mlregression_model_for_biathlon_that/" target="_blank" rel="noopener">[P]現在の賭け市場のオッズを打ち負かすバイアスロンのML回帰モデルを構築しました</a>
-            </h3>
-          </header>
-          <div class="card-meta">
-            <span class="card-source">Reddit MachineLearning Papers</span>
-            
-          </div>
-          <div class="card-summary">こんにちはYa&#x27;ll！私は最近、バイアスロンの予測不可能なスポーツを予測するためにML回帰モデルを構築しました。バイアスロンでは、天候、コースプロファイル、高度などの外部要因が、誰が勝つかを決定する上で大きな役割を果たします。しかし、これらの要因をプレイするとき、アスリートの過去のパフォーマンスに加えて、驚くほど高い精度を獲得することができます。これは、10年間の歴史的バイアスロンデータを使用して...</div>
-          <footer class="card-footer">
-            <span class="card-score">スコア: 8.1</span>
-            <span class="card-time"></span>
-          </footer>
-        </article>
+  <footer class="site-footer">
+    <p>Daily AI Newsは主要AIソースからの最新トピックを収集し、日本語要約とともに重要度・鮮度で整理してお届けします。気になる記事はカードのリンクから原文をご確認ください。</p>
+  </footer>
 
-      </div>
-    </section>
+class DashboardUI {
+    this.root = document.documentElement;
+    this.themePreferenceKey = 'daily-ai-news-theme';
+    this.tabList = document.querySelector('[role="tablist"]');
+    this.tabButtons = Array.from(document.querySelectorAll('[role="tab"]'));
+    this.panels = new Map(this.tabButtons.map(btn => [btn.dataset.tab, document.getElementById(`panel-${btn.dataset.tab}`)]));
+    this.searchInput = document.getElementById('searchInput');
+    this.importanceFilter = document.getElementById('importanceFilter');
+    this.freshnessFilter = document.getElementById('freshnessFilter');
+    this.sortSelect = document.getElementById('sortBy');
+    this.resultsRegion = document.getElementById('resultsCount');
+    this.themeToggle = document.getElementById('themeToggle');
+    this.themeToggleIcon = this.themeToggle?.querySelector('.toggle-icon');
+    this.themeToggleLabel = this.themeToggle?.querySelector('.toggle-label');
+    this.filtersForm = document.querySelector('.filters-form');
+    this.relativeTimeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
+    this.absoluteTimeFormatter = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Tokyo' });
+    this.baseTabLabels = new Map();
+    this.tabButtons.forEach(btn => {
+      const baseLabel = btn.textContent.trim().replace(/\s*\(.*\)$/, '');
+      this.baseTabLabels.set(btn.dataset.tab, baseLabel);
+    });
 
-  </main>
+    this.enhanceCards();
+    this.initTheme();
+    this.bindEvents();
+    this.switchTab(this.activeTab, { focus: false });
+    this.updateTabCounts();
+    this.applySorting();
 
-<script>
-// タブ切り替え機能
-class TabController {
-  constructor() {
-    this.activeTab = 'business';
-    this.init();
-  }
-  
-  init() {
-    // タブボタンのイベントリスナー
-    document.querySelectorAll('.tab-button').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const tab = e.target.dataset.tab;
-        this.switchTab(tab);
-      });
-    });
-    
-    // フィルター機能
-    this.setupFilters();
-    
-    // 初期表示：businessタブを明示的に表示
-    this.switchTab('business');
-  }
-  
-  switchTab(tabName) {
-    if (this.activeTab === tabName) return;
-    
-    // ボタンの状態更新
-    document.querySelectorAll('.tab-button').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-    
-    // パネルの表示切り替え（hidden class使用）
-    document.querySelectorAll('.tab-panel').forEach(panel => {
-      panel.classList.add('hidden');
-    });
-    document.querySelector(`[data-category="${tabName}"]`).classList.remove('hidden');
-    
-    this.activeTab = tabName;
-    this.updateTabCounts(); // タブカウント更新
-    this.applyFilters(); // フィルター再適用
-  }
-  
-  updateTabCounts() {
-    // 各タブの記事数をカウントして表示更新
-    const tabs = ['business', 'tools', 'posts'];
-    const tabLabels = {
-      'business': '📈 Business',
-      'tools': '🔧 Tools', 
-      'posts': '💬 Posts'
-    };
-    
-    tabs.forEach(tabName => {
-      const panel = document.querySelector(`[data-category="${tabName}"]`);
-      const count = panel ? panel.querySelectorAll('.enhanced-card').length : 0;
-      const button = document.querySelector(`[data-tab="${tabName}"]`);
-      if (button) {
-        button.textContent = `${tabLabels[tabName]} (${count})`;
+  initTheme() {
+    const stored = window.localStorage.getItem(this.themePreferenceKey);
+    if (stored === 'light' || stored === 'dark') {
+      this.applyTheme(stored);
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.applyTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', (event) => {
+      const preference = window.localStorage.getItem(this.themePreferenceKey);
+      if (!preference) {
+        this.applyTheme(event.matches ? 'dark' : 'light');
       }
-    });
+
+  applyTheme(theme) {
+    this.root.setAttribute('data-theme', theme);
+    const isDark = theme === 'dark';
+    if (this.themeToggle) {
+      this.themeToggle.setAttribute('aria-pressed', String(isDark));
+      if (this.themeToggleIcon) {
+        this.themeToggleIcon.textContent = isDark ? '🌙' : '🌞';
+      }
+      if (this.themeToggleLabel) {
+        this.themeToggleLabel.textContent = isDark ? 'ダーク' : 'ライト';
+      }
+    }
   }
-  
-  setupFilters() {
-    // 検索フィルター
-    document.getElementById('searchInput').addEventListener('input', () => {
-      this.applyFilters();
-    });
-    
-    // 重要度フィルター
-    document.getElementById('importanceFilter').addEventListener('change', () => {
-      this.applyFilters();
-    });
-    
-    // ソート
-    document.getElementById('sortBy').addEventListener('change', () => {
-      this.applySorting();
-    });
+
+  toggleTheme() {
+    const nextTheme = this.root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    window.localStorage.setItem(this.themePreferenceKey, nextTheme);
+    this.applyTheme(nextTheme);
   }
-  
-  applyFilters() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const importance = document.getElementById('importanceFilter').value;
-    
-    // 現在アクティブなタブのカードのみ処理
-    const activePanel = document.querySelector(`[data-category="${this.activeTab}"]`);
-    const cards = activePanel.querySelectorAll('.enhanced-card');
-    
+
+  enhanceCards() {
+    const cards = document.querySelectorAll('.enhanced-card');
     cards.forEach(card => {
-      let showCard = true;
-      
-      // 検索フィルター
-      if (searchTerm) {
-        const title = card.querySelector('.card-title a').textContent.toLowerCase();
-        const summary = card.querySelector('.card-summary').textContent.toLowerCase();
-        const source = card.querySelector('.card-source').textContent.toLowerCase();
-        
-        showCard = title.includes(searchTerm) || 
-                  summary.includes(searchTerm) || 
-                  source.includes(searchTerm);
+      if (card.dataset.enhanced === 'true') return;
+
+      card.setAttribute('role', 'article');
+      const badge = card.querySelector('.card-priority');
+      if (badge) {
+        badge.classList.add('card-badge');
+        const score = Number.parseFloat(card.dataset.score);
+        const level = this.getImportanceLevel(score);
+        if (level === 'high') badge.classList.add('badge-high');
+        if (level === 'medium') badge.classList.add('badge-medium');
+        if (level === 'low') badge.classList.add('badge-low');
+        badge.setAttribute('aria-label', `重要度 ${badge.textContent.trim()}`);
       }
-      
-      // 重要度フィルター
-      if (showCard && importance !== 'all') {
-        const score = parseFloat(card.dataset.score);
-        if (importance === 'high' && score < 7.0) showCard = false;
-        if (importance === 'medium' && (score < 4.0 || score >= 7.0)) showCard = false;
-        if (importance === 'low' && score >= 4.0) showCard = false;
+
+      const contentNodes = Array.from(card.children).filter(node => {
+        return !(node.classList && (node.classList.contains('card-priority') || node.classList.contains('card-body') || node.classList.contains('card-media')));
+      });
+
+      if (contentNodes.length) {
+        const body = document.createElement('div');
+        body.className = 'card-body';
+        contentNodes.forEach(node => body.appendChild(node));
+        card.appendChild(body);
+
+      const body = card.querySelector('.card-body');
+      if (body) {
+        const meta = body.querySelector('.card-meta');
+        if (meta) meta.classList.add('card-meta-info');
+        const footer = body.querySelector('.card-footer');
+        if (footer) {
+          footer.classList.add('card-footer-info');
+          const timeElement = footer.querySelector('.card-time');
+          if (timeElement && timeElement.tagName.toLowerCase() !== 'time') {
+            const timeNode = document.createElement('time');
+            timeNode.className = 'card-time';
+            timeNode.textContent = timeElement.textContent;
+            footer.replaceChild(timeNode, timeElement);
+          }
+        }
       }
-      
-      card.style.display = showCard ? 'block' : 'none';
-    });
+
+      const link = card.querySelector('.card-title a');
+      if (link) {
+        const source = card.dataset.source || '外部サイト';
+        link.setAttribute('aria-label', `${link.textContent.trim()}（${source}）を新しいタブで開く`);
+        if (!card.querySelector('.card-media')) {
+          const media = this.createMedia(link.href, source);
+          if (media) {
+            const bodyNode = card.querySelector('.card-body');
+            if (bodyNode) {
+              card.insertBefore(media, bodyNode);
+            } else {
+              card.insertBefore(media, card.firstChild);
+            }
+          }
+        }
+      }
+
+      this.updateCardTime(card);
+      card.dataset.enhanced = 'true';
+
+  createMedia(href, sourceLabel) {
+    try {
+      const url = new URL(href);
+      const figure = document.createElement('figure');
+      figure.className = 'card-media';
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.src = `https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(url.origin)}`;
+      img.alt = `${sourceLabel || url.hostname}のアイコン`;
+      img.addEventListener('error', () => {
+        img.remove();
+        figure.classList.add('card-media--no-image');
+      });
+      const caption = document.createElement('figcaption');
+      caption.textContent = (sourceLabel || url.hostname).replace(/^www\./, '');
+      figure.appendChild(img);
+      figure.appendChild(caption);
+      return figure;
+    } catch (error) {
+      return null;
+    }
   }
-  
+
+  updateCardTime(card) {
+    const rawTime = card.dataset.time;
+    const timeElement = card.querySelector('.card-time');
+    if (!rawTime || !timeElement) return;
+    const parsed = Date.parse(rawTime);
+    if (Number.isNaN(parsed)) {
+      timeElement.textContent = rawTime;
+      return;
+    }
+
+    const publishedDate = new Date(parsed);
+    card.dataset.publishedMs = String(publishedDate.getTime());
+    timeElement.dateTime = publishedDate.toISOString();
+    const absolute = this.absoluteTimeFormatter.format(publishedDate);
+    const relative = this.formatRelativeTime(publishedDate.getTime() - Date.now());
+    timeElement.textContent = `${absolute} · ${relative}`;
+    timeElement.setAttribute('aria-label', `${absolute}（${relative}）`);
+  }
+
+  formatRelativeTime(diffMs) {
+    const absoluteMs = Math.abs(diffMs);
+    const units = [
+      { unit: 'year', ms: 1000 * 60 * 60 * 24 * 365 },
+      { unit: 'month', ms: 1000 * 60 * 60 * 24 * 30 },
+      { unit: 'week', ms: 1000 * 60 * 60 * 24 * 7 },
+      { unit: 'day', ms: 1000 * 60 * 60 * 24 },
+      { unit: 'hour', ms: 1000 * 60 * 60 },
+      { unit: 'minute', ms: 1000 * 60 },
+      { unit: 'second', ms: 1000 }
+    ];
+
+    for (const { unit, ms } of units) {
+      if (absoluteMs >= ms) {
+        const value = Math.round(diffMs / ms);
+        return this.relativeTimeFormatter.format(value, unit);
+      }
+    }
+
+    return this.relativeTimeFormatter.format(0, 'second');
+  }
+
+  bindEvents() {
+    this.tabButtons.forEach(button => {
+      button.addEventListener('click', () => this.switchTab(button.dataset.tab));
+
+    if (this.tabList) {
+      this.tabList.addEventListener('keydown', (event) => this.handleTabKeyNavigation(event));
+    }
+
+    if (this.searchInput) {
+      this.searchInput.addEventListener('input', () => this.applyFilters());
+    }
+
+    if (this.importanceFilter) {
+      this.importanceFilter.addEventListener('change', () => this.applyFilters());
+    }
+
+    if (this.freshnessFilter) {
+      this.freshnessFilter.addEventListener('change', () => this.applyFilters());
+    }
+
+    if (this.sortSelect) {
+      this.sortSelect.addEventListener('change', () => this.applySorting());
+    }
+
+    if (this.themeToggle) {
+      this.themeToggle.addEventListener('click', () => this.toggleTheme());
+    }
+
+    if (this.filtersForm) {
+      this.filtersForm.addEventListener('submit', (event) => event.preventDefault());
+    }
+
+    this.initSwipeSupport();
+  }
+
+  handleTabKeyNavigation(event) {
+    const { key } = event;
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) return;
+    event.preventDefault();
+    const index = this.tabButtons.findIndex(btn => btn.dataset.tab === this.activeTab);
+    let targetIndex = index;
+    if (key === 'ArrowRight') targetIndex = (index + 1) % this.tabButtons.length;
+    if (key === 'ArrowLeft') targetIndex = (index - 1 + this.tabButtons.length) % this.tabButtons.length;
+    if (key === 'Home') targetIndex = 0;
+    if (key === 'End') targetIndex = this.tabButtons.length - 1;
+    const targetTab = this.tabButtons[targetIndex]?.dataset.tab;
+    if (targetTab) {
+      this.switchTab(targetTab);
+    }
+  }
+
+  initSwipeSupport() {
+    const swipeArea = document.querySelector('main') || document.body;
+    const tabsOrder = this.tabButtons.map(btn => btn.dataset.tab);
+    let startX = 0;
+    let startY = 0;
+    const threshold = 50;
+    const restraint = 80;
+
+    swipeArea.addEventListener('touchstart', (event) => {
+      const touch = event.changedTouches[0];
+      startX = touch.pageX;
+      startY = touch.pageY;
+    }, { passive: true });
+
+    swipeArea.addEventListener('touchend', (event) => {
+      const touch = event.changedTouches[0];
+      const dx = touch.pageX - startX;
+      const dy = touch.pageY - startY;
+      if (Math.abs(dx) > threshold && Math.abs(dy) < restraint) {
+        const currentIndex = tabsOrder.indexOf(this.activeTab);
+        const nextIndex = dx < 0 ? Math.min(currentIndex + 1, tabsOrder.length - 1) : Math.max(currentIndex - 1, 0);
+        const nextTab = tabsOrder[nextIndex];
+        if (nextTab && nextTab !== this.activeTab) {
+          this.switchTab(nextTab, { focus: false });
+          document.querySelector(`[data-tab="${nextTab}"]`)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      }
+    }, { passive: true });
+  }
+
+  switchTab(tabName, options = { focus: true }) {
+    if (!this.panels.has(tabName)) return;
+    this.activeTab = tabName;
+    this.tabButtons.forEach(button => {
+      const isActive = button.dataset.tab === tabName;
+      button.setAttribute('aria-selected', String(isActive));
+      button.tabIndex = isActive ? 0 : -1;
+      button.classList.toggle('active', isActive);
+    });
+
+    this.panels.forEach((panel, key) => {
+      const isActive = key === tabName;
+      if (panel) {
+        panel.setAttribute('aria-hidden', String(!isActive));
+      }
+
+    if (options.focus) {
+      const activeButton = this.tabButtons.find(btn => btn.dataset.tab === tabName);
+      activeButton?.focus();
+    }
+
+    this.applySorting();
+    this.updateTabCounts();
+  }
+
   applySorting() {
-    const sortBy = document.getElementById('sortBy').value;
-    const activePanel = document.querySelector(`[data-category="${this.activeTab}"]`);
-    const container = activePanel.querySelector('.tab-content');
+    const sortBy = this.sortSelect?.value || 'score';
+    const panel = this.panels.get(this.activeTab);
+    if (!panel) return;
+    const container = panel.querySelector('.tab-content');
+    if (!container) return;
     const cards = Array.from(container.querySelectorAll('.enhanced-card'));
-    
-    cards.sort((a, b) => {
-      if (sortBy === 'score') {
+
+    const comparators = {
+      score: (a, b) => Number.parseFloat(b.dataset.score) - Number.parseFloat(a.dataset.score),
+      time: (a, b) => {
+        const aTime = Number(a.dataset.publishedMs || Date.parse(a.dataset.time || ''));
+        const bTime = Number(b.dataset.publishedMs || Date.parse(b.dataset.time || ''));
+        return (bTime || 0) - (aTime || 0);
+      },
+      source: (a, b) => (a.dataset.source || '').localeCompare(b.dataset.source || '')
+    };
+
+    const comparator = comparators[sortBy] || comparators.score;
+    cards.sort(comparator);
+    cards.forEach(card => container.appendChild(card));
+    this.applyFilters();
+
+    const searchTerm = (this.searchInput?.value || '').toLowerCase();
+    const importance = this.importanceFilter?.value || 'all';
+    const freshness = this.freshnessFilter?.value || 'all';
+    const panel = this.panels.get(this.activeTab);
+    if (!panel) return;
+    const cards = Array.from(panel.querySelectorAll('.enhanced-card'));
+    const now = Date.now();
+    let visibleCount = 0;
+
+      let show = true;
+
+        const title = card.querySelector('.card-title a')?.textContent.toLowerCase() || '';
+        const summary = card.querySelector('.card-summary')?.textContent.toLowerCase() || '';
+        const source = card.querySelector('.card-source')?.textContent.toLowerCase() || '';
+        show = title.includes(searchTerm) || summary.includes(searchTerm) || source.includes(searchTerm);
+      }
+
+      if (show && importance !== 'all') {
+        const score = Number.parseFloat(card.dataset.score);
+        if (importance === 'high' && score < 7) show = false;
+        if (importance === 'medium' && (score < 4 || score >= 7)) show = false;
+        if (importance === 'low' && score >= 4) show = false;
+      }
+
+      if (show && freshness !== 'all') {
+        const published = Number(card.dataset.publishedMs || Date.parse(card.dataset.time || ''));
+        if (Number.isFinite(published)) {
+          const hours = (now - published) / (1000 * 60 * 60);
+          if (freshness === '24h' && hours > 24) show = false;
+          if (freshness === '72h' && hours > 72) show = false;
+          if (freshness === '168h' && hours > 168) show = false;
+        } else {
+          show = false;
+        }
+
+      card.hidden = !show;
+      card.classList.toggle('is-hidden', !show);
+      card.setAttribute('aria-hidden', String(!show));
+      if (show) visibleCount += 1;
+
+    this.updateResultsCount(visibleCount);
+
+  updateTabCounts() {
+    this.tabButtons.forEach(button => {
+      const tabName = button.dataset.tab;
+      const panel = this.panels.get(tabName);
+      const baseLabel = this.baseTabLabels.get(tabName) || button.textContent.trim();
+      const count = panel ? panel.querySelectorAll('.enhanced-card').length : 0;
+      button.textContent = `${baseLabel} (${count})`;
+  }
+
+  updateResultsCount(count) {
+    if (this.resultsRegion) {
+      const label = this.baseTabLabels.get(this.activeTab) || this.activeTab;
+      this.resultsRegion.textContent = `${label}：${count}件表示中`;
+    }
+  }
+
+  getImportanceLevel(score) {
+    if (!Number.isFinite(score)) return 'medium';
+    if (score >= 7) return 'high';
+    if (score >= 4) return 'medium';
+    return 'low';
+  new DashboardUI();
         return parseFloat(b.dataset.score) - parseFloat(a.dataset.score);
       } else if (sortBy === 'time') {
         const timeA = new Date(a.dataset.time || 0);
