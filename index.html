@@ -72,6 +72,7 @@
         <div class="filter-group">
           <label class="filter-label" for="searchInput">キーワード検索</label>
           <input type="search" id="searchInput" class="filter-input" placeholder="例：LLM、OpenAI、ビジネス" aria-label="記事を検索"/>
+          <div id="searchTags" class="search-tags" aria-live="polite" role="list"></div>
         </div>
         <div class="filter-group">
           <label class="filter-label" for="importanceFilter">重要度</label>
@@ -94,26 +95,40 @@
         <div class="filter-group">
           <label class="filter-label" for="sortBy">並び順</label>
           <select id="sortBy" class="filter-select" aria-label="記事の並び順を選択">
-            <option value="score">重要度順</option>
-            <option value="time">新着順</option>
-            <option value="source">情報源順</option>
+            <option value="importance">重要度順</option>
+            <option value="freshness">鮮度順</option>
+            <option value="time">時間順</option>
+            <option value="none">ソートなし</option>
           </select>
         </div>
       </form>
       <div class="filter-results" id="resultsCount" aria-live="polite"></div>
     </section>
 
-    <nav class="tabs" role="tablist" aria-label="記事カテゴリ">
-      <button class="tab-button" role="tab" id="tab-business" data-tab="business" aria-controls="panel-business" aria-selected="true" tabindex="0">
-        📈 Business
-      </button>
-      <button class="tab-button" role="tab" id="tab-tools" data-tab="tools" aria-controls="panel-tools" aria-selected="false" tabindex="-1">
-        🔧 Tools
-      </button>
-      <button class="tab-button" role="tab" id="tab-posts" data-tab="posts" aria-controls="panel-posts" aria-selected="false" tabindex="-1">
-        💬 Posts
-      </button>
-    </nav>
+    <section class="category-filter" aria-label="カテゴリフィルター">
+      <div class="category-filter__group" role="group" aria-label="カテゴリを選択">
+        <button type="button" class="category-button is-active" data-category="all" aria-pressed="true" aria-label="すべてのニュースを表示">
+          <span aria-hidden="true">🌐</span>
+          <span class="category-button__label">すべて</span>
+        </button>
+        <button type="button" class="category-button" data-category="business" aria-pressed="false" aria-label="ビジネスニュースのみを表示">
+          <span aria-hidden="true">📈</span>
+          <span class="category-button__label">ビジネスニュース</span>
+        </button>
+        <button type="button" class="category-button" data-category="tools" aria-pressed="false" aria-label="ツールニュースのみを表示">
+          <span aria-hidden="true">🛠️</span>
+          <span class="category-button__label">ツールニュース</span>
+        </button>
+        <button type="button" class="category-button" data-category="posts" aria-pressed="false" aria-label="SNSや論文ポストのみを表示">
+          <span aria-hidden="true">💬</span>
+          <span class="category-button__label">SNS/論文ポスト</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="news-results" aria-label="ニュース記事一覧">
+      <div id="newsGrid" class="news-grid" role="list"></div>
+    </section>
 
     <section class="tab-panel" id="panel-business" role="tabpanel" aria-labelledby="tab-business" data-category="business" aria-hidden="false">
       <div class="tab-content">
@@ -1593,748 +1608,434 @@ The post How We Reduced LLM Costs by 90% with 5 Lines of Code appeared first on
             </h3>
           </header>
           <div class="card-meta">
-            <span class="card-source">Reddit MachineLearning Papers</span>
-            
-          </div>
-          <div class="card-summary">私の共著者の1人がこの論文をArxivに提出しました。それは拒否されました。理由は何でしょうか？ Ithenticateは盗作を検出せず、Arxivはあいまいな「提出は、私たちが提供するサービスの外にある追加のレビューと改訂から恩恵を受ける」：親愛なる著者、あなたの作品をArxivに提出してくれてありがとう。 Arxivのモデレーターが、この時点であなたの提出が受け入れられず、http：// ar...</div>
-          <footer class="card-footer">
-            <span class="card-score">スコア: 8.8</span>
-            <span class="card-time"></span>
           </footer>
         </article>
-
-        <article class="enhanced-card" data-score="8.5" data-source="Reddit DeepLearning" data-time="2025-08-21T11:32:00+00:00">
-          <div class="card-priority high">高 8.5</div>
-          <header class="card-header">
-            <h3 class="card-title">
-              <a href="https://www.reddit.com/r/deeplearning/comments/1mw8cls/tutorial_hell_is_the_real_reason_most_people/" target="_blank" rel="noopener">チュートリアル地獄は、ほとんどの人がMLに侵入しない本当の理由です</a>
-            </h3>
-          </header>
-          <div class="card-meta">
-            <span class="card-source">Reddit DeepLearning</span>
-            
-          </div>
-          <div class="card-summary">同じループを見続けています。  1 MLのチュートリアルを1つ終え、数時間賢く感じ、次のチュートリアルを開始し、最後のものを実際に理解していないことに気付きます。  10回繰り返します。  数ヶ月後、あなたは無限のコンテンツを消費しましたが、.fit（）内部で何が起こるかを説明することはできません。しかし、基本を知らないときにどのようにプロジェクトを構築し、「ただ書類を読む」と言っている人がいます...</div>
-          <footer class="card-footer">
-            <span class="card-score">スコア: 8.5</span>
-            <span class="card-time"></span>
-        this.prepareCards();
-        this.updateHeaderOffset();
-
-      updateHeaderOffset() {
-        const header = document.querySelector('.site-header');
-        if (!header) return;
-        const height = header.getBoundingClientRect().height;
-        if (Number.isFinite(height)) {
-          this.root.style.setProperty('--header-height', `${Math.round(height)}px`);
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const root = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const searchForm = document.querySelector('.filters-form');
+        const searchInput = document.getElementById('searchInput');
+        const searchTagsContainer = document.getElementById('searchTags');
+        const importanceSelect = document.getElementById('importanceFilter');
+        const freshnessSelect = document.getElementById('freshnessFilter');
+        const sortSelect = document.getElementById('sortBy');
+        const resultsRegion = document.getElementById('resultsCount');
+        const categoryButtons = Array.from(document.querySelectorAll('.category-button'));
+        const newsGrid = document.getElementById('newsGrid');
+        const legacyPanels = Array.from(document.querySelectorAll('.tab-panel'));
+        if (!newsGrid || legacyPanels.length === 0) {
+          return;
         }
-      }
+        const labelByCategory = new Map([
+          ['all', 'すべて'],
+          ['business', 'ビジネスニュース'],
+          ['tools', 'ツールニュース'],
+          ['posts', 'SNS/論文ポスト']
+        ]);
 
-      }
+        const absoluteFormatter = new Intl.DateTimeFormat('ja-JP', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+        const relativeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
 
-        const nextTheme = theme === 'dark' ? 'dark' : 'light';
-        this.root.setAttribute('data-theme', nextTheme);
-        const isDark = nextTheme === 'dark';
-      }
-        const current = this.root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-        const nextTheme = current === 'dark' ? 'light' : 'dark';
-      }
-      prepareCards() {
-        const cards = Array.from(document.querySelectorAll('.enhanced-card'));
-        this.cards = cards;
-        cards.forEach((card, index) => {
-          const priorityNode = card.querySelector('.card-priority');
-          const priorityText = priorityNode?.textContent.trim() ?? '';
-          const headerNode = card.querySelector('.card-header');
-          const linkNode = headerNode?.querySelector('a') ?? null;
-          const titleText = linkNode?.textContent.trim() ?? headerNode?.textContent.trim() ?? '記事';
-          const href = linkNode?.href ?? '';
-          const summaryNode = card.querySelector('.card-summary');
-          const summaryText = summaryNode?.textContent.trim() ?? '';
-          const shortSummary = summaryText.length > 160 ? `${summaryText.slice(0, 160)}…` : summaryText;
-          const sourceNode = card.querySelector('.card-source');
-          const sourceLabel = sourceNode?.textContent.trim() || card.dataset.source || '';
-          const scoreValue = Number.parseFloat(card.dataset.score ?? '0');
-          const level = this.getImportanceLevel(scoreValue);
-          const id = index + 1;
-          const readMoreId = `card-detail-${id}`;
-          const summaryId = `card-summary-${id}`;
-          const titleId = `card-title-${id}`;
-          const timeInfo = this.computeTimeInfo(card.dataset.time ?? '');
+        const toRelative = (diffMs) => {
+          const units = [
+            { unit: 'year', value: 1000 * 60 * 60 * 24 * 365 },
+            { unit: 'month', value: 1000 * 60 * 60 * 24 * 30 },
+            { unit: 'week', value: 1000 * 60 * 60 * 24 * 7 },
+            { unit: 'day', value: 1000 * 60 * 60 * 24 },
+            { unit: 'hour', value: 1000 * 60 * 60 },
+            { unit: 'minute', value: 1000 * 60 },
+            { unit: 'second', value: 1000 }
+          ];
 
-          card.innerHTML = '';
-          card.classList.add('news-card');
-          card.setAttribute('role', 'article');
-          card.setAttribute('aria-labelledby', titleId);
-          if (summaryText) {
-            card.setAttribute('aria-describedby', summaryId);
-
-          const wrapper = document.createElement('div');
-          wrapper.className = 'card-inner';
-
-          const media = this.buildMedia(href, titleText, sourceLabel);
-          if (media) {
-            wrapper.appendChild(media);
-          const header = document.createElement('header');
-          header.className = 'card-header';
-
-          if (priorityText || Number.isFinite(scoreValue)) {
-            const badge = document.createElement('span');
-            badge.className = `card-badge badge-${level}`;
-            badge.textContent = priorityText || `重要度 ${scoreValue.toFixed(1)}`;
-            badge.setAttribute('aria-label', `重要度 ${scoreValue.toFixed(1)}`);
-            header.appendChild(badge);
-          const titleEl = document.createElement('h3');
-          titleEl.className = 'card-title';
-          titleEl.id = titleId;
-          const titleSpan = document.createElement('span');
-          titleSpan.textContent = titleText;
-          titleEl.appendChild(titleSpan);
-          header.appendChild(titleEl);
-
-          const meta = document.createElement('div');
-          meta.className = 'card-meta';
-
-          if (sourceLabel) {
-            const sourceItem = document.createElement('span');
-            sourceItem.className = 'card-meta-item';
-            sourceItem.textContent = sourceLabel;
-            meta.appendChild(sourceItem);
-          }
-          if (Number.isFinite(scoreValue)) {
-            const scoreItem = document.createElement('span');
-            scoreItem.className = 'card-meta-item';
-            scoreItem.textContent = `重要度: ${scoreValue.toFixed(1)}`;
-            meta.appendChild(scoreItem);
+          for (const { unit, value } of units) {
+            if (Math.abs(diffMs) >= value) {
+              return relativeFormatter.format(Math.round(diffMs / value), unit);
+            }
           }
 
-          if (timeInfo) {
-            const timeItem = document.createElement('span');
-            timeItem.className = 'card-meta-item';
-            const timeEl = document.createElement('time');
-            timeEl.className = 'card-time';
-            timeEl.dateTime = timeInfo.iso;
-            timeEl.textContent = `${timeInfo.absolute} · ${timeInfo.relative}`;
-            timeEl.setAttribute('aria-label', `${timeInfo.absolute}（${timeInfo.relative}）`);
-            timeItem.appendChild(timeEl);
-            meta.appendChild(timeItem);
-            card.dataset.publishedMs = String(timeInfo.timestamp);
-            card.dataset.absoluteDate = timeInfo.absolute;
-            card.dataset.relativeTime = timeInfo.relative;
-          } else if (card.dataset.time) {
-            const timeItem = document.createElement('span');
-            timeItem.className = 'card-meta-item';
-            timeItem.textContent = card.dataset.time;
-            meta.appendChild(timeItem);
-            card.dataset.absoluteDate = card.dataset.time;
-            delete card.dataset.publishedMs;
-            card.dataset.relativeTime = '';
-            delete card.dataset.publishedMs;
-            card.dataset.absoluteDate = '';
-            card.dataset.relativeTime = '';
-          header.appendChild(meta);
-          wrapper.appendChild(header);
-
-          if (summaryText) {
-            const abstract = document.createElement('p');
-            abstract.className = 'card-abstract';
-            abstract.id = summaryId;
-            abstract.textContent = shortSummary;
-            wrapper.appendChild(abstract);
-          const actions = document.createElement('div');
-          actions.className = 'card-actions';
-
-          if (href) {
-            const linkButton = document.createElement('a');
-            linkButton.className = 'card-button card-button--primary';
-            linkButton.href = href;
-            linkButton.target = '_blank';
-            linkButton.rel = 'noopener';
-            linkButton.textContent = '原文を開く';
-            linkButton.setAttribute('aria-label', `${titleText}の原文を新しいタブで開く`);
-            actions.appendChild(linkButton);
-          }
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.className = 'card-button';
-          toggle.setAttribute('aria-expanded', 'false');
-          toggle.setAttribute('aria-controls', readMoreId);
-          toggle.textContent = 'もっと読む';
-          toggle.setAttribute('aria-label', `${titleText}の詳細を表示`);
-          actions.appendChild(toggle);
-
-          wrapper.appendChild(actions);
-
-          const details = document.createElement('div');
-          details.className = 'card-details';
-          details.id = readMoreId;
-          details.hidden = true;
-
-          if (summaryText) {
-            const fullSummary = document.createElement('p');
-            fullSummary.className = 'card-full-summary';
-            fullSummary.textContent = summaryText;
-            details.appendChild(fullSummary);
-          }
-
-          const metaList = document.createElement('dl');
-          metaList.className = 'card-meta-list';
-
-          if (sourceLabel) {
-            const dt = document.createElement('dt');
-            dt.textContent = '出典';
-            const dd = document.createElement('dd');
-            dd.textContent = sourceLabel;
-            metaList.appendChild(dt);
-            metaList.appendChild(dd);
-          }
-
-          if (timeInfo) {
-            const dt = document.createElement('dt');
-            dt.textContent = '掲載日';
-            const dd = document.createElement('dd');
-            dd.textContent = timeInfo.absolute;
-            metaList.appendChild(dt);
-            metaList.appendChild(dd);
-          }
-
-          if (Number.isFinite(scoreValue)) {
-            const dt = document.createElement('dt');
-            dt.textContent = '重要度スコア';
-            const dd = document.createElement('dd');
-            dd.textContent = scoreValue.toFixed(1);
-            metaList.appendChild(dt);
-            metaList.appendChild(dd);
-          }
-
-          if (card.dataset.category) {
-            const dt = document.createElement('dt');
-            dt.textContent = 'カテゴリ';
-            const dd = document.createElement('dd');
-            dd.textContent = `#${this.categoryLabels[card.dataset.category] || card.dataset.category}`;
-            metaList.appendChild(dt);
-            metaList.appendChild(dd);
-          }
-
-          if (metaList.children.length > 0) {
-            details.appendChild(metaList);
-          }
-
-          wrapper.appendChild(details);
-          card.appendChild(wrapper);
-
-          const searchTokens = [titleText, summaryText, sourceLabel].join(' ').toLowerCase();
-          card.dataset.searchText = searchTokens;
-          card.dataset.sourceLabel = sourceLabel;
-          card.dataset.sourceSearch = sourceLabel.toLowerCase();
-          card.dataset.summaryFull = summaryText;
-          card.dataset.shortSummary = shortSummary;
-
-          toggle.addEventListener('click', () => {
-            const expanded = toggle.getAttribute('aria-expanded') === 'true';
-            const nextState = !expanded;
-            toggle.setAttribute('aria-expanded', String(nextState));
-            toggle.textContent = nextState ? '閉じる' : 'もっと読む';
-            toggle.setAttribute('aria-label', `${titleText}の詳細を${nextState ? '閉じる' : '表示'}`);
-            details.hidden = !nextState;
-
-        this.updateTabCounts();
-      buildMedia(href, titleText, sourceLabel) {
-        const figure = document.createElement('figure');
-        figure.className = 'card-media';
-        const readableSource = (sourceLabel || '').trim();
-        const caption = document.createElement('figcaption');
-        caption.textContent = readableSource || (href ? this.extractHostname(href) : '出典');
-
-        if (href) {
-          try {
-            const url = new URL(href);
-            const img = document.createElement('img');
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            img.src = `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(url.origin)}`;
-            img.alt = `${titleText || caption.textContent}のサムネイル`;
-            img.tabIndex = -1;
-            img.addEventListener('error', () => {
-              img.remove();
-              figure.classList.add('card-media--no-image');
-            });
-            figure.appendChild(img);
-          } catch (error) {
-          }
-          figure.classList.add('card-media--no-image');
-
-        figure.appendChild(caption);
-        return figure;
-
-      extractHostname(href) {
-        try {
-          return new URL(href).hostname.replace(/^www\./, '');
-        } catch (error) {
-          return href;
-
-      computeTimeInfo(rawTime) {
-        if (!rawTime) return null;
-          return null;
-        const published = new Date(parsed);
-        return {
-          timestamp: published.getTime(),
-          iso: published.toISOString(),
-          absolute: this.absoluteTimeFormatter.format(published),
-          relative: this.formatRelativeTime(published.getTime() - Date.now())
+          return relativeFormatter.format(0, 'second');
+        };
+        const getImportanceLevel = (score) => {
+          if (!Number.isFinite(score)) return 'medium';
+          if (score >= 7) return 'high';
+          if (score >= 4) return 'medium';
+          return 'low';
         };
 
+        const buildThumbnailUrl = (href) => {
+          if (!href) return '';
+            return `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(url.origin)}`;
+            return '';
+        const cardRecords = [];
 
+        legacyPanels.forEach((panel) => {
+          const category = (panel.dataset.category || 'all').trim();
+          const cards = Array.from(panel.querySelectorAll('.enhanced-card'));
+          cards.forEach((card) => {
+            const originalIndex = cardRecords.length;
+            const link = card.querySelector('a');
+            const href = link?.href || '';
+            const titleText = link?.textContent?.trim() || card.querySelector('.card-title')?.textContent?.trim() || '記事詳細';
+            const sourceText = card.dataset.source || card.querySelector('.card-source')?.textContent?.trim() || '';
+            const summaryText = card.querySelector('.card-summary')?.textContent?.trim() || '';
+            const score = Number.parseFloat(card.dataset.score || '0');
+            const importance = getImportanceLevel(score);
 
-        window.addEventListener('resize', () => this.updateHeaderOffset());
-        }
-      }
+            const rawTime = card.dataset.time || '';
+            let publishedMs = Number.NaN;
+            let absoluteText = '';
+            let relativeText = '';
 
-      }
-
-          if (isActive && options.focus) {
-            button.focus();
-          }
-          panel.toggleAttribute('hidden', !isActive);
-      }
-
-        const cards = Array.from(container.querySelectorAll('.news-card'));
-      }
-        const panel = this.panels.get(this.activeTab);
-        if (!panel) return 0;
-        const cards = Array.from(panel.querySelectorAll('.news-card'));
-            show = (card.dataset.searchText || '').includes(searchTerm);
-          const count = panel ? panel.querySelectorAll('.news-card').length : 0;
-        }
-
-      }
-    }
-
-      if (document.querySelectorAll('.enhanced-card').length) {
-
-        if (!timeElement) return;
-        if (!rawTime) {
-          timeElement.textContent = '';
-          return;
-        }
-        const parsed = Date.parse(rawTime);
-        if (Number.isNaN(parsed)) {
-          timeElement.textContent = rawTime;
-          card.dataset.absoluteDate = rawTime;
-          return;
-        }
-        const publishedDate = new Date(parsed);
-        card.dataset.publishedMs = String(publishedDate.getTime());
-        const absolute = this.absoluteTimeFormatter.format(publishedDate);
-        const relative = this.formatRelativeTime(publishedDate.getTime() - Date.now());
-        timeElement.textContent = `${absolute} · ${relative}`;
-        timeElement.dateTime = publishedDate.toISOString();
-        timeElement.setAttribute('aria-label', `${absolute}（${relative}）`);
-        card.dataset.absoluteDate = absolute;
-        card.dataset.relativeTime = relative;
-      }
-      formatRelativeTime(diffMs) {
-        const absoluteMs = Math.abs(diffMs);
-        const units = [
-          { unit: 'year', ms: 1000 * 60 * 60 * 24 * 365 },
-          { unit: 'month', ms: 1000 * 60 * 60 * 24 * 30 },
-          { unit: 'week', ms: 1000 * 60 * 60 * 24 * 7 },
-          { unit: 'day', ms: 1000 * 60 * 60 * 24 },
-          { unit: 'hour', ms: 1000 * 60 * 60 },
-          { unit: 'minute', ms: 1000 * 60 },
-          { unit: 'second', ms: 1000 }
-        ];
-
-        for (const { unit, ms } of units) {
-          if (absoluteMs >= ms) {
-            const value = Math.round(diffMs / ms);
-            return this.relativeTimeFormatter.format(value, unit);
-          }
-        }
-        return this.relativeTimeFormatter.format(0, 'second');
-      }
-      bindEvents() {
-        this.tabButtons.forEach((button) => {
-          button.addEventListener('click', () => this.switchTab(button.dataset.tab));
-        });
-        if (this.tabList) {
-          this.tabList.addEventListener('keydown', (event) => this.handleTabKeyNavigation(event));
-    (() => {
-      'use strict';
-
-      const doc = document;
-      const root = doc.documentElement;
-
-      const themeToggle = doc.getElementById('themeToggle');
-      const searchInput = doc.getElementById('searchInput');
-      const importanceSelect = doc.getElementById('importanceFilter');
-      const freshnessSelect = doc.getElementById('freshnessFilter');
-      const sortSelect = doc.getElementById('sortBy');
-      const resultsRegion = doc.getElementById('resultsCount');
-
-      const decodeTextarea = doc.createElement('textarea');
-      const decodeEntities = (value) => {
-        if (!value || typeof value !== 'string') return '';
-        decodeTextarea.innerHTML = value;
-        return decodeTextarea.value;
-      };
-
-      const containsJapanese = (value) => /[぀-ヿ㐀-䶿一-鿿ｦ-ﾟ]/.test(value);
-      const looksLatin = (value) => /[A-Za-z]/.test(value);
-      const detectLanguage = (value) => {
-        if (!value) return 'und';
-        if (containsJapanese(value)) return 'ja';
-        if (looksLatin(value)) return 'en';
-        return 'und';
-      };
-      const languageLabel = (code) => {
-        if (code === 'ja') return '日本語';
-        if (code === 'en') return '英語';
-        return 'その他';
-      };
-
-      const translationEntries = [
-        ['https://www.reddit.com/r/artificial/comments/1mxcciv/catch_up_with_the_ai_industry_august_22_2025/', 'OpenAIとRetro Bioが細胞の若返りで成果を上げたこと、95%の企業がAI投資でROIを得られていないという報告、GoogleのGeminiが炭素排出量を98%削減したこと、AppleのLLMが自律的に学習するようになったことなどをまとめています。'],
-        ['https://venturebeat.com/ai/opencuas-open-source-computer-use-agents-rival-proprietary-models-from-openai-and-anthropic/', 'このオープンソースのフレームワークは、専有システムに匹敵する強力なコンピューター利用エージェントを構築するためのデータと学習手順を提供します。'],
-        ['https://techcrunch.com/2025/08/21/openai-lawyers-question-metas-role-in-elon-musks-97b-takeover-bid/', 'OpenAIによると、イーロン・マスクがChatGPTの買収提案（970億ドル規模）についてMetaのマーク・ザッカーバーグCEOと協議したとされています。'],
-        ['https://venturebeat.com/ai/meta-is-partnering-with-midjourney-and-will-license-its-technology-for-future-models-and-products/', '資金規模などの詳細は不明で、Midjourneyが以前発表したエンタープライズ向けAPI計画にどのような影響があるのかが注目されています。'],
-        ['https://aibusiness.com/health-care/most-read-generative-ai-powers-parkinson-s-drug-development-nasa-google-testing-ai-for-medical-care-in-space', 'Oracleがエンタープライズ向けソフト全体にOpenAIのGPT-5を統合したことや、トランプ政権の出資計画を背景にソフトバンクが20億ドルを投じインテル株が急伸したことなどをまとめたダイジェストです。'],
-        ['https://github.com/RijinRaju/octanedb', 'OctaneDBはPython向けのオープンソース・ベクトルデータベースで、高次元データの超高速な類似検索に特化しており、AI/MLやセマンティック検索、大規模ドキュメントや埋め込み検索に最適です。'],
-        ['https://venturebeat.com/ai/chan-zuckerberg-initiatives-rbio-uses-virtual-cells-to-train-ai-bypassing-lab-work/', 'Chan Zuckerberg Initiativeが発表したAIモデル「rBio」は、実験室での実験なしに細胞生物学をシミュレートし、新薬開発と疾患研究を加速させます。'],
-        ['https://www.reddit.com/r/MachineLearning/comments/1mwxfxj/d_using_llms_to_extract_knowledge_graphs_from/', '大規模言語モデルで表やスプレッドシート、データベースから構造化知識を抽出し、それをナレッジグラフへ変換して活用するアプローチについての議論です。'],
-        ['https://towardsdatascience.com/how-we-reduced-llm-cost-by-90-with-5-lines-of-code/', 'クリーンなコードの裏に潜む非効率を見直し、数行を修正しただけでLLMのコストを90%削減できた学びを共有しています。\nこの投稿はToward Data Science掲載の「5行のコードでLLMコストを90%削減した方法」の抄訳です。'],
-        ['https://x.com/ctgptlb/status/1960344324035752352/photo/1', '投稿本文が文字化けしているため、原文表示を参照してください。'],
-        ['https://x.com/heyrimsha/status/1960396245710856691/photo/1', 'Googleが69ページにわたるプロンプトエンジニアリング講座を公開しました。https://t.co/FidH18MDE1'],
-        ['https://x.com/EXM7777/status/1960356531935031679/photo/1', 'ChatGPTで常に人間味のある文章を書くためのシステムプロンプトが共有されています。https://t.co/hlP1cBLZEz'],
-        ['https://x.com/claudeai/status/1960387088836169931/video/1', 'Claude CodeのGitHub連携が一般提供となり、簡素化されたAPIや即利用できるテンプレート、@-claude以外のGitHubイベントにも対応しました。https://t.co/wiehAvbeoy'],
-        ['https://x.com/hakky_kazumasa/status/1960361401450627174/photo/1', '投稿本文が文字化けしているため、原文のまま掲載しています。'],
-        ['https://www.reddit.com/r/deeplearning/comments/1mxl35o/ai_daily_rundown_aug_22_2025_google_analyzes/', '2025年8月22日のAIイノベーションを日次でまとめたポッドキャストの案内で、Geminiの環境負荷分析やOpenAI買収の噂などが紹介されています。詳しくは https://podcasts.apple.com/... から視聴できます。'],
-        ['https://www.reddit.com/r/deeplearning/comments/1mwoq5c/ai_daily_news_aug_21_2025_google_doubles_down_on/', '2025年8月21日のAIニュースをまとめたポッドキャストで、Googleの“AIフォン”戦略やNASAとIBMによる太陽解析モデル、Geminiの家庭向け展開などを取り上げています。']
-      ];
-      const translationMap = new Map(translationEntries);
-
-      const tabButtons = [...doc.querySelectorAll('.tab-button')];
-      const panels = new Map();
-      const baseTabLabels = new Map();
-
-      tabButtons.forEach((button) => {
-        const tabName = button.dataset.tab;
-        if (!tabName) return;
-        const panel = doc.querySelector(`#panel-${tabName}`) || doc.querySelector(`.tab-panel[data-category="${tabName}"]`);
-        if (panel) {
-          panels.set(tabName, panel);
-          baseTabLabels.set(tabName, button.textContent.trim());
-        }
-      });
-
-      const cardsByTab = new Map();
-      const allCards = [];
-      panels.forEach((panel, tabName) => {
-        const cards = [...panel.querySelectorAll('.enhanced-card')];
-        cardsByTab.set(tabName, cards);
-        panel.dataset.totalCount = String(cards.length);
-        allCards.push(...cards);
-      });
-
-      const updateTabLabels = () => {
-        tabButtons.forEach((button) => {
-          const base = baseTabLabels.get(tabName) || button.textContent.trim();
-          const total = cardsByTab.get(tabName)?.length ?? 0;
-          button.textContent = `${base} (${total})`;
-      };
-      const formatAbsolute = (timestamp) => {
-        try {
-          return new Intl.DateTimeFormat('ja-JP', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-          }).format(new Date(timestamp));
-        } catch (error) {
-          return '';
-      };
-      const formatRelative = (timestamp) => {
-        const diffMs = Date.now() - timestamp;
-        if (diffMs < 0) return 'たった今';
-        const diffMinutes = Math.floor(diffMs / 60000);
-        if (diffMinutes < 1) return 'たった今';
-        if (diffMinutes < 60) return `${diffMinutes}分前`;
-        const diffHours = Math.floor(diffMinutes / 60);
-        if (diffHours < 24) return `${diffHours}時間前`;
-        const diffDays = Math.floor(diffHours / 24);
-        if (diffDays < 7) return `${diffDays}日前`;
-        return formatAbsolute(timestamp);
-      };
-
-      const applyTheme = (theme) => {
-        const normalized = theme === 'dark' ? 'dark' : 'light';
-        root.dataset.theme = normalized;
-        root.setAttribute('data-theme', normalized);
-        if (themeToggle) {
-          themeToggle.setAttribute('aria-pressed', normalized === 'dark' ? 'true' : 'false');
-          const icon = themeToggle.querySelector('.toggle-icon');
-          const label = themeToggle.querySelector('.toggle-label');
-          if (icon) icon.textContent = normalized === 'dark' ? '🌙' : '🌞';
-          if (label) label.textContent = normalized === 'dark' ? 'ダーク' : 'ライト';
-        }
-      };
-
-      const storedTheme = (() => {
-        try {
-          return localStorage.getItem('daily-ai-news-theme');
-        } catch (error) {
-          return null;
-        }
-      })();
-
-      if (storedTheme) {
-        applyTheme(storedTheme);
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        applyTheme('dark');
-      } else {
-        applyTheme(root.dataset.theme || 'light');
-      if (window.matchMedia) {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        if (mediaQuery.addEventListener) {
-          mediaQuery.addEventListener('change', (event) => {
-            let saved = null;
-            try {
-              saved = localStorage.getItem('daily-ai-news-theme');
-            } catch (error) {
-              saved = null;
-            }
-            if (!saved) {
-              applyTheme(event.matches ? 'dark' : 'light');
-            }
-        }
-      }
-
-      if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-          const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-          applyTheme(next);
-          try {
-            localStorage.setItem('daily-ai-news-theme', next);
-          } catch (error) {
-            // ignore storage errors
-          }
-      allCards.forEach((card) => {
-        const score = Number.parseFloat(card.dataset.score || '0');
-        const link = card.querySelector('.card-title a')?.href || '';
-        const sourceEl = card.querySelector('.card-source');
-        const titleText = card.querySelector('.card-title')?.textContent || '';
-        const sourceText = decodeEntities(sourceEl?.textContent || '');
-        const priority = card.querySelector('.card-priority');
-        const scoreNode = card.querySelector('.card-score');
-        const timeNode = card.querySelector('.card-time');
-        const importance = score >= 7 ? 'high' : score >= 4 ? 'medium' : 'low';
-        card.dataset.importanceLevel = importance;
-        card.classList.add(`importance-${importance}`);
-
-        if (priority) {
-          const label = { high: '高', medium: '中', low: '低' }[importance] || '中';
-          const formattedScore = Number.isFinite(score) ? score.toFixed(1) : '';
-          priority.textContent = formattedScore ? `重要度: ${label} ${formattedScore}` : `重要度: ${label}`;
-          priority.setAttribute('aria-label', priority.textContent);
-        }
-        if (scoreNode && Number.isFinite(score)) {
-          scoreNode.textContent = `スコア: ${score.toFixed(1)}`;
-        const originalSummary = decodeEntities(summaryEl?.textContent || '').trim();
-        const translation = translationMap.get(link) || '';
-        const originalLang = detectLanguage(originalSummary);
-        const translationLang = translation ? detectLanguage(translation) : originalLang;
-
-        if (summaryEl) {
-          summaryEl.innerHTML = '';
-          if (translation) {
-            const jaParagraph = doc.createElement('p');
-            jaParagraph.className = 'summary-text summary-ja';
-            jaParagraph.textContent = translation.trim();
-
-            const note = doc.createElement('span');
-            note.className = 'summary-note';
-            note.textContent = `翻訳: ${languageLabel(translationLang)} / 原文: ${languageLabel(originalLang)}`;
-            jaParagraph.appendChild(doc.createTextNode(' '));
-            jaParagraph.appendChild(note);
-
-            const originalParagraph = doc.createElement('p');
-            originalParagraph.className = 'summary-text summary-original';
-            if (originalLang !== 'und') {
-              originalParagraph.lang = originalLang;
-            }
-            originalParagraph.textContent = originalSummary;
-
-            summaryEl.append(jaParagraph, originalParagraph);
-            card.dataset.translationStatus = 'translated';
-          } else {
-            const paragraph = doc.createElement('p');
-            paragraph.className = 'summary-text summary-ja';
-            paragraph.textContent = originalSummary;
-
-            const note = doc.createElement('span');
-            note.className = 'summary-note';
-            note.textContent = `翻訳: 未提供 / 原文: ${languageLabel(originalLang)}`;
-            paragraph.appendChild(doc.createTextNode(' '));
-            paragraph.appendChild(note);
-            summaryEl.appendChild(paragraph);
-            card.dataset.translationStatus = 'original';
-          }
-        }
-          titleText,
-          translation,
-          originalSummary,
-        card.dataset.searchText = searchParts.join(' ').replace(/\s+/g, ' ').trim().toLowerCase();
-        card.dataset.sourceLabel = sourceText;
-        card.dataset.sourceSearch = sourceText.toLowerCase();
-        card.dataset.source = sourceText;
-
-        const timestamp = Date.parse(card.dataset.time || '');
-        if (!Number.isNaN(timestamp)) {
-          if (timeNode) {
-            let timeEl = timeNode;
-            if (timeNode.tagName.toLowerCase() !== 'time') {
-              timeEl = doc.createElement('time');
-              timeEl.className = timeNode.className;
-              timeNode.replaceWith(timeEl);
-            }
-            timeEl.dateTime = new Date(timestamp).toISOString();
-            timeEl.textContent = formatRelative(timestamp);
-            timeEl.setAttribute('aria-label', formatAbsolute(timestamp));
-          }
-      });
-
-      updateTabLabels();
-
-      const state = {
-        activeTab: tabButtons.find((button) => button.getAttribute('aria-selected') === 'true')?.dataset.tab || tabButtons[0]?.dataset.tab || null
-      };
-
-      const updateResultsCount = (visible) => {
-        if (!resultsRegion || !state.activeTab) return;
-        const base = baseTabLabels.get(state.activeTab) || state.activeTab;
-        const total = cardsByTab.get(state.activeTab)?.length ?? 0;
-        resultsRegion.textContent = `${base}：${visible}件表示中（全${total}件）`;
-      };
-
-      const applyFilters = () => {
-        if (!state.activeTab) return;
-        const cards = cardsByTab.get(state.activeTab) || [];
-        const query = (searchInput?.value || '').trim().toLowerCase();
-        const importance = importanceSelect?.value || 'all';
-        const freshness = freshnessSelect?.value || 'all';
-        const now = Date.now();
-
-        let visibleCount = 0;
-        cards.forEach((card) => {
-          let visible = true;
-          if (query) {
-            visible = (card.dataset.searchText || '').includes(query);
-          }
-          if (visible && importance !== 'all') {
-            const level = card.dataset.importanceLevel;
-            if (importance === 'high') visible = level === 'high';
-            else if (importance === 'medium') visible = level === 'medium';
-            else if (importance === 'low') visible = level === 'low';
-          }
-          if (visible && freshness !== 'all') {
-            const published = Number.parseFloat(card.dataset.publishedMs || '');
-            if (Number.isFinite(published)) {
-              const hours = (now - published) / 36e5;
-              if (freshness === '24h' && hours > 24) visible = false;
-              if (freshness === '72h' && hours > 72) visible = false;
-              if (freshness === '168h' && hours > 168) visible = false;
-            } else {
-              visible = false;
-            }
-          }
-          card.hidden = !visible;
-          card.classList.toggle('is-hidden', !visible);
-          card.setAttribute('aria-hidden', String(!visible));
-          if (visible) visibleCount += 1;
-        });
-
-        updateResultsCount(visibleCount);
-        return visibleCount;
-      };
-      const applySorting = () => {
-        if (!state.activeTab) return;
-        const sortBy = sortSelect?.value || 'score';
-        const panel = panels.get(state.activeTab);
-        if (!panel) return;
-        const cards = cardsByTab.get(state.activeTab) || [];
-        const sorted = [...cards].sort((a, b) => {
-          if (sortBy === 'score') {
-            return (Number.parseFloat(b.dataset.score || '0') || 0) - (Number.parseFloat(a.dataset.score || '0') || 0);
-          }
-          if (sortBy === 'time') {
-            return (Number.parseFloat(b.dataset.publishedMs || '0') || 0) - (Number.parseFloat(a.dataset.publishedMs || '0') || 0);
-          }
-          if (sortBy === 'source') {
-            return (a.dataset.sourceLabel || '').localeCompare(b.dataset.sourceLabel || '', 'ja');
-          }
-          return 0;
-        });
-        sorted.forEach((card) => panel.appendChild(card));
-        cardsByTab.set(state.activeTab, sorted);
-        applyFilters();
-      };
-
-      const setActiveTab = (tabName, { focus = true } = {}) => {
-        if (!tabName || !panels.has(tabName)) return;
-        state.activeTab = tabName;
-        tabButtons.forEach((button) => {
-          const isActive = button.dataset.tab === tabName;
-          button.classList.toggle('active', isActive);
-          button.setAttribute('aria-selected', isActive ? 'true' : 'false');
-          button.tabIndex = isActive ? 0 : -1;
-          if (isActive && focus) {
-            button.focus();
-          }
-        });
-        panels.forEach((panel, name) => {
-          const isActive = name === tabName;
-          panel.hidden = !isActive;
-          panel.setAttribute('aria-hidden', String(!isActive));
-        });
-        applySorting();
-      };
-
-      tabButtons.forEach((button, index) => {
-        button.addEventListener('click', () => setActiveTab(button.dataset.tab || null, { focus: false }));
-        button.addEventListener('keydown', (event) => {
-          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-          event.preventDefault();
-          const direction = event.key === 'ArrowRight' ? 1 : -1;
-          const nextIndex = (index + direction + tabButtons.length) % tabButtons.length;
-          const nextButton = tabButtons[nextIndex];
-          setActiveTab(nextButton.dataset.tab || null);
-      });
-      const swipeArea = doc.querySelector('main');
-      if (swipeArea && tabButtons.length > 1) {
-        swipeArea.addEventListener('touchstart', (event) => {
-        swipeArea.addEventListener('touchend', (event) => {
-            const currentIndex = tabButtons.findIndex((button) => button.dataset.tab === state.activeTab);
-            const nextIndex = Math.min(Math.max(currentIndex + direction, 0), tabButtons.length - 1);
-            const nextButton = tabButtons[nextIndex];
-            if (nextButton) {
-              setActiveTab(nextButton.dataset.tab || null, { focus: false });
-              try {
-                nextButton.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-              } catch (error) {
-                // ignore scroll errors
+            if (rawTime) {
+              const parsed = Date.parse(rawTime);
+              if (!Number.isNaN(parsed)) {
+                publishedMs = parsed;
+                absoluteText = absoluteFormatter.format(new Date(parsed));
+                relativeText = toRelative(parsed - Date.now());
               }
-        }, { passive: true });
-      searchInput?.addEventListener('input', () => applyFilters());
-      importanceSelect?.addEventListener('change', () => applyFilters());
-      freshnessSelect?.addEventListener('change', () => applyFilters());
-      sortSelect?.addEventListener('change', () => applySorting());
+            }
+            card.innerHTML = '';
+            card.className = 'news-card';
+            card.setAttribute('role', 'listitem');
+            card.dataset.category = category;
+            card.dataset.importance = importance;
+            card.dataset.score = Number.isFinite(score) ? String(score) : '0';
+            card.dataset.publishedMs = Number.isFinite(publishedMs) ? String(publishedMs) : '';
+            card.dataset.searchText = [titleText, summaryText, sourceText].join(' ').replace(/\s+/g, ' ').toLowerCase();
+            card.dataset.originalIndex = String(originalIndex);
 
-      setActiveTab(state.activeTab, { focus: false });
-    })();
-      getImportanceLevel(score) {
-        if (!Number.isFinite(score)) return 'medium';
+            const titleId = `news-card-title-${originalIndex + 1}`;
+            card.setAttribute('aria-labelledby', titleId);
+
+            const cardLink = document.createElement('a');
+            cardLink.className = 'news-card__link';
+            cardLink.href = href || '#';
+            cardLink.target = href ? '_blank' : '_self';
+            cardLink.rel = 'noopener';
+            cardLink.setAttribute('aria-label', `${titleText}の原文を開く`);
+
+            const container = document.createElement('div');
+            container.className = 'news-card__container';
+
+            const media = document.createElement('figure');
+            media.className = 'news-card__media';
+            const thumbnailUrl = buildThumbnailUrl(href);
+            if (thumbnailUrl) {
+              const img = document.createElement('img');
+              img.src = thumbnailUrl;
+              img.loading = 'lazy';
+              img.decoding = 'async';
+              img.alt = `${sourceText || titleText}のサムネイル`;
+              media.appendChild(img);
+            }
+            const caption = document.createElement('figcaption');
+            caption.textContent = sourceText || '情報源';
+            media.appendChild(caption);
+            const body = document.createElement('div');
+            body.className = 'news-card__body';
+            const header = document.createElement('header');
+            header.className = 'news-card__header';
+            if (importance) {
+              const badge = document.createElement('span');
+              badge.className = `news-card__badge badge-${importance}`;
+              badge.textContent = importance === 'high' ? '重要度 高' : importance === 'medium' ? '重要度 中' : '重要度 低';
+              header.appendChild(badge);
+            }
+            const title = document.createElement('h3');
+            title.className = 'news-card__title';
+            title.id = titleId;
+            title.textContent = titleText;
+            header.appendChild(title);
+            body.appendChild(header);
+            if (summaryText) {
+              const summary = document.createElement('p');
+              summary.className = 'news-card__summary';
+              summary.textContent = summaryText;
+              body.appendChild(summary);
+            }
+            const meta = document.createElement('div');
+            meta.className = 'news-card__meta';
+            if (sourceText) {
+              const source = document.createElement('span');
+              source.className = 'news-card__meta-item';
+              source.textContent = sourceText;
+              meta.appendChild(source);
+            }
+            if (Number.isFinite(score)) {
+              const scoreEl = document.createElement('span');
+              scoreEl.className = 'news-card__meta-item';
+              scoreEl.textContent = `スコア: ${score.toFixed(1)}`;
+              meta.appendChild(scoreEl);
+
+            if (Number.isFinite(publishedMs)) {
+              const timeItem = document.createElement('time');
+              timeItem.className = 'news-card__meta-item';
+              timeItem.dateTime = new Date(publishedMs).toISOString();
+              timeItem.textContent = `${absoluteText} · ${relativeText}`;
+              timeItem.setAttribute('aria-label', `${absoluteText}（${relativeText}）`);
+              meta.appendChild(timeItem);
+            body.appendChild(meta);
+
+            const cta = document.createElement('span');
+            cta.className = 'news-card__cta';
+            cta.textContent = '原文リンクを開く';
+            body.appendChild(cta);
+
+            container.append(media, body);
+            cardLink.appendChild(container);
+            card.appendChild(cardLink);
+
+            if (!thumbnailUrl) {
+              card.classList.add('news-card--no-thumbnail');
+            }
+
+            newsGrid.appendChild(card);
+
+            cardRecords.push({
+              element: card,
+              category,
+              score,
+              importance,
+              publishedMs,
+              searchText: card.dataset.searchText,
+              originalIndex
+            });
+          });
+        });
+
+        legacyPanels.forEach((panel) => panel.remove());
+
+        const state = {
+          category: 'all',
+          keywords: [],
+          currentInput: '',
+          sort: sortSelect?.value || 'importance'
+        };
+
+        const applyTheme = (theme) => {
+          const next = theme === 'dark' ? 'dark' : 'light';
+          root.dataset.theme = next;
+          if (themeToggle) {
+            themeToggle.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
+            const icon = themeToggle.querySelector('.toggle-icon');
+            const label = themeToggle.querySelector('.toggle-label');
+            if (icon) icon.textContent = next === 'dark' ? '🌙' : '🌞';
+            if (label) label.textContent = next === 'dark' ? 'ダーク' : 'ライト';
+          }
+        };
+
+        const storedTheme = (() => {
+            return localStorage.getItem('daily-ai-news-theme');
+            return null;
+        })();
+
+        if (storedTheme) {
+          applyTheme(storedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          applyTheme('dark');
+
+        const handleThemeToggle = () => {
+          const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          applyTheme(nextTheme);
+          try {
+            localStorage.setItem('daily-ai-news-theme', nextTheme);
+          } catch (error) {
+            // ignore
+        };
+        themeToggle?.addEventListener('click', handleThemeToggle);
+        themeToggle?.addEventListener('keydown', (event) => {
+          if (event.key === ' ' || event.key === 'Enter') {
+            event.preventDefault();
+            handleThemeToggle();
+        });
+
+        const renderTags = () => {
+          if (!searchTagsContainer) return;
+          searchTagsContainer.textContent = '';
+          if (state.keywords.length === 0) {
+            const placeholder = document.createElement('span');
+            placeholder.className = 'search-tags__placeholder';
+            placeholder.setAttribute('role', 'listitem');
+            placeholder.textContent = 'キーワードを追加するとタグとして表示されます';
+            searchTagsContainer.appendChild(placeholder);
+            return;
+          }
+
+          state.keywords.forEach((keyword, index) => {
+            const tag = document.createElement('span');
+            tag.className = 'search-tag';
+            tag.setAttribute('role', 'listitem');
+            tag.textContent = keyword;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'search-tag__remove';
+            removeButton.setAttribute('aria-label', `検索タグ「${keyword}」を削除`);
+            removeButton.innerHTML = '<span aria-hidden="true">×</span>';
+            removeButton.addEventListener('click', () => {
+              state.keywords.splice(index, 1);
+              renderTags();
+              applyFilters();
+            });
+
+            removeButton.addEventListener('keydown', (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                state.keywords.splice(index, 1);
+                renderTags();
+                applyFilters();
+              }
+            });
+
+            tag.appendChild(removeButton);
+            searchTagsContainer.appendChild(tag);
+          });
+        };
+
+        const applyFilters = () => {
+          const activeKeywords = [...state.keywords, state.currentInput].filter(Boolean);
+          const importanceFilter = importanceSelect?.value || 'all';
+          const freshnessFilter = freshnessSelect?.value || 'all';
+          const now = Date.now();
+
+          let visibleCount = 0;
+          let totalInCategory = 0;
+
+          cardRecords.forEach((record) => {
+            const { element } = record;
+            const recordCategory = record.category || element.dataset.category || 'all';
+            const matchesCategory = state.category === 'all' || recordCategory === state.category;
+
+            if (matchesCategory) {
+              totalInCategory += 1;
+            }
+
+            let visible = matchesCategory;
+
+            if (visible && importanceFilter !== 'all') {
+              visible = record.importance === importanceFilter;
+            }
+
+            if (visible && freshnessFilter !== 'all') {
+              if (Number.isFinite(record.publishedMs)) {
+                const hours = (now - record.publishedMs) / 36e5;
+                if (freshnessFilter === '24h' && hours > 24) visible = false;
+                if (freshnessFilter === '72h' && hours > 72) visible = false;
+                if (freshnessFilter === '168h' && hours > 168) visible = false;
+              } else {
+                visible = false;
+              }
+
+            if (visible && activeKeywords.length) {
+              const text = record.searchText;
+              visible = activeKeywords.every((keyword) => text.includes(keyword));
+            }
+
+            element.hidden = !visible;
+            element.classList.toggle('is-hidden', !visible);
+            element.setAttribute('aria-hidden', String(!visible));
+
+            if (visible) {
+              visibleCount += 1;
+            }
+          });
+
+          const total = state.category === 'all' ? cardRecords.length : totalInCategory;
+
+          if (resultsRegion) {
+            const label = labelByCategory.get(state.category) || 'すべて';
+            resultsRegion.textContent = `${label}：${visibleCount}件表示中（全${total}件）`;
+        };
+
+        const sortCards = () => {
+          const sortBy = state.sort;
+          const sorted = [...cardRecords].sort((a, b) => {
+            if (sortBy === 'importance') {
+              return (Number.isFinite(b.score) ? b.score : -Infinity) - (Number.isFinite(a.score) ? a.score : -Infinity);
+            }
+            if (sortBy === 'freshness') {
+              return (Number.isFinite(b.publishedMs) ? b.publishedMs : -Infinity) - (Number.isFinite(a.publishedMs) ? a.publishedMs : -Infinity);
+            }
+            if (sortBy === 'time') {
+              return (Number.isFinite(a.publishedMs) ? a.publishedMs : Infinity) - (Number.isFinite(b.publishedMs) ? b.publishedMs : Infinity);
+            }
+            return a.originalIndex - b.originalIndex;
+          });
+
+          sorted.forEach((record) => {
+            newsGrid.appendChild(record.element);
+          });
+        };
+
+        const applySortAndFilter = () => {
+          sortCards();
+          applyFilters();
+        };
+
+        categoryButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const category = button.dataset.category || 'all';
+            state.category = category;
+            categoryButtons.forEach((target) => {
+              const isActive = target === button;
+              target.classList.toggle('is-active', isActive);
+              target.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+            applySortAndFilter();
+          });
+
+          button.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              button.click();
+            }
+          });
+        searchForm?.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const value = searchInput?.value.trim();
+          if (!value) return;
+          const normalized = value.toLowerCase();
+          if (!state.keywords.includes(normalized)) {
+            state.keywords.push(normalized);
+          if (searchInput) {
+            searchInput.value = '';
+          state.currentInput = '';
+          renderTags();
+          applySortAndFilter();
+
+        searchInput?.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            searchForm?.dispatchEvent(new Event('submit', { cancelable: true }));
+          }
+          if (event.key === 'Backspace' && !searchInput.value && state.keywords.length) {
+            state.keywords.pop();
+            renderTags();
+            applySortAndFilter();
+
+        searchInput?.addEventListener('input', () => {
+          state.currentInput = (searchInput.value || '').trim().toLowerCase();
+          applyFilters();
+        importanceSelect?.addEventListener('change', applyFilters);
+        freshnessSelect?.addEventListener('change', applyFilters);
+
+        sortSelect?.addEventListener('change', (event) => {
+          state.sort = event.target.value;
+          applySortAndFilter();
+        });
+
+        applySortAndFilter();
+        renderTags();
+    </script>
+
         if (score >= 7) return 'high';
         if (score >= 4) return 'medium';
         return 'low';
