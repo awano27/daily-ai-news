@@ -303,6 +303,26 @@ def looks_japanese(s: str) -> bool:
     # Hiragana, Katakana, CJK
     return re.search(r"[\u3040-\u30ff\u3400-\u9fff]", s) is not None
 
+
+def detect_language_code(text: str) -> str:
+    """Return a lightweight language code for display purposes."""
+    if not text:
+        return "und"
+    if looks_japanese(text):
+        return "ja"
+    if re.search(r"[A-Za-z]", text):
+        return "en"
+    return "und"
+
+
+def language_label(code: str) -> str:
+    """Map simple language codes to human readable Japanese labels."""
+    return {
+        "ja": "日本語",
+        "en": "英語",
+        "und": "その他"
+    }.get(code, "その他")
+
 class JaTranslator:
     def __init__(self, engine="google"):
         self.engine = engine
@@ -867,7 +887,7 @@ CARD_TMPL = """
     <p class="card-summary">{summary}</p>
     <div class="chips">
       <span class="chip">{source_name}</span>
-      <span class="chip ghost">翻訳: {summary_lang}</span>
+      <span class="chip ghost">{translation_badge}</span>
       <span class="chip ghost">{ago}</span>
     </div>
   </div>
@@ -1292,11 +1312,11 @@ def build_cards(items, translator):
     """改善版カード生成関数"""
     cards = []
     for it in items[:MAX_ITEMS_PER_CATEGORY]:
-        title = it.get("title") or "(no title)"
+        title = html.unescape(it.get("title") or "(no title)")
         link = it.get("link") or "#"
-        src = it.get("_source") or ""
+        src = html.unescape(it.get("_source") or "")
         dt = it.get("_dt") or NOW
-        raw_summary = it.get("_summary") or ""
+        raw_summary = html.unescape(it.get("_summary") or "")
         importance_score = it.get("_importance_score", 50)
 
         # 重要度クラス決定
@@ -1362,12 +1382,19 @@ def build_cards(items, translator):
         # ソースタイプ判定
         source_type_class = "official" if any(word in src.lower() for word in ['openai', 'anthropic', 'google', 'microsoft', 'meta']) else "news"
 
+        original_lang_code = detect_language_code(raw_summary)
+        translated_lang_code = detect_language_code(ja_summary if did_translate else raw_summary)
+        if did_translate:
+            translation_badge = f"翻訳: {language_label(translated_lang_code)} / 原文: {language_label(original_lang_code)}"
+        else:
+            translation_badge = f"原文: {language_label(original_lang_code)}"
+
         cards.append(CARD_TMPL.format(
             link=html.escape(link, quote=True),
             title=html.escape(title, quote=False),
             summary=html.escape(final_summary, quote=False),
             source_name=html.escape(src, quote=False),
-            summary_lang=("日本語" if did_translate else "原文"),
+            translation_badge=translation_badge,
             ago=ago_str(dt)
         ))
 
