@@ -40,20 +40,61 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Restore translation cache
+        uses: actions/cache@v4
+        with:
+          path: _cache
+          key: translation-cache-${{ github.run_id }}
+          restore-keys: |
+            translation-cache-
+
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt || pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0 python-dateutil>=2.8.0
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || {
+            echo "⚠️ Failed to install from requirements.txt, using fallback..."
+            pip install feedparser pyyaml deep-translator==1.11.4 beautifulsoup4 requests google-generativeai>=0.3.0 python-dateutil>=2.8.0
+          }
+
+      - name: Verify CSV accessibility
+        timeout-minutes: 2
+        run: |
+          echo "🔍 Testing CSV accessibility..."
+          if curl -s -L -A "Mozilla/5.0" --connect-timeout 30 --max-time 60 "$X_POSTS_CSV" | head -1 > /dev/null; then
+            echo "✅ CSV is accessible"
+          else
+            echo "⚠️ CSV may be temporarily unavailable, but continuing..."
+          fi
 
       - name: Build AI News Site from CSV
-        timeout-minutes: 10
+        timeout-minutes: 15
+        continue-on-error: false
         run: |
           set -e
           echo "Building AI News site (CSV: $X_POSTS_CSV)"
-          python build.py
+
+          # Run build with retry logic
+          max_retries=2
+          retry_count=0
+          while [ $retry_count -lt $max_retries ]; do
+            if python build.py; then
+              echo "✅ Build completed successfully"
+              break
+            else
+              retry_count=$((retry_count + 1))
+              if [ $retry_count -lt $max_retries ]; then
+                echo "⚠️ Build failed, retrying ($retry_count/$max_retries)..."
+                sleep 10
+              else
+                echo "❌ Build failed after $max_retries attempts"
+                exit 1
+              fi
+            fi
+          done
 
           echo "Generating enhanced dashboard landing page..."
           if python generate_comprehensive_dashboard.py; then
-            echo "Dashboard generation completed."
+            echo "✅ Dashboard generation completed."
           else
             echo "⚠️ Dashboard generation failed; the classic layout will be used." >&2
           fi
@@ -66,9 +107,16 @@ jobs:
 
           if [ -f "index.html" ]; then
             file_size=$(stat -c%s index.html 2>/dev/null || stat -f%z index.html 2>/dev/null || echo 0)
-            echo "index.html generated (${file_size} bytes)"
+            echo "✅ index.html generated (${file_size} bytes)"
+
+            # Verify HTML is valid
+            if grep -q "<html" index.html && grep -q "</html>" index.html; then
+              echo "✅ HTML structure validated"
+            else
+              echo "⚠️ HTML structure may be incomplete"
+            fi
           else
-            echo "index.html not generated!"
+            echo "❌ index.html not generated!"
             exit 1
           fi
       - name: Prepare outputs
@@ -105,6 +153,7 @@ jobs:
           fi
 
       - name: Deploy to public repository
+        id: deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
@@ -117,10 +166,24 @@ jobs:
           keep_files: false
           enable_jekyll: false
 
-      - name: Summary
+      - name: Verify deployment
+        if: success()
         run: |
-          echo "🎉 Deployment completed!"
+          echo "✅ Deployment completed successfully!"
           echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+          echo "📊 Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Report failure
+        if: failure()
+        run: |
+          echo "❌ Workflow failed!"
+          echo "📝 Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "Common issues:"
+          echo "  - Translation API rate limits"
+          echo "  - CSV file temporarily unavailable"
+          echo "  - Network connectivity issues"
+          echo "  - Deployment token expired"
 
 
 
