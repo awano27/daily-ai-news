@@ -129,6 +129,45 @@ jobs:
           touch outputs/.nojekyll
           ls -la outputs
 
+      - name: Verify PERSONAL_TOKEN access
+        env:
+          TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        run: |
+          echo "🔐 Verifying PERSONAL_TOKEN permissions..."
+
+          if [ -z "$TOKEN" ]; then
+            echo "❌ PERSONAL_TOKEN is not set!"
+            echo "Please add PERSONAL_TOKEN to repository secrets:"
+            echo "  Settings > Secrets and variables > Actions > New repository secret"
+            exit 1
+          fi
+
+          # Test token by checking access to target repo
+          response=$(curl -s -w "%{http_code}" -o /tmp/token_test.json \
+            -H "Authorization: token $TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/awano27/daily-ai-news-pages")
+
+          if [ "$response" = "200" ]; then
+            echo "✅ PERSONAL_TOKEN is valid and has access to target repository"
+          elif [ "$response" = "401" ]; then
+            echo "❌ PERSONAL_TOKEN is invalid or expired!"
+            echo "Please regenerate your Personal Access Token:"
+            echo "  GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)"
+            echo "  Required scopes: repo (Full control of private repositories)"
+            exit 1
+          elif [ "$response" = "404" ]; then
+            echo "❌ PERSONAL_TOKEN does not have access to awano27/daily-ai-news-pages"
+            echo "Please check:"
+            echo "  1. Token has 'repo' scope"
+            echo "  2. Token owner has write access to target repository"
+            exit 1
+          else
+            echo "⚠️ Unexpected response code: $response"
+            cat /tmp/token_test.json
+            exit 1
+          fi
+
       - name: Debug X CSV structure
         env:
           X_POSTS_CSV: ${{ env.X_POSTS_CSV }}
@@ -155,6 +194,7 @@ jobs:
       - name: Deploy to public repository
         id: deploy
         uses: peaceiris/actions-gh-pages@v4
+        continue-on-error: false
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           external_repository: awano27/daily-ai-news-pages
@@ -165,6 +205,31 @@ jobs:
           commit_message: 'Deploy from CSV: ${{ github.sha }}'
           keep_files: false
           enable_jekyll: false
+          force_orphan: false
+
+      - name: Verify deployment was committed
+        run: |
+          echo "🔍 Verifying deployment to awano27/daily-ai-news-pages..."
+          sleep 5
+
+          # Check if the deployment actually happened by fetching the latest commit
+          latest_commit=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/awano27/daily-ai-news-pages/commits/gh-pages" \
+            | grep '"sha"' | head -1 | cut -d'"' -f4)
+
+          if [ -n "$latest_commit" ]; then
+            echo "✅ Latest commit in target repo: $latest_commit"
+
+            # Check commit timestamp
+            commit_date=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/awano27/daily-ai-news-pages/commits/$latest_commit" \
+              | grep '"date"' | head -1)
+            echo "📅 Commit date: $commit_date"
+          else
+            echo "❌ Could not verify deployment commit!"
+            echo "⚠️ This might indicate a PERSONAL_TOKEN issue or permissions problem"
+            exit 1
+          fi
 
       - name: Verify deployment
         if: success()
