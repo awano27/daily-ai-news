@@ -92,12 +92,14 @@ jobs:
             fi
           done
 
-          echo "Generating enhanced dashboard landing page..."
-          if python generate_comprehensive_dashboard.py; then
-            echo "✅ Dashboard generation completed."
-          else
-            echo "⚠️ Dashboard generation failed; the classic layout will be used." >&2
-          fi
+          # Note: generate_comprehensive_dashboard.py is disabled to preserve modern_index_template.html format
+          # If you want the dashboard format, uncomment the lines below:
+          # echo "Generating enhanced dashboard landing page..."
+          # if python generate_comprehensive_dashboard.py; then
+          #   echo "✅ Dashboard generation completed."
+          # else
+          #   echo "⚠️ Dashboard generation failed; the classic layout will be used." >&2
+          # fi
 
           echo "Verifying build output..."
           if [ ! -f "index.html" ] && [ -f "news_detail.html" ]; then
