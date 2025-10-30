@@ -139,6 +139,7 @@ jobs:
 
           cp -v index.html outputs/
           cp -v style.css outputs/
+          cp -v style-modern.css outputs/
           cp -v news_detail.html outputs/ || true
           touch outputs/.nojekyll
 
@@ -155,6 +156,19 @@ jobs:
             fi
           else
             echo "❌ style.css not copied to outputs!"
+            exit 1
+          fi
+
+          # Verify style-modern.css (should be 872 lines)
+          if [ -f "outputs/style-modern.css" ]; then
+            modern_lines=$(wc -l < outputs/style-modern.css)
+            echo "✅ outputs/style-modern.css: ${modern_lines} lines"
+            if [ "$modern_lines" -lt 800 ]; then
+              echo "❌ ERROR: style-modern.css too small! Expected ~872 lines, got ${modern_lines}"
+              exit 1
+            fi
+          else
+            echo "❌ style-modern.css not copied to outputs!"
             exit 1
           fi
 

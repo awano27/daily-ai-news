@@ -4,626 +4,515 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>%%PAGE_TITLE%%</title>
+  <meta name="description" content="Daily AI News は AI 動向を俯瞰できる日本語ダイジェストです。最終更新：%%UPDATED_FULL%%、対象期間：過去 %%LOOKBACK_HOURS%% 時間。"/>
+  <meta name="color-scheme" content="light dark"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style-modern.css"/>
   <!-- Last update: %%GENERATED_AT%% -->
 </head>
 <body>
   <a class="skip-link" href="#mainContent">本文へスキップ</a>
-  <header class="site-header" role="banner">
+
+  <header class="site-header" id="top" role="banner">
     <div class="header-inner">
       <div class="brand-area" aria-label="Daily AI News">
-        <div class="brand-logo" aria-hidden="true">📰</div>
+        <span class="brand-logo" aria-hidden="true">📰</span>
         <div class="brand-copy">
           <span class="brand-name">Daily AI News</span>
           <span class="brand-tagline">AIの最前線を日本語でスピーディに把握</span>
         </div>
       </div>
-      <div class="header-actions">
-        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="テーマを切り替え">
-          <span class="toggle-icon" aria-hidden="true">🌞</span>
-          <span class="toggle-label">ライト</span>
-        </button>
-      </div>
+
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <ul class="site-nav__list">
+          <li><a href="#insights">指標</a></li>
+          <li><a href="#filters">検索</a></li>
+          <li><a href="#newsResults">最新記事</a></li>
+          <li><a href="#aboutSection">サイトについて</a></li>
+          <li><a href="#contactSection">お問い合わせ</a></li>
+        </ul>
+      </nav>
+
+      <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="テーマを切り替え">
+        <span class="theme-toggle__icon" aria-hidden="true">🌞</span>
+        <span class="theme-toggle__label">ライト</span>
+      </button>
     </div>
   </header>
 
-  <main id="mainContent">
-    <h1 class="page-title">今日の最新AI情報</h1>
-    <p class="lead">
-      エンジニア関連度スコアでランキング表示。実装可能性・技術的価値・学習効果を重視した自動ソート。
-      豊富な情報量を維持しつつ、重要度で整理表示。
-    </p>
-
-    <section class="status-overview" aria-label="更新状況と主要指標">
-      <div class="status-meta" aria-live="polite">
-        <span class="status-updated">最終更新：%%UPDATED_FULL%%</span>
-        <span class="status-window">対象期間：過去%%LOOKBACK_HOURS%%時間</span>
-      </div>
-
-      <div class="kpi-grid metrics-grid" aria-label="主要指標">
-      <article class="kpi-card metric-card" role="group" aria-label="総記事数">
-        <div class="kpi-value metric-value">%%TOTAL_ITEMS%%件</div>
-        <div class="kpi-label metric-label">総記事数</div>
-        <div class="kpi-note metric-note">情報量維持</div>
-      </article>
-      <article class="kpi-card metric-card" role="group" aria-label="高優先度記事">
-        <div class="kpi-value metric-value">%%HIGH_PRIORITY_ITEMS%%件</div>
-        <div class="kpi-label metric-label">高優先度記事</div>
-        <div class="kpi-note metric-note">スコア7.0+</div>
-      </article>
-      <article class="kpi-card metric-card" role="group" aria-label="情報源">
-        <div class="kpi-value metric-value">%%SOURCE_COUNT%%個</div>
-        <div class="kpi-label metric-label">情報源</div>
-        <div class="kpi-note metric-note">多角的収集</div>
-      </article>
-      <article class="kpi-card metric-card" role="group" aria-label="収集範囲">
-        <div class="kpi-value metric-value">%%LOOKBACK_LABEL%%</div>
-        <div class="kpi-label metric-label">収集範囲</div>
-        <div class="kpi-note metric-note">最新性重視</div>
-      </article>
-      </div>
+  <main id="mainContent" class="page-content">
+    <section class="hero" aria-labelledby="heroTitle">
+      <h1 id="heroTitle">今日の最新AI情報</h1>
+      <p class="lead">
+        世界の生成AI・機械学習に関する公式発表、資金調達、研究論文、開発者コミュニティの投稿を横断的に収集。
+        重要度と鮮度で優先順位付けし、日本語サマリーと原文リンクをセットでお届けします。
+      </p>
+      <dl class="hero-meta">
+        <div>
+          <dt>最終更新</dt>
+          <dd>%%UPDATED_FULL%%</dd>
+        </div>
+        <div>
+          <dt>対象期間</dt>
+          <dd>過去 %%LOOKBACK_HOURS%% 時間</dd>
+        </div>
+      </dl>
     </section>
 
-    <section class="filters filter-bar" aria-label="記事フィルター">
+    <section id="insights" class="status-overview" aria-labelledby="insightTitle">
+      <div class="section-header">
+        <h2 id="insightTitle">主要指標</h2>
+        <p class="section-note">記事件数・注目度・情報源など、ダッシュボード全体のスナップショットです。</p>
+      </div>
+      <div class="metrics-grid" role="list">
+        <article class="metric-card" role="listitem">
+          <span class="metric-card__value">%%TOTAL_ITEMS%%件</span>
+          <span class="metric-card__label">掲載記事数</span>
+          <span class="metric-card__note">全カテゴリ合計</span>
+        </article>
+        <article class="metric-card" role="listitem">
+          <span class="metric-card__value">%%HIGH_PRIORITY_ITEMS%%件</span>
+          <span class="metric-card__label">重要度 高</span>
+          <span class="metric-card__note">スコア 7.0 以上</span>
+        </article>
+        <article class="metric-card" role="listitem">
+          <span class="metric-card__value">%%SOURCE_COUNT%%件</span>
+          <span class="metric-card__label">情報源</span>
+          <span class="metric-card__note">多角的なソース</span>
+        </article>
+        <article class="metric-card" role="listitem">
+          <span class="metric-card__value">%%LOOKBACK_LABEL%%</span>
+          <span class="metric-card__label">収集範囲</span>
+          <span class="metric-card__note">最新性を重視</span>
+        </article>
+      </div>
+      <ul class="metric-summary">
+        <li>ビジネス：%%BUSINESS_COUNT%%件</li>
+        <li>ツール：%%TOOLS_COUNT%%件</li>
+        <li>SNS / 論文：%%POSTS_COUNT%%件</li>
+      </ul>
+    </section>
+
+    <section id="filters" class="filter-panel" aria-labelledby="filterTitle">
+      <div class="section-header">
+        <h2 id="filterTitle">検索とフィルタ</h2>
+        <p class="section-note">キーワードと複数フィルタを組み合わせて、目的の記事を素早く見つけましょう。</p>
+      </div>
       <form class="filters-form" role="search">
-        <div class="filter-group">
+        <div class="filter-field filter-field--search">
           <label class="filter-label" for="searchInput">キーワード検索</label>
-          <input type="search" id="searchInput" class="filter-input" placeholder="例：LLM、OpenAI、ビジネス" aria-label="記事を検索"/>
+          <input type="search" id="searchInput" class="filter-input" autocomplete="off" placeholder="例：LLM、OpenAI、Gemini、論文など" aria-describedby="searchHelp"/>
+          <p id="searchHelp" class="filter-help">Enter キーでキーワードを追加できます。</p>
           <div id="searchTags" class="search-tags" aria-live="polite" role="list"></div>
         </div>
-        <div class="filter-group">
+
+        <div class="filter-field">
           <label class="filter-label" for="importanceFilter">重要度</label>
-          <select id="importanceFilter" class="filter-select" aria-label="重要度で絞り込み">
+          <select id="importanceFilter" class="filter-select" title="記事の重要度を基準に絞り込みます">
             <option value="all">すべて</option>
             <option value="high">高 (7.0+)</option>
             <option value="medium">中 (4.0-6.9)</option>
             <option value="low">低 (0-3.9)</option>
           </select>
         </div>
-        <div class="filter-group">
+
+        <div class="filter-field">
           <label class="filter-label" for="freshnessFilter">鮮度</label>
-          <select id="freshnessFilter" class="filter-select" aria-label="掲載からの時間で絞り込み">
+          <select id="freshnessFilter" class="filter-select" title="掲載からの経過時間で絞り込みます">
             <option value="all">すべての期間</option>
             <option value="24h">24時間以内</option>
             <option value="72h">3日以内</option>
             <option value="168h">7日以内</option>
           </select>
         </div>
-        <div class="filter-group">
+
+        <div class="filter-field">
           <label class="filter-label" for="sortBy">並び順</label>
-          <select id="sortBy" class="filter-select" aria-label="記事の並び順を選択">
+          <select id="sortBy" class="filter-select" title="表示順序を変更します">
             <option value="importance">重要度順</option>
             <option value="freshness">鮮度順</option>
-            <option value="time">時間順</option>
-            <option value="none">ソートなし</option>
+            <option value="time">公開が新しい順</option>
+            <option value="source">情報源順</option>
+            <option value="original">元の順序</option>
           </select>
         </div>
+
+        <div class="filter-actions">
+          <button type="button" id="clearFilters" class="button button--secondary" disabled>フィルタをリセット</button>
+        </div>
       </form>
-      <div class="filter-results" id="resultsCount" aria-live="polite"></div>
+
+      <div class="category-switch" role="group" aria-label="カテゴリを選択">
+        <button type="button" class="category-switch__button is-active" data-category="all" aria-pressed="true">すべて</button>
+        <button type="button" class="category-switch__button" data-category="business" aria-pressed="false">ビジネス</button>
+        <button type="button" class="category-switch__button" data-category="tools" aria-pressed="false">ツール</button>
+        <button type="button" class="category-switch__button" data-category="posts" aria-pressed="false">SNS / 論文</button>
+      </div>
+
+      <p id="resultsCount" class="results-summary" role="status" aria-live="polite">
+        すべて：%%RESULT_COUNT%%件表示（全%%RESULT_COUNT%%件）
+      </p>
     </section>
 
-    <section class="category-filter" aria-label="カテゴリフィルター">
-      <div class="category-filter__group" role="group" aria-label="カテゴリを選択">
-        <button type="button" class="category-button is-active" data-category="all" aria-pressed="true" aria-label="すべてのニュースを表示">
-          <span aria-hidden="true">🌐</span>
-          <span class="category-button__label">すべて</span>
-        </button>
-        <button type="button" class="category-button" data-category="business" aria-pressed="false" aria-label="ビジネスニュースのみを表示">
-          <span aria-hidden="true">📈</span>
-          <span class="category-button__label">ビジネスニュース</span>
-        </button>
-        <button type="button" class="category-button" data-category="tools" aria-pressed="false" aria-label="ツールニュースのみを表示">
-          <span aria-hidden="true">🛠️</span>
-          <span class="category-button__label">ツールニュース</span>
-        </button>
-        <button type="button" class="category-button" data-category="posts" aria-pressed="false" aria-label="SNSや論文ポストのみを表示">
-          <span aria-hidden="true">💬</span>
-          <span class="category-button__label">SNS/論文ポスト</span>
-        </button>
+    <section id="newsResults" class="news-results" aria-labelledby="newsResultsTitle">
+      <div class="section-header">
+        <h2 id="newsResultsTitle">最新記事</h2>
+        <p class="section-note">カード内には翻訳済み要約、原文リンク、信頼度、更新時刻を記載しています。</p>
+      </div>
+      <div id="newsGrid" class="news-grid" role="list" aria-live="polite">
+%%LEGACY_SECTIONS%%
       </div>
     </section>
 
-    <section class="news-results" aria-label="ニュース記事一覧">
-      <div id="newsGrid" class="news-grid" role="list"></div>
+    <section id="sourceHighlights" class="source-insights" aria-labelledby="sourceHeading">
+      <div class="section-header">
+        <h2 id="sourceHeading">主要ソースの内訳</h2>
+        <p class="section-note">関連記事数が多い情報源をランキング形式で表示します。信頼度や投稿シェアも参考にしてください。</p>
+      </div>
+%%SOURCE_LIST%%
     </section>
 
-        %%LEGACY_SECTIONS%%
+    <aside class="additional-info">
+      <section id="aboutSection" class="info-section" aria-labelledby="aboutHeading">
+        <h2 id="aboutHeading">サイトについて</h2>
+        <p>
+          Daily AI News は、エンジニア・研究者・ビジネスリーダーが最新情報を効率良くチェックできるように設計した非公式ダッシュボードです。
+          重要度スコア、鮮度指標、ソース信頼度を組み合わせ、注目トピックを優先的に表示します。
+        </p>
+        <p class="info-highlight">
+          収集した主な情報源（抜粋）：%%SOURCE_SAMPLE%%
+        </p>
+      </section>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const root = document.documentElement;
-        const themeToggle = document.getElementById('themeToggle');
-        const searchForm = document.querySelector('.filters-form');
-        const searchInput = document.getElementById('searchInput');
-        const searchTagsContainer = document.getElementById('searchTags');
-        const importanceSelect = document.getElementById('importanceFilter');
-        const freshnessSelect = document.getElementById('freshnessFilter');
-        const sortSelect = document.getElementById('sortBy');
-        const resultsRegion = document.getElementById('resultsCount');
-        const categoryButtons = Array.from(document.querySelectorAll('.category-button'));
-        const newsGrid = document.getElementById('newsGrid');
-        const legacyPanels = Array.from(document.querySelectorAll('.tab-panel'));
+      <section id="contactSection" class="info-section" aria-labelledby="contactHeading">
+        <h2 id="contactHeading">お問い合わせ</h2>
+        <p>改善要望やフィード追加のご相談は、<a href="mailto:awano27@gmail.com">awano27@gmail.com</a> までご連絡ください。</p>
+        <p>GitHub Pages を利用し、テーマ切り替え・キーボード操作・スクリーンリーダーに配慮したアクセシブルな構成を目指しています。</p>
+      </section>
+    </aside>
+  </main>
 
-        if (!newsGrid || legacyPanels.length === 0) {
-          return;
-        const labelByCategory = new Map([
-          ['all', 'すべて'],
-          ['business', 'ビジネスニュース'],
-          ['tools', 'ツールニュース'],
-          ['posts', 'SNS/論文ポスト']
-        ]);
+  <footer class="site-footer">
+    <small>© 2025 Daily AI News. 情報は自動収集のため正確性を保証するものではありません。</small>
+  </footer>
 
-        const absoluteFormatter = new Intl.DateTimeFormat('ja-JP', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        });
-        const relativeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const searchForm = document.querySelector('.filters-form');
+      const searchInput = document.getElementById('searchInput');
+      const searchTagsContainer = document.getElementById('searchTags');
+      const categoryButtons = Array.from(document.querySelectorAll('.category-switch__button'));
+      const importanceSelect = document.getElementById('importanceFilter');
+      const freshnessSelect = document.getElementById('freshnessFilter');
+      const sortSelect = document.getElementById('sortBy');
+      const clearButton = document.getElementById('clearFilters');
+      const resultsRegion = document.getElementById('resultsCount');
+      const newsGrid = document.getElementById('newsGrid');
 
-        const toRelative = (diffMs) => {
-          const units = [
-            { unit: 'year', value: 1000 * 60 * 60 * 24 * 365 },
-            { unit: 'month', value: 1000 * 60 * 60 * 24 * 30 },
-            { unit: 'week', value: 1000 * 60 * 60 * 24 * 7 },
-            { unit: 'day', value: 1000 * 60 * 60 * 24 },
-            { unit: 'hour', value: 1000 * 60 * 60 },
-            { unit: 'minute', value: 1000 * 60 },
-            { unit: 'second', value: 1000 }
-          ];
+      const cards = Array.from(newsGrid.querySelectorAll('.news-card'));
+      const labelByCategory = new Map([
+        ['all', 'すべて'],
+        ['business', 'ビジネス'],
+        ['tools', 'ツール'],
+        ['posts', 'SNS / 論文']
+      ]);
 
-          for (const { unit, value } of units) {
-            if (Math.abs(diffMs) >= value) {
-              return relativeFormatter.format(Math.round(diffMs / value), unit);
-          }
+      const records = cards.map((card, index) => {
+        const textContent = (card.textContent || '').toLowerCase();
+        const tags = (card.dataset.tags || '')
+          .split(',')
+          .map(tag => tag.trim())
+          .filter(Boolean);
 
-          return relativeFormatter.format(0, 'second');
+        return {
+          element: card,
+          baseIndex: index,
+          category: (card.dataset.category || 'all'),
+          importance: (card.dataset.importance || 'medium'),
+          score: Number(card.dataset.score || '0'),
+          freshness: Number(card.dataset.freshness || '0'),
+          freshnessBucket: (card.dataset.freshnessBucket || 'all'),
+          published: Number(card.dataset.publishedMs || '0'),
+          source: (card.dataset.source || '').toLowerCase(),
+          tags,
+          text: `${textContent} ${tags.join(' ').toLowerCase()}`
         };
+      });
 
-        const getImportanceLevel = (score) => {
-          if (!Number.isFinite(score)) return 'medium';
-          if (score >= 7) return 'high';
-          if (score >= 4) return 'medium';
-          return 'low';
-        };
+      const state = {
+        category: 'all',
+        importance: 'all',
+        freshness: 'all',
+        sort: 'importance',
+        keywords: [],
+        currentInput: ''
+      };
 
-        const buildThumbnailUrl = (href) => {
-          if (!href) return '';
-            const url = new URL(href);
-            return `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(url.origin)}`;
-            return '';
-        };
+      const applyTheme = (theme) => {
+        const next = theme === 'dark' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        const isDark = next === 'dark';
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+        const icon = themeToggle.querySelector('.theme-toggle__icon');
+        const label = themeToggle.querySelector('.theme-toggle__label');
+        if (icon) icon.textContent = isDark ? '🌙' : '🌞';
+        if (label) label.textContent = isDark ? 'ダーク' : 'ライト';
+      };
 
-        const cardRecords = [];
-
-        legacyPanels.forEach((panel) => {
-          const category = panel.dataset.category || 'all';
-          const cards = Array.from(panel.querySelectorAll('.enhanced-card'));
-          cards.forEach((card) => {
-            const originalIndex = cardRecords.length;
-            const link = card.querySelector('a');
-            const href = link?.href || '';
-            const titleText = link?.textContent?.trim() || card.querySelector('.card-title')?.textContent?.trim() || '記事詳細';
-            const sourceText = card.dataset.source || card.querySelector('.card-source')?.textContent?.trim() || '';
-            const summaryText = card.querySelector('.card-summary')?.textContent?.trim() || '';
-            const score = Number.parseFloat(card.dataset.score || '0');
-            const importance = getImportanceLevel(score);
-
-            const rawTime = card.dataset.time || '';
-            let publishedMs = Number.NaN;
-            let absoluteText = '';
-            let relativeText = '';
-
-            if (rawTime) {
-              const parsed = Date.parse(rawTime);
-              if (!Number.isNaN(parsed)) {
-                publishedMs = parsed;
-                absoluteText = absoluteFormatter.format(new Date(parsed));
-                relativeText = toRelative(parsed - Date.now());
-              }
-
-            card.innerHTML = '';
-            card.className = 'news-card';
-            card.setAttribute('role', 'listitem');
-            card.dataset.category = category;
-            card.dataset.importance = importance;
-            card.dataset.score = Number.isFinite(score) ? String(score) : '0';
-            card.dataset.publishedMs = Number.isFinite(publishedMs) ? String(publishedMs) : '';
-            card.dataset.searchText = [titleText, summaryText, sourceText].join(' ').replace(/\s+/g, ' ').toLowerCase();
-            card.dataset.originalIndex = String(originalIndex);
-
-            const titleId = `news-card-title-${originalIndex + 1}`;
-            card.setAttribute('aria-labelledby', titleId);
-
-            const cardLink = document.createElement('a');
-            cardLink.className = 'news-card__link';
-            cardLink.href = href || '#';
-            cardLink.target = href ? '_blank' : '_self';
-            cardLink.rel = 'noopener';
-            cardLink.setAttribute('aria-label', `${titleText}の原文を開く`);
-
-            const container = document.createElement('div');
-            container.className = 'news-card__container';
-
-            const media = document.createElement('figure');
-            media.className = 'news-card__media';
-            const thumbnailUrl = buildThumbnailUrl(href);
-            if (thumbnailUrl) {
-              const img = document.createElement('img');
-              img.src = thumbnailUrl;
-              img.loading = 'lazy';
-              img.decoding = 'async';
-              img.alt = `${sourceText || titleText}のサムネイル`;
-              media.appendChild(img);
-            }
-            const caption = document.createElement('figcaption');
-            caption.textContent = sourceText || '情報源';
-            media.appendChild(caption);
-
-            const body = document.createElement('div');
-            body.className = 'news-card__body';
-
-            const header = document.createElement('header');
-            header.className = 'news-card__header';
-
-            if (importance) {
-              const badge = document.createElement('span');
-              badge.className = `news-card__badge badge-${importance}`;
-              badge.textContent = importance === 'high' ? '重要度 高' : importance === 'medium' ? '重要度 中' : '重要度 低';
-              header.appendChild(badge);
-            }
-
-            const title = document.createElement('h3');
-            title.className = 'news-card__title';
-            title.id = titleId;
-            title.textContent = titleText;
-            header.appendChild(title);
-
-            body.appendChild(header);
-
-            if (summaryText) {
-              const summary = document.createElement('p');
-              summary.className = 'news-card__summary';
-              summary.textContent = summaryText;
-              body.appendChild(summary);
-            }
-
-            const meta = document.createElement('div');
-            meta.className = 'news-card__meta';
-
-            if (sourceText) {
-              const source = document.createElement('span');
-              source.className = 'news-card__meta-item';
-              source.textContent = sourceText;
-              meta.appendChild(source);
-            }
-
-            if (Number.isFinite(score)) {
-              const scoreEl = document.createElement('span');
-              scoreEl.className = 'news-card__meta-item';
-              scoreEl.textContent = `スコア: ${score.toFixed(1)}`;
-              meta.appendChild(scoreEl);
-            }
-
-            if (Number.isFinite(publishedMs)) {
-              const timeItem = document.createElement('time');
-              timeItem.className = 'news-card__meta-item';
-              timeItem.dateTime = new Date(publishedMs).toISOString();
-              timeItem.textContent = `${absoluteText} · ${relativeText}`;
-              timeItem.setAttribute('aria-label', `${absoluteText}（${relativeText}）`);
-              meta.appendChild(timeItem);
-            }
-
-            body.appendChild(meta);
-
-            const cta = document.createElement('span');
-            cta.className = 'news-card__cta';
-            cta.textContent = '原文リンクを開く';
-            body.appendChild(cta);
-
-            container.append(media, body);
-            cardLink.appendChild(container);
-            card.appendChild(cardLink);
-
-            if (!thumbnailUrl) {
-              card.classList.add('news-card--no-thumbnail');
-            }
-
-            newsGrid.appendChild(card);
-
-            cardRecords.push({
-              element: card,
-              category,
-              score,
-              importance,
-              publishedMs,
-              searchText: card.dataset.searchText,
-              originalIndex
-            });
-          });
-        });
-
-        legacyPanels.forEach((panel) => panel.remove());
-
-        const state = {
-          category: 'all',
-          keywords: [],
-          currentInput: '',
-          sort: sortSelect?.value || 'importance'
-        };
-
-        const applyTheme = (theme) => {
-          const next = theme === 'dark' ? 'dark' : 'light';
-          root.dataset.theme = next;
-          if (themeToggle) {
-            themeToggle.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
-            const icon = themeToggle.querySelector('.toggle-icon');
-            const label = themeToggle.querySelector('.toggle-label');
-            if (icon) icon.textContent = next === 'dark' ? '🌙' : '🌞';
-            if (label) label.textContent = next === 'dark' ? 'ダーク' : 'ライト';
-        };
-
-        const storedTheme = (() => {
-          try {
-            return localStorage.getItem('daily-ai-news-theme');
-          } catch (error) {
-            return null;
-          }
-        })();
-
+      const storageKey = 'daily-ai-news-theme';
+      try {
+        const storedTheme = localStorage.getItem(storageKey);
         if (storedTheme) {
           applyTheme(storedTheme);
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           applyTheme('dark');
-
-        const handleThemeToggle = () => {
-          const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-          applyTheme(nextTheme);
-          try {
-            localStorage.setItem('daily-ai-news-theme', nextTheme);
-          } catch (error) {
-            // ignore
-        };
-        themeToggle?.addEventListener('click', handleThemeToggle);
-        themeToggle?.addEventListener('keydown', (event) => {
-          if (event.key === ' ' || event.key === 'Enter') {
-            event.preventDefault();
-            handleThemeToggle();
-        });
-
-        const renderTags = () => {
-          if (!searchTagsContainer) return;
-          searchTagsContainer.textContent = '';
-          if (state.keywords.length === 0) {
-            const placeholder = document.createElement('span');
-            placeholder.className = 'search-tags__placeholder';
-            placeholder.setAttribute('role', 'listitem');
-            placeholder.textContent = 'キーワードを追加するとタグとして表示されます';
-            searchTagsContainer.appendChild(placeholder);
-            return;
-
-          state.keywords.forEach((keyword, index) => {
-            const tag = document.createElement('span');
-            tag.className = 'search-tag';
-            tag.setAttribute('role', 'listitem');
-            tag.textContent = keyword;
-
-            const removeButton = document.createElement('button');
-            removeButton.type = 'button';
-            removeButton.className = 'search-tag__remove';
-            removeButton.setAttribute('aria-label', `検索タグ「${keyword}」を削除`);
-            removeButton.innerHTML = '<span aria-hidden="true">×</span>';
-            removeButton.addEventListener('click', () => {
-              state.keywords.splice(index, 1);
-              renderTags();
-              applyFilters();
-            });
-
-            removeButton.addEventListener('keydown', (event) => {
-              visible = false;
-            }
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                state.keywords.splice(index, 1);
-                renderTags();
-                applyFilters();
-              }
-            });
-
-            tag.appendChild(removeButton);
-            searchTagsContainer.appendChild(tag);
-          });
-        };
-
-        const applyFilters = () => {
-          const activeKeywords = [...state.keywords, state.currentInput].filter(Boolean);
-          const importanceFilter = importanceSelect?.value || 'all';
-          const freshnessFilter = freshnessSelect?.value || 'all';
-          const now = Date.now();
-
-          let visibleCount = 0;
-
-          cardRecords.forEach((record) => {
-            const { element } = record;
-            let visible = true;
-
-            if (state.category !== 'all' && record.category !== state.category) {
-
-            if (visible && importanceFilter !== 'all') {
-              visible = record.importance === importanceFilter;
-            }
-
-            if (visible && freshnessFilter !== 'all') {
-              if (Number.isFinite(record.publishedMs)) {
-                const hours = (now - record.publishedMs) / 36e5;
-                if (freshnessFilter === '24h' && hours > 24) visible = false;
-                if (freshnessFilter === '72h' && hours > 72) visible = false;
-                if (freshnessFilter === '168h' && hours > 168) visible = false;
-              } else {
-                visible = false;
-              }
-            }
-
-            if (visible && activeKeywords.length) {
-              const text = record.searchText;
-              visible = activeKeywords.every((keyword) => text.includes(keyword));
-            }
-
-            element.hidden = !visible;
-            element.classList.toggle('is-hidden', !visible);
-            element.setAttribute('aria-hidden', String(!visible));
-
-            if (visible) {
-              visibleCount += 1;
-            }
-          });
-
-          const total = state.category === 'all' ? cardRecords.length : cardRecords.filter((record) => record.category === state.category).length;
-
-          if (resultsRegion) {
-            const label = labelByCategory.get(state.category) || 'すべて';
-            resultsRegion.textContent = `${label}：${visibleCount}件表示中（全${total}件）`;
-        };
-
-        const sortCards = () => {
-          const sortBy = state.sort;
-          const sorted = [...cardRecords].sort((a, b) => {
-            if (sortBy === 'importance') {
-              return (Number.isFinite(b.score) ? b.score : -Infinity) - (Number.isFinite(a.score) ? a.score : -Infinity);
-            }
-            if (sortBy === 'freshness') {
-              return (Number.isFinite(b.publishedMs) ? b.publishedMs : -Infinity) - (Number.isFinite(a.publishedMs) ? a.publishedMs : -Infinity);
-            }
-            if (sortBy === 'time') {
-              return (Number.isFinite(a.publishedMs) ? a.publishedMs : Infinity) - (Number.isFinite(b.publishedMs) ? b.publishedMs : Infinity);
-            }
-            return a.originalIndex - b.originalIndex;
-          });
-
-          sorted.forEach((record) => {
-            newsGrid.appendChild(record.element);
-          });
-        };
-
-        const applySortAndFilter = () => {
-          sortCards();
-          applyFilters();
-        };
-
-        categoryButtons.forEach((button) => {
-          button.addEventListener('click', () => {
-            const category = button.dataset.category || 'all';
-            state.category = category;
-            categoryButtons.forEach((target) => {
-              const isActive = target === button;
-              target.classList.toggle('is-active', isActive);
-              target.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            });
-            applySortAndFilter();
-          });
-
-          button.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              button.click();
-            }
-          });
-
-        searchForm?.addEventListener('submit', (event) => {
-          event.preventDefault();
-          const value = searchInput?.value.trim();
-          if (!value) return;
-          const normalized = value.toLowerCase();
-          if (!state.keywords.includes(normalized)) {
-            state.keywords.push(normalized);
-          if (searchInput) {
-            searchInput.value = '';
-          state.currentInput = '';
-          renderTags();
-          applySortAndFilter();
-
-        searchInput?.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            searchForm?.dispatchEvent(new Event('submit', { cancelable: true }));
-          }
-          if (event.key === 'Backspace' && !searchInput.value && state.keywords.length) {
-            state.keywords.pop();
-            renderTags();
-            applySortAndFilter();
-
-        searchInput?.addEventListener('input', () => {
-          state.currentInput = (searchInput.value || '').trim().toLowerCase();
-          applyFilters();
-        importanceSelect?.addEventListener('change', applyFilters);
-        freshnessSelect?.addEventListener('change', applyFilters);
-
-        sortSelect?.addEventListener('change', (event) => {
-          state.sort = event.target.value;
-          applySortAndFilter();
-        });
-
-        applySortAndFilter();
-        renderTags();
-    </script>
-
-  new DashboardUI();
-        return parseFloat(b.dataset.score) - parseFloat(a.dataset.score);
-      } else if (sortBy === 'time') {
-        const timeA = new Date(a.dataset.time || 0);
-        const timeB = new Date(b.dataset.time || 0);
-        return timeB - timeA;
-      } else if (sortBy === 'source') {
-        return a.dataset.source.localeCompare(b.dataset.source);
+        } else {
+          applyTheme('light');
+        }
+      } catch (error) {
+        applyTheme('light');
       }
-      return 0;
+
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        try {
+          localStorage.setItem(storageKey, nextTheme);
+        } catch (error) {
+          /* ignore */
+        }
+      });
+
+      const renderCategoryButtons = () => {
+        categoryButtons.forEach((button) => {
+          const isActive = button.dataset.category === state.category;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-pressed', String(isActive));
+        });
+      };
+
+      const renderTags = () => {
+        searchTagsContainer.textContent = '';
+        if (state.keywords.length === 0) {
+          const placeholder = document.createElement('span');
+          placeholder.className = 'search-tags__placeholder';
+          placeholder.setAttribute('role', 'listitem');
+          placeholder.textContent = 'キーワードを追加するとタグとして表示されます';
+          searchTagsContainer.appendChild(placeholder);
+          return;
+        }
+
+        state.keywords.forEach((keyword, index) => {
+          const tag = document.createElement('span');
+          tag.className = 'search-tag';
+          tag.setAttribute('role', 'listitem');
+          tag.textContent = keyword;
+
+          const removeButton = document.createElement('button');
+          removeButton.type = 'button';
+          removeButton.className = 'search-tag__remove';
+          removeButton.setAttribute('aria-label', `検索タグ「${keyword}」を削除`);
+          removeButton.innerHTML = '<span aria-hidden="true">×</span>';
+          removeButton.addEventListener('click', () => {
+            state.keywords.splice(index, 1);
+            renderTags();
+            applySortAndFilter(false);
+          });
+
+          tag.appendChild(removeButton);
+          searchTagsContainer.appendChild(tag);
+        });
+      };
+
+      const sortRecords = () => {
+        const sorted = [...records];
+        switch (state.sort) {
+          case 'freshness':
+            sorted.sort((a, b) => b.freshness - a.freshness || b.published - a.published || a.baseIndex - b.baseIndex);
+            break;
+          case 'time':
+            sorted.sort((a, b) => b.published - a.published || b.score - a.score || a.baseIndex - b.baseIndex);
+            break;
+          case 'source':
+            sorted.sort((a, b) => a.source.localeCompare(b.source) || a.baseIndex - b.baseIndex);
+            break;
+          case 'original':
+            sorted.sort((a, b) => a.baseIndex - b.baseIndex);
+            break;
+          case 'importance':
+          default:
+            sorted.sort((a, b) => b.score - a.score || b.freshness - a.freshness || a.baseIndex - b.baseIndex);
+            break;
+        }
+        sorted.forEach((record) => newsGrid.appendChild(record.element));
+      };
+
+      const applyFilters = () => {
+        const keywordsLower = state.keywords.map(keyword => keyword.toLowerCase());
+        const extraKeywords = state.currentInput
+          ? state.currentInput.split(/\s+/).map(word => word.trim()).filter(Boolean)
+          : [];
+        const allKeywords = keywordsLower.concat(extraKeywords.map(word => word.toLowerCase()));
+
+        let visibleCount = 0;
+        let totalInCategory = 0;
+
+        records.forEach((record) => {
+          const matchesCategory = state.category === 'all' || record.category === state.category;
+          if (matchesCategory) {
+            totalInCategory += 1;
+          }
+
+          let visible = matchesCategory;
+
+          if (visible && state.importance !== 'all') {
+            visible = record.importance === state.importance;
+          }
+
+          if (visible && state.freshness !== 'all') {
+            visible = record.freshnessBucket === state.freshness;
+          }
+
+          if (visible && allKeywords.length) {
+            visible = allKeywords.every((keyword) => {
+              if (!keyword) return true;
+              return record.text.includes(keyword);
+            });
+          }
+
+          record.element.hidden = !visible;
+          record.element.classList.toggle('is-hidden', !visible);
+          record.element.setAttribute('aria-hidden', String(!visible));
+
+          if (visible) {
+            visibleCount += 1;
+          }
+        });
+
+        const label = labelByCategory.get(state.category) || 'すべて';
+        resultsRegion.textContent = `${label}：${visibleCount}件表示（全${totalInCategory}件）`;
+        clearButton.disabled = (
+          state.category === 'all' &&
+          state.importance === 'all' &&
+          state.freshness === 'all' &&
+          state.sort === 'importance' &&
+          state.keywords.length === 0 &&
+          !state.currentInput
+        );
+      };
+
+      const applySortAndFilter = (shouldSort = true) => {
+        if (shouldSort) {
+          sortRecords();
+        }
+        applyFilters();
+      };
+
+      const addKeyword = (value) => {
+        const trimmed = value.trim();
+        if (!trimmed) return;
+        const normalized = trimmed.toLowerCase();
+        const duplicated = state.keywords.some((keyword) => keyword.toLowerCase() === normalized);
+        if (!duplicated) {
+          state.keywords.push(trimmed);
+          renderTags();
+          applySortAndFilter(false);
+        }
+      };
+
+      categoryButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const category = button.dataset.category || 'all';
+          if (state.category !== category) {
+            state.category = category;
+            renderCategoryButtons();
+            applySortAndFilter(false);
+          }
+        });
+
+        button.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            button.click();
+          }
+        });
+      });
+
+      importanceSelect.addEventListener('change', () => {
+        state.importance = importanceSelect.value;
+        applySortAndFilter(false);
+      });
+
+      freshnessSelect.addEventListener('change', () => {
+        state.freshness = freshnessSelect.value;
+        applySortAndFilter(false);
+      });
+
+      sortSelect.addEventListener('change', () => {
+        state.sort = sortSelect.value || 'importance';
+        applySortAndFilter(true);
+      });
+
+      searchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const value = searchInput.value;
+        addKeyword(value);
+        searchInput.value = '';
+        state.currentInput = '';
+        applySortAndFilter(false);
+      });
+
+      searchInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          addKeyword(searchInput.value);
+          searchInput.value = '';
+          state.currentInput = '';
+          applySortAndFilter(false);
+        }
+      });
+
+      searchInput.addEventListener('input', () => {
+        state.currentInput = searchInput.value.trim().toLowerCase();
+        applySortAndFilter(false);
+      });
+
+      clearButton.addEventListener('click', () => {
+        state.category = 'all';
+        state.importance = 'all';
+        state.freshness = 'all';
+        state.sort = 'importance';
+        state.keywords = [];
+        state.currentInput = '';
+
+        categoryButtons[0].focus();
+        renderCategoryButtons();
+
+        importanceSelect.value = 'all';
+        freshnessSelect.value = 'all';
+        sortSelect.value = 'importance';
+        searchInput.value = '';
+        renderTags();
+        applySortAndFilter(true);
+      });
+
+      renderCategoryButtons();
+      renderTags();
+      applySortAndFilter(true);
+
+      if (window.matchMedia) {
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        darkQuery.addEventListener('change', (event) => {
+          if (!localStorage.getItem(storageKey)) {
+            applyTheme(event.matches ? 'dark' : 'light');
+          }
+        });
+      }
     });
-    
-    // DOM再構築
-    cards.forEach(card => container.appendChild(card));
-    
-    // フィルター再適用
-    this.applyFilters();
-  }
-}
-
-// 初期化
-document.addEventListener('DOMContentLoaded', () => {
-  const controller = new TabController();
-
-  // タブのスワイプ切替（モバイル最適化）
-  const tabsOrder = ['business','tools','posts'];
-  const getActiveTab = () => document.querySelector('.tab-button.active')?.dataset.tab || 'business';
-  const switchRelative = (dir) => {
-    const current = getActiveTab();
-    const idx = tabsOrder.indexOf(current);
-    const next = tabsOrder[Math.min(Math.max(idx + dir, 0), tabsOrder.length - 1)];
-    if (next !== current) {
-      controller.switchTab(next);
-      try { document.querySelector(`[data-tab="${next}"]`)?.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}); } catch(e) {}
-    }
-  };
-
-  const area = document.querySelector('main') || document.body;
-  let startX = 0, startY = 0;
-  const threshold = 50, restraint = 80;
-  area.addEventListener('touchstart', (e) => {
-    const t = e.changedTouches[0]; startX = t.pageX; startY = t.pageY;
-  }, {passive:true});
-  area.addEventListener('touchend', (e) => {
-    const t = e.changedTouches[0];
-    const dx = t.pageX - startX; const dy = t.pageY - startY;
-    if (Math.abs(dx) > threshold && Math.abs(dy) < restraint) {
-      if (dx < 0) switchRelative(1); else switchRelative(-1);
-    }
-  }, {passive:true});
-});
-</script>
-
+  </script>
 </body>
 </html>
