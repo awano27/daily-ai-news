@@ -125,11 +125,38 @@ jobs:
         run: |
           rm -rf outputs || true
           mkdir -p outputs
+
+          # Ensure style.css is the latest version from repository
+          echo "📋 Verifying style.css..."
+          if [ -f "style.css" ]; then
+            style_lines=$(wc -l < style.css)
+            style_size=$(stat -c%s style.css 2>/dev/null || stat -f%z style.css 2>/dev/null || echo 0)
+            echo "✅ style.css: ${style_lines} lines, ${style_size} bytes"
+          else
+            echo "❌ style.css not found!"
+            exit 1
+          fi
+
           cp -v index.html outputs/
-          cp -v style.css outputs/ || true
+          cp -v style.css outputs/
           cp -v news_detail.html outputs/ || true
           touch outputs/.nojekyll
-          ls -la outputs
+
+          echo "📦 Output files:"
+          ls -lh outputs/
+
+          # Verify style.css was copied correctly
+          if [ -f "outputs/style.css" ]; then
+            output_lines=$(wc -l < outputs/style.css)
+            echo "✅ outputs/style.css: ${output_lines} lines"
+            if [ "$style_lines" != "$output_lines" ]; then
+              echo "❌ ERROR: Line count mismatch! Source: $style_lines, Output: $output_lines"
+              exit 1
+            fi
+          else
+            echo "❌ style.css not copied to outputs!"
+            exit 1
+          fi
 
       - name: Verify PERSONAL_TOKEN access
         env:
