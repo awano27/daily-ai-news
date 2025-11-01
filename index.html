@@ -339,6 +339,23 @@
         ['posts', 'SNS/論文ポスト']
       ]);
 
+      const normalizeCategory = (value) => {
+        const normalized = (value ?? '').toString().trim().toLowerCase();
+        if (!normalized || normalized === 'all' || normalized === 'everything') {
+          return 'all';
+        }
+        if (['business', 'biz', 'business-news'].includes(normalized)) {
+          return 'business';
+        }
+        if (['tools', 'tool'].includes(normalized)) {
+          return 'tools';
+        }
+        if (['posts', 'post', 'sns', 'sns/posts'].includes(normalized)) {
+          return 'posts';
+        }
+        return normalized;
+      };
+
       const absoluteFormatter = new Intl.DateTimeFormat('ja-JP', {
         year: 'numeric',
         month: '2-digit',
@@ -408,11 +425,12 @@
       const now = Date.now();
 
       legacyPanels.forEach((panel) => {
-        const category =
+        const category = normalizeCategory(
           panel.dataset.category ||
-          panel.getAttribute('data-category') ||
-          panel.id ||
-          'all';
+            panel.getAttribute('data-category') ||
+            panel.id ||
+            'all'
+        );
         panel.querySelectorAll('.enhanced-card, .card').forEach((card) => {
           const originalIndex = cardRecords.length;
           const link = card.querySelector('a');
@@ -821,7 +839,9 @@
 
       categoryButtons.forEach((button) => {
         button.addEventListener('click', () => {
-          const category = button.dataset.category || 'all';
+          const category = normalizeCategory(
+            button.dataset.category || button.getAttribute('data-category') || 'all'
+          );
           state.category = category;
           categoryButtons.forEach((target) => {
             const isActive = target === button;
