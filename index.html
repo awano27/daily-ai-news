@@ -121,6 +121,14 @@
 </button>
 </div>
 </section>
+<section aria-label="データソースフィルター" class="source-filter">
+<div aria-label="データソースを選択" class="source-filter__group" role="group">
+<button aria-label="すべてのデータソースを表示" aria-pressed="true" class="source-button is-active" data-source="all" data-source-label="すべてのソース" type="button">
+<span class="source-button__label">すべてのソース</span>
+</button>
+<div class="source-filter__buttons" id="sourceFilterButtons"></div>
+</div>
+</section>
 <section aria-label="ニュース記事一覧" class="news-results">
 <div class="news-grid" id="newsGrid" role="list"></div>
 </section>
@@ -325,6 +333,10 @@
       const sortSelect = document.getElementById('sortBy');
       const resultsRegion = document.getElementById('resultsCount');
       const categoryButtons = Array.from(document.querySelectorAll('.category-button'));
+      const sourceFilterSection = document.querySelector('.source-filter');
+      const sourceAllButton = sourceFilterSection?.querySelector('[data-source="all"]');
+      const sourceButtonsContainer = document.getElementById('sourceFilterButtons');
+      const sourceButtons = [];
       const newsGrid = document.getElementById('newsGrid');
       const legacyPanels = Array.from(document.querySelectorAll('.tab-panel'));
 
@@ -337,6 +349,10 @@
         ['business', 'ビジネスニュース'],
         ['tools', 'ツールニュース'],
         ['posts', 'SNS/論文ポスト']
+      ]);
+
+      const labelBySource = new Map([
+        ['all', 'すべてのソース']
       ]);
 
       const normalizeCategory = (value) => {
@@ -356,6 +372,20 @@
         return normalized;
       };
 
+      const normalizeSourceText = (value) => (value ?? '').toString().trim();
+
+      const deriveSourceInfo = (value) => {
+        const label = normalizeSourceText(value);
+        if (!label) {
+          return { key: 'other', label: 'その他' };
+        }
+        const key = label
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9\-\u0080-\uFFFF]/g, '');
+        return { key: key || 'other', label };
+      };
+
       const absoluteFormatter = new Intl.DateTimeFormat('ja-JP', {
         year: 'numeric',
         month: '2-digit',
@@ -365,6 +395,10 @@
         hour12: false
       });
       const relativeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
+      const sourceCollator = new Intl.Collator('ja', {
+        sensitivity: 'base',
+        numeric: true
+      });
 
       const toRelative = (diffMs) => {
         const units = [
@@ -450,9 +484,10 @@
             .map((chip) => normalizeText(chip.textContent))
             .filter(Boolean);
 
-          let sourceText = normalizeText(
+          const directSource = normalizeText(
             card.dataset.source || card.getAttribute('data-source')
           );
+          let sourceText = directSource;
           if (!sourceText) {
             sourceText =
               chipTexts.find(
@@ -465,6 +500,8 @@
               ) ||
               '';
           }
+          const { key: sourceKey, label: sourceLabel } = deriveSourceInfo(sourceText);
+          const shouldTagSource = Boolean(sourceText);
 
           const rawTime = card.dataset.time || card.getAttribute('data-time');
           let publishedMs = Number.NaN;
@@ -499,9 +536,9 @@
             if (/\d+\s*(秒|分|時間|日)前$/.test(text)) return false;
             return true;
           });
-          if (sourceText) {
-            if (!tags.includes(sourceText)) {
-              tags.unshift(sourceText);
+          if (shouldTagSource && sourceLabel) {
+            if (!tags.includes(sourceLabel)) {
+              tags.unshift(sourceLabel);
             }
           }
 
@@ -519,10 +556,12 @@
           card.dataset.publishedMs = Number.isFinite(publishedMs)
             ? String(publishedMs)
             : '';
+          card.dataset.sourceKey = sourceKey;
+          card.dataset.sourceLabel = sourceLabel;
           card.dataset.searchText = [
             titleText,
             summaryText,
-            sourceText,
+            sourceLabel,
             absoluteText,
             relativeText,
             ...tags
@@ -531,6 +570,10 @@
             .replace(/\s+/g, ' ')
             .toLowerCase();
           card.dataset.originalIndex = String(originalIndex);
+
+          if (sourceLabel && !labelBySource.has(sourceKey)) {
+            labelBySource.set(sourceKey, sourceLabel);
+          }
 
           const titleId = `news-card-title-${originalIndex + 1}`;
           card.setAttribute('aria-labelledby', titleId);
@@ -645,6 +688,8 @@
             score: hasScore ? score : Number.NaN,
             importance: hasScore ? importance : 'medium',
             publishedMs,
+            sourceKey,
+            sourceLabel,
             searchText: card.dataset.searchText,
             originalIndex
           });
@@ -655,9 +700,142 @@
 
       const state = {
         category: 'all',
+        source: 'all',
         keywords: [],
         currentInput: '',
         sort: sortSelect?.value || 'importance'
+      };
+
+      const initializeSourceFilter = () => {
+        if (!sourceFilterSection) {
+          return;
+        }
+
+        const summary = new Map();
+
+        cardRecords.forEach(({ sourceKey, sourceLabel }) => {
+          const key = sourceKey || 'other';
+          const label = sourceLabel || 'その他';
+          if (!summary.has(key)) {
+            summary.set(key, { key, label, count: 0 });
+          }
+          summary.get(key).count += 1;
+        });
+
+        if (sourceAllButton) {
+          const labelSpan =
+            sourceAllButton.querySelector('.source-button__label') ||
+            sourceAllButton;
+          const labelText = (labelSpan.textContent || '').trim() || 'すべてのソース';
+          sourceAllButton.dataset.sourceLabel = labelText;
+          labelBySource.set('all', labelText);
+          let countSpan = sourceAllButton.querySelector('.source-button__count');
+          if (!countSpan) {
+            countSpan = document.createElement('span');
+            countSpan.className = 'source-button__count';
+            sourceAllButton.appendChild(countSpan);
+          }
+          countSpan.textContent = `(${cardRecords.length})`;
+          sourceAllButton.setAttribute(
+            'aria-label',
+            `${labelText}を表示（${cardRecords.length}件）`
+          );
+        }
+
+        if (sourceButtonsContainer) {
+          const fragment = document.createDocumentFragment();
+          sourceButtonsContainer.textContent = '';
+          const sortedSources = Array.from(summary.values()).sort((a, b) =>
+            sourceCollator.compare(a.label, b.label)
+          );
+
+          sortedSources.forEach(({ key, label, count }) => {
+            if (key === 'all') {
+              return;
+            }
+
+            labelBySource.set(key, label);
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'source-button';
+            button.dataset.source = key;
+            button.dataset.sourceLabel = label;
+            button.setAttribute('aria-pressed', 'false');
+            button.setAttribute(
+              'aria-label',
+              `${label}のニュースを表示（${count}件）`
+            );
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'source-button__label';
+            labelSpan.textContent = label;
+            button.appendChild(labelSpan);
+
+            const countSpan = document.createElement('span');
+            countSpan.className = 'source-button__count';
+            countSpan.textContent = `(${count})`;
+            button.appendChild(countSpan);
+
+            fragment.appendChild(button);
+          });
+
+          sourceButtonsContainer.appendChild(fragment);
+        }
+
+        const interactiveButtons = Array.from(
+          sourceFilterSection.querySelectorAll('button[data-source]')
+        );
+
+        sourceButtons.length = 0;
+
+        interactiveButtons.forEach((button) => {
+          if (!button.classList.contains('source-button')) {
+            button.classList.add('source-button');
+          }
+
+          if (!button.dataset.sourceLabel) {
+            const labelSpan = button.querySelector('.source-button__label');
+            button.dataset.sourceLabel =
+              (labelSpan?.textContent || button.textContent || '').trim() || 'すべてのソース';
+          }
+
+          const sourceValue = button.dataset.source || 'all';
+          const label = button.dataset.sourceLabel;
+          if (label && !labelBySource.has(sourceValue)) {
+            labelBySource.set(sourceValue, label);
+          }
+
+          if (button === sourceAllButton) {
+            button.classList.add('is-active');
+            button.setAttribute('aria-pressed', 'true');
+          } else {
+            button.classList.remove('is-active');
+            button.setAttribute('aria-pressed', 'false');
+          }
+
+          sourceButtons.push(button);
+        });
+
+        sourceButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const source = button.dataset.source || 'all';
+            state.source = source;
+            sourceButtons.forEach((target) => {
+              const isActive = target === button;
+              target.classList.toggle('is-active', isActive);
+              target.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+            applySortAndFilter();
+          });
+
+          button.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              button.click();
+            }
+          });
+        });
       };
 
       const applyTheme = (theme) => {
@@ -760,16 +938,25 @@
         const now = Date.now();
 
         let visibleCount = 0;
-        const totalInCategory =
-          state.category === 'all'
-            ? cardRecords.length
-            : cardRecords.filter((record) => record.category === state.category).length;
+        const totalInScope = cardRecords.reduce((count, record) => {
+          if (state.category !== 'all' && record.category !== state.category) {
+            return count;
+          }
+          if (state.source !== 'all' && record.sourceKey !== state.source) {
+            return count;
+          }
+          return count + 1;
+        }, 0);
 
         cardRecords.forEach((record) => {
           const { element } = record;
           let visible = true;
 
           if (state.category !== 'all' && record.category !== state.category) {
+            visible = false;
+          }
+
+          if (visible && state.source !== 'all' && record.sourceKey !== state.source) {
             visible = false;
           }
 
@@ -803,8 +990,9 @@
         });
 
         if (resultsRegion) {
-          const label = labelByCategory.get(state.category) || 'すべて';
-          resultsRegion.textContent = `${label}：${visibleCount}件表示中（全${totalInCategory}件）`;
+          const categoryLabel = labelByCategory.get(state.category) || 'すべて';
+          const sourceLabel = labelBySource.get(state.source) || 'すべてのソース';
+          resultsRegion.textContent = `${categoryLabel} × ${sourceLabel}：${visibleCount}件表示中（全${totalInScope}件）`;
         }
 
         if (emptyState) {
@@ -904,6 +1092,7 @@
         applySortAndFilter();
       });
 
+      initializeSourceFilter();
       applySortAndFilter();
       renderTags();
     });

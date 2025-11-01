@@ -428,6 +428,65 @@ button {
   cursor: not-allowed;
 }
 
+.category-filter,
+.source-filter {
+  margin: var(--space-lg) 0 var(--space-md);
+}
+
+.category-filter__group,
+.source-filter__group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.source-filter__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.category-button,
+.source-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  font-weight: 600;
+  background: var(--color-surface-alt);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.category-button__label,
+.source-button__label {
+  line-height: 1.2;
+}
+
+.source-button__count {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.category-button.is-active,
+.source-button.is-active {
+  background: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+  color: #fff;
+}
+
+.category-button:is(:hover, :focus-visible),
+.source-button:is(:hover, :focus-visible) {
+  border-color: var(--color-accent-strong);
+}
+
+.source-button.is-active .source-button__count {
+  color: inherit;
+  opacity: 0.85;
+}
+
 .category-switch {
   display: flex;
   flex-wrap: wrap;
