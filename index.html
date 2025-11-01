@@ -376,31 +376,79 @@
         return 'low';
       };
 
-      const buildThumbnailUrl = (href) => {
-        if (!href) return '';
-        try {
-          const url = new URL(href);
-          return `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(url.origin)}`;
-        } catch (error) {
-          return '';
+      const normalizeText = (value) => (value ?? '').toString().replace(/\s+/g, ' ').trim();
+
+      const parseRelativeTimeLabel = (label, now = Date.now()) => {
+        const original = normalizeText(label);
+        if (!original) {
+          return { timestamp: Number.NaN, label: '' };
         }
+        const normalized = original.replace(/^約/, '');
+        const match = normalized.match(/^(\d+)(秒|分|時間|日)前$/);
+        if (match) {
+          const amount = Number.parseInt(match[1], 10);
+          const unit = match[2];
+          const unitMap = { 秒: 1000, 分: 60_000, 時間: 3_600_000, 日: 86_400_000 };
+          const multiplier = unitMap[unit];
+          if (Number.isFinite(amount) && multiplier) {
+            return { timestamp: now - amount * multiplier, label: original };
+          }
+        }
+        return { timestamp: Number.NaN, label: original };
       };
 
       const cardRecords = [];
 
+      const emptyState = document.createElement('p');
+      emptyState.className = 'news-empty';
+      emptyState.textContent = '該当するニュースが見つかりません。検索条件を調整してください。';
+      emptyState.hidden = true;
+      newsGrid.insertAdjacentElement('afterend', emptyState);
+
+      const now = Date.now();
+
       legacyPanels.forEach((panel) => {
-        const category = panel.dataset.category || 'all';
-        panel.querySelectorAll('.enhanced-card').forEach((card) => {
+        const category =
+          panel.dataset.category ||
+          panel.getAttribute('data-category') ||
+          panel.id ||
+          'all';
+        panel.querySelectorAll('.enhanced-card, .card').forEach((card) => {
           const originalIndex = cardRecords.length;
           const link = card.querySelector('a');
-          const href = link?.href || '';
-          const titleText = link?.textContent?.trim() || card.querySelector('.card-title')?.textContent?.trim() || '記事詳細';
-          const sourceText = card.dataset.source || card.querySelector('.card-source')?.textContent?.trim() || '';
-          const summaryText = card.querySelector('.card-summary')?.textContent?.trim() || '';
-          const score = Number.parseFloat(card.dataset.score || '0');
-          const importance = getImportanceLevel(score);
+          const href = normalizeText(link?.href);
+          const titleText =
+            normalizeText(link?.textContent) ||
+            normalizeText(card.querySelector('.card-title')?.textContent) ||
+            '記事詳細';
+          const summaryText = normalizeText(
+            card.querySelector('.card-summary')?.textContent
+          );
 
-          const rawTime = card.dataset.time || '';
+          const chipElements = Array.from(
+            card.querySelectorAll('.chip, .tag, .card-meta span')
+          );
+          const chipTexts = chipElements
+            .map((chip) => normalizeText(chip.textContent))
+            .filter(Boolean);
+
+          let sourceText = normalizeText(
+            card.dataset.source || card.getAttribute('data-source')
+          );
+          if (!sourceText) {
+            sourceText =
+              chipTexts.find(
+                (text) =>
+                  text &&
+                  !text.includes('翻訳') &&
+                  !text.includes('要約') &&
+                  !text.includes('原文') &&
+                  !/\d+\s*(秒|分|時間|日)前$/.test(text)
+              ) ||
+              '';
+          }
+
+          const rawTime = card.dataset.time || card.getAttribute('data-time');
           let publishedMs = Number.NaN;
           let absoluteText = '';
           let relativeText = '';
@@ -410,68 +458,126 @@
             if (!Number.isNaN(parsed)) {
               publishedMs = parsed;
               absoluteText = absoluteFormatter.format(new Date(parsed));
-              relativeText = toRelative(parsed - Date.now());
+              relativeText = toRelative(parsed - now);
             }
           }
+
+          for (const text of chipTexts) {
+            if (!text) continue;
+            if (!relativeText && /\d+\s*(秒|分|時間|日)前$/.test(text)) {
+              const parsed = parseRelativeTimeLabel(text, now);
+              relativeText = parsed.label || relativeText;
+              if (Number.isNaN(publishedMs) && Number.isFinite(parsed.timestamp)) {
+                publishedMs = parsed.timestamp;
+                absoluteText = absoluteFormatter.format(new Date(parsed.timestamp));
+              }
+              break;
+            }
+          }
+
+          const tags = chipTexts.filter((text) => {
+            if (!text) return false;
+            if (text === relativeText) return false;
+            if (/\d+\s*(秒|分|時間|日)前$/.test(text)) return false;
+            return true;
+          });
+          if (sourceText) {
+            if (!tags.includes(sourceText)) {
+              tags.unshift(sourceText);
+            }
+          }
+
+          const scoreAttr = card.dataset.score || card.getAttribute('data-score');
+          const score = scoreAttr ? Number.parseFloat(scoreAttr) : Number.NaN;
+          const hasScore = Number.isFinite(score);
+          const importance = hasScore ? getImportanceLevel(score) : 'medium';
 
           card.innerHTML = '';
           card.className = 'news-card';
           card.setAttribute('role', 'listitem');
           card.dataset.category = category;
           card.dataset.importance = importance;
-          card.dataset.score = Number.isFinite(score) ? String(score) : '0';
-          card.dataset.publishedMs = Number.isFinite(publishedMs) ? String(publishedMs) : '';
-          card.dataset.searchText = [titleText, summaryText, sourceText].join(' ').replace(/\s+/g, ' ').toLowerCase();
+          card.dataset.score = hasScore ? String(score) : '';
+          card.dataset.publishedMs = Number.isFinite(publishedMs)
+            ? String(publishedMs)
+            : '';
+          card.dataset.searchText = [
+            titleText,
+            summaryText,
+            sourceText,
+            absoluteText,
+            relativeText,
+            ...tags
+          ]
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .toLowerCase();
           card.dataset.originalIndex = String(originalIndex);
 
           const titleId = `news-card-title-${originalIndex + 1}`;
           card.setAttribute('aria-labelledby', titleId);
 
-          const cardLink = document.createElement('a');
-          cardLink.className = 'news-card__link';
-          cardLink.href = href || '#';
-          cardLink.target = href ? '_blank' : '_self';
-          cardLink.rel = href ? 'noopener noreferrer' : '';
-          cardLink.setAttribute('aria-label', `${titleText}の原文を開く`);
-
-          const container = document.createElement('div');
-          container.className = 'news-card__container';
-
-          const media = document.createElement('figure');
-          media.className = 'news-card__media';
-          const thumbnailUrl = buildThumbnailUrl(href);
-          if (thumbnailUrl) {
-            const img = document.createElement('img');
-            img.src = thumbnailUrl;
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            img.alt = `${sourceText || titleText}のサムネイル`;
-            media.appendChild(img);
-          }
-          const caption = document.createElement('figcaption');
-          caption.textContent = sourceText || '情報源';
-          media.appendChild(caption);
-
-          const body = document.createElement('div');
-          body.className = 'news-card__body';
-
           const header = document.createElement('header');
           header.className = 'news-card__header';
 
-          if (importance) {
+          const headline = document.createElement('div');
+          headline.className = 'news-card__headline';
+
+          const metaTop = document.createElement('div');
+          metaTop.className = 'news-card__meta-top';
+
+          if (hasScore) {
             const badge = document.createElement('span');
-            badge.className = `news-card__badge badge-${importance}`;
-            badge.textContent = importance === 'high' ? '重要度 高' : importance === 'medium' ? '重要度 中' : '重要度 低';
-            header.appendChild(badge);
+            badge.className = `news-card__badge news-card__badge--${importance}`;
+            badge.textContent =
+              importance === 'high'
+                ? '重要度 高'
+                : importance === 'medium'
+                ? '重要度 中'
+                : '重要度 低';
+            metaTop.appendChild(badge);
+
+            const scoreEl = document.createElement('span');
+            scoreEl.className = 'news-card__score';
+            scoreEl.textContent = `スコア: ${score.toFixed(1)}`;
+            metaTop.appendChild(scoreEl);
           }
 
-          const title = document.createElement('h3');
-          title.className = 'news-card__title';
-          title.id = titleId;
-          title.textContent = titleText;
-          header.appendChild(title);
+          if (relativeText || absoluteText) {
+            const freshness = document.createElement('span');
+            freshness.className = 'news-card__freshness';
+            const displayText = absoluteText && relativeText
+              ? `${absoluteText} · ${relativeText}`
+              : absoluteText || relativeText;
+            const announceText = absoluteText && relativeText
+              ? `${absoluteText}（${relativeText}）`
+              : absoluteText || relativeText;
+            freshness.textContent = displayText;
+            if (announceText) {
+              freshness.setAttribute('aria-label', announceText);
+            }
+            metaTop.appendChild(freshness);
+          }
 
-          body.appendChild(header);
+          if (metaTop.childElementCount > 0) {
+            headline.appendChild(metaTop);
+          }
+
+          const titleLink = document.createElement('a');
+          titleLink.className = 'news-card__title';
+          titleLink.id = titleId;
+          titleLink.href = href || '#';
+          if (href) {
+            titleLink.target = '_blank';
+            titleLink.rel = 'noopener noreferrer';
+          }
+          titleLink.textContent = titleText;
+          headline.appendChild(titleLink);
+          header.appendChild(headline);
+          card.appendChild(header);
+
+          const body = document.createElement('div');
+          body.className = 'news-card__body';
 
           if (summaryText) {
             const summary = document.createElement('p');
@@ -480,54 +586,46 @@
             body.appendChild(summary);
           }
 
-          const meta = document.createElement('div');
-          meta.className = 'news-card__meta';
-
-          if (sourceText) {
-            const source = document.createElement('span');
-            source.className = 'news-card__meta-item';
-            source.textContent = sourceText;
-            meta.appendChild(source);
+          if (tags.length) {
+            const tagList = document.createElement('div');
+            tagList.className = 'news-card__taglist';
+            tags.forEach((text) => {
+              if (!text) return;
+              const tag = document.createElement('span');
+              tag.className = 'news-card__tag';
+              tag.textContent = text;
+              tagList.appendChild(tag);
+            });
+            if (tagList.childElementCount) {
+              body.appendChild(tagList);
+            }
           }
 
-          if (Number.isFinite(score)) {
-            const scoreEl = document.createElement('span');
-            scoreEl.className = 'news-card__meta-item';
-            scoreEl.textContent = `スコア: ${score.toFixed(1)}`;
-            meta.appendChild(scoreEl);
-          }
+          card.appendChild(body);
 
-          if (Number.isFinite(publishedMs)) {
-            const timeItem = document.createElement('time');
-            timeItem.className = 'news-card__meta-item';
-            timeItem.dateTime = new Date(publishedMs).toISOString();
-            timeItem.textContent = `${absoluteText} · ${relativeText}`;
-            timeItem.setAttribute('aria-label', `${absoluteText}（${relativeText}）`);
-            meta.appendChild(timeItem);
-          }
+          const footer = document.createElement('footer');
+          footer.className = 'news-card__footer';
 
-          body.appendChild(meta);
-
-          const cta = document.createElement('span');
+          const cta = document.createElement('a');
           cta.className = 'news-card__cta';
-          cta.textContent = '原文リンクを開く';
-          body.appendChild(cta);
-
-          container.append(media, body);
-          cardLink.appendChild(container);
-          card.appendChild(cardLink);
-
-          if (!thumbnailUrl) {
-            card.classList.add('news-card--no-thumbnail');
+          cta.href = href || '#';
+          if (href) {
+            cta.target = '_blank';
+            cta.rel = 'noopener noreferrer';
           }
+          cta.textContent = '原文リンクを開く';
+          cta.setAttribute('aria-label', `${titleText}の原文を新しいタブで開く`);
+          footer.appendChild(cta);
+
+          card.appendChild(footer);
 
           newsGrid.appendChild(card);
 
           cardRecords.push({
             element: card,
             category,
-            score,
-            importance,
+            score: hasScore ? score : Number.NaN,
+            importance: hasScore ? importance : 'medium',
             publishedMs,
             searchText: card.dataset.searchText,
             originalIndex
@@ -689,6 +787,10 @@
         if (resultsRegion) {
           const label = labelByCategory.get(state.category) || 'すべて';
           resultsRegion.textContent = `${label}：${visibleCount}件表示中（全${totalInCategory}件）`;
+        }
+
+        if (emptyState) {
+          emptyState.hidden = visibleCount > 0;
         }
       };
 
