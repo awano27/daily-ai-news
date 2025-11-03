@@ -340,7 +340,8 @@
       ]);
 
       const normalizeCategory = (value) => {
-        const normalized = (value ?? '').toString().trim().toLowerCase();
+        const raw = value === undefined || value === null ? '' : value;
+        const normalized = raw.toString().trim().toLowerCase();
         if (!normalized || normalized === 'all' || normalized === 'everything') {
           return 'all';
         }
@@ -364,7 +365,10 @@
         minute: '2-digit',
         hour12: false
       });
-      const relativeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
+      const relativeFormatter =
+        typeof Intl !== 'undefined' && typeof Intl.RelativeTimeFormat === 'function'
+          ? new Intl.RelativeTimeFormat('ja', { numeric: 'auto' })
+          : null;
 
       const toRelative = (diffMs) => {
         const units = [
@@ -377,13 +381,29 @@
           { unit: 'second', value: 1000 }
         ];
 
-        for (const { unit, value } of units) {
-          if (Math.abs(diffMs) >= value) {
-            return relativeFormatter.format(Math.round(diffMs / value), unit);
+        if (relativeFormatter) {
+          for (const { unit, value } of units) {
+            if (Math.abs(diffMs) >= value) {
+              return relativeFormatter.format(Math.round(diffMs / value), unit);
+            }
           }
+          return relativeFormatter.format(0, 'second');
         }
 
-        return relativeFormatter.format(0, 'second');
+        const absoluteSeconds = Math.round(Math.abs(diffMs) / 1000);
+        if (absoluteSeconds >= 86400) {
+          const days = Math.round(absoluteSeconds / 86400);
+          return days + '日前';
+        }
+        if (absoluteSeconds >= 3600) {
+          const hours = Math.round(absoluteSeconds / 3600);
+          return hours + '時間前';
+        }
+        if (absoluteSeconds >= 60) {
+          const minutes = Math.round(absoluteSeconds / 60);
+          return minutes + '分前';
+        }
+        return absoluteSeconds + '秒前';
       };
 
       const getImportanceLevel = (score) => {
@@ -393,7 +413,12 @@
         return 'low';
       };
 
-      const normalizeText = (value) => (value ?? '').toString().replace(/\s+/g, ' ').trim();
+      const normalizeText = (value) => {
+        if (value === undefined || value === null) {
+          return '';
+        }
+        return value.toString().replace(/\s+/g, ' ').trim();
+      };
 
       const parseRelativeTimeLabel = (label, now = Date.now()) => {
         const original = normalizeText(label);
@@ -405,7 +430,7 @@
         if (match) {
           const amount = Number.parseInt(match[1], 10);
           const unit = match[2];
-          const unitMap = { 秒: 1000, 分: 60_000, 時間: 3_600_000, 日: 86_400_000 };
+          const unitMap = { 秒: 1000, 分: 60000, 時間: 3600000, 日: 86400000 };
           const multiplier = unitMap[unit];
           if (Number.isFinite(amount) && multiplier) {
             return { timestamp: now - amount * multiplier, label: original };
@@ -434,14 +459,15 @@
         panel.querySelectorAll('.enhanced-card, .card').forEach((card) => {
           const originalIndex = cardRecords.length;
           const link = card.querySelector('a');
-          const href = normalizeText(link?.href);
+          const href = normalizeText(link ? link.href : '');
+          const linkText = link ? link.textContent : '';
+          const cardTitleNode = card.querySelector('.card-title');
+          const summaryNode = card.querySelector('.card-summary');
           const titleText =
-            normalizeText(link?.textContent) ||
-            normalizeText(card.querySelector('.card-title')?.textContent) ||
+            normalizeText(linkText) ||
+            normalizeText(cardTitleNode ? cardTitleNode.textContent : '') ||
             '記事詳細';
-          const summaryText = normalizeText(
-            card.querySelector('.card-summary')?.textContent
-          );
+          const summaryText = normalizeText(summaryNode ? summaryNode.textContent : '');
 
           const chipElements = Array.from(
             card.querySelectorAll('.chip, .tag, .card-meta span')
@@ -657,7 +683,7 @@
         category: 'all',
         keywords: [],
         currentInput: '',
-        sort: sortSelect?.value || 'importance'
+        sort: sortSelect ? sortSelect.value || 'importance' : 'importance'
       };
 
       const applyTheme = (theme) => {
@@ -672,9 +698,12 @@
         }
       };
 
-      const storedTheme = (() => {
+      const storedTheme = (function () {
         try {
-          return localStorage.getItem('daily-ai-news-theme');
+          if (typeof window === 'undefined' || !window.localStorage) {
+            return null;
+          }
+          return window.localStorage.getItem('daily-ai-news-theme');
         } catch (error) {
           return null;
         }
@@ -690,7 +719,9 @@
         const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
         applyTheme(nextTheme);
         try {
-          localStorage.setItem('daily-ai-news-theme', nextTheme);
+          if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.setItem('daily-ai-news-theme', nextTheme);
+          }
         } catch (error) {
           // ignore
         }
@@ -755,8 +786,8 @@
         const activeKeywords = state.currentInput
           ? [...state.keywords, state.currentInput]
           : [...state.keywords];
-        const importanceFilter = importanceSelect?.value || 'all';
-        const freshnessFilter = freshnessSelect?.value || 'all';
+        const importanceFilter = importanceSelect ? importanceSelect.value || 'all' : 'all';
+        const freshnessFilter = freshnessSelect ? freshnessSelect.value || 'all' : 'all';
         const now = Date.now();
 
         let visibleCount = 0;
@@ -862,7 +893,7 @@
       if (searchForm) {
         searchForm.addEventListener('submit', (event) => {
           event.preventDefault();
-          const value = searchInput?.value.trim();
+          const value = searchInput ? searchInput.value.trim() : '';
           if (!value) return;
           const normalized = value.toLowerCase();
           if (!state.keywords.includes(normalized)) {
@@ -881,7 +912,9 @@
         searchInput.addEventListener('keydown', (event) => {
           if (event.key === 'Enter') {
             event.preventDefault();
-            searchForm?.dispatchEvent(new Event('submit', { cancelable: true }));
+            if (searchForm) {
+              searchForm.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
           }
           if (event.key === 'Backspace' && !searchInput.value && state.keywords.length) {
             state.keywords.pop();
@@ -896,13 +929,19 @@
         });
       }
 
-      importanceSelect?.addEventListener('change', applyFilters);
-      freshnessSelect?.addEventListener('change', applyFilters);
+      if (importanceSelect) {
+        importanceSelect.addEventListener('change', applyFilters);
+      }
+      if (freshnessSelect) {
+        freshnessSelect.addEventListener('change', applyFilters);
+      }
 
-      sortSelect?.addEventListener('change', (event) => {
-        state.sort = event.target.value;
-        applySortAndFilter();
-      });
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (event) => {
+          state.sort = event.target.value;
+          applySortAndFilter();
+        });
+      }
 
       applySortAndFilter();
       renderTags();
