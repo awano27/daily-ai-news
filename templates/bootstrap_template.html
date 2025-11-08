@@ -298,13 +298,13 @@
         </div>
       </div>
       <div class="tab-pane fade" id="business" role="tabpanel">
-        <div class="row g-4" data-category="business"></div>
+        <div class="row g-4" id="businessGrid"></div>
       </div>
       <div class="tab-pane fade" id="tools" role="tabpanel">
-        <div class="row g-4" data-category="tools"></div>
+        <div class="row g-4" id="toolsGrid"></div>
       </div>
       <div class="tab-pane fade" id="posts" role="tabpanel">
-        <div class="row g-4" data-category="posts"></div>
+        <div class="row g-4" id="postsGrid"></div>
       </div>
     </div>
   </div>
@@ -331,6 +331,51 @@
         col.className = 'col-md-6 col-lg-4';
         card.parentNode.insertBefore(col, card);
         col.appendChild(card);
+      });
+
+      // Populate category tabs with cards
+      function populateCategoryTabs() {
+        const businessGrid = document.getElementById('businessGrid');
+        const toolsGrid = document.getElementById('toolsGrid');
+        const postsGrid = document.getElementById('postsGrid');
+
+        // Clear existing content
+        businessGrid.innerHTML = '';
+        toolsGrid.innerHTML = '';
+        postsGrid.innerHTML = '';
+
+        // Get all cards and clone them to category tabs
+        const allCards = newsGrid.querySelectorAll('.col-md-6');
+
+        allCards.forEach(colDiv => {
+          const card = colDiv.querySelector('.news-card');
+          if (!card) return;
+
+          const category = card.dataset.categorySlug;
+
+          // Clone card with its wrapper
+          const clonedCol = colDiv.cloneNode(true);
+
+          // Add to appropriate category grid
+          if (category === 'business') {
+            businessGrid.appendChild(clonedCol);
+          } else if (category === 'tools') {
+            toolsGrid.appendChild(clonedCol);
+          } else if (category === 'posts') {
+            postsGrid.appendChild(clonedCol);
+          }
+        });
+      }
+
+      // Populate tabs on load
+      populateCategoryTabs();
+
+      // Update visible count when tab changes
+      const tabButtons = document.querySelectorAll('#categoryTabs button[data-bs-toggle="tab"]');
+      tabButtons.forEach(button => {
+        button.addEventListener('shown.bs.tab', (event) => {
+          applyFilters();
+        });
       });
 
       // Theme toggle
@@ -385,7 +430,25 @@
       }
 
       function applyFilters() {
-        const cards = document.querySelectorAll('.news-card');
+        // Get active tab
+        const activeTab = document.querySelector('#categoryTabs .nav-link.active');
+        const activeTabId = activeTab ? activeTab.getAttribute('data-bs-target').replace('#', '') : 'all';
+
+        // Get cards in the active tab
+        let targetGrid;
+        if (activeTabId === 'all') {
+          targetGrid = document.getElementById('newsGrid');
+        } else if (activeTabId === 'business') {
+          targetGrid = document.getElementById('businessGrid');
+        } else if (activeTabId === 'tools') {
+          targetGrid = document.getElementById('toolsGrid');
+        } else if (activeTabId === 'posts') {
+          targetGrid = document.getElementById('postsGrid');
+        }
+
+        if (!targetGrid) return;
+
+        const cards = targetGrid.querySelectorAll('.news-card');
         const importance = importanceFilter.value;
         const freshness = freshnessFilter.value;
         let visibleCount = 0;
@@ -402,7 +465,9 @@
           // Freshness filter
           if (freshness !== 'all' && visible) {
             const cardFreshness = card.dataset.freshnessBucket;
-            if (cardFreshness !== freshness) visible = false;
+            if (freshness === '24h' && cardFreshness !== '24h') visible = false;
+            if (freshness === '3d' && !['24h', '72h'].includes(cardFreshness)) visible = false;
+            if (freshness === '7d' && !['24h', '72h', '168h'].includes(cardFreshness)) visible = false;
           }
 
           // Keyword filter
@@ -414,8 +479,11 @@
             if (!hasAllKeywords) visible = false;
           }
 
-          card.closest('.col-md-6').style.display = visible ? '' : 'none';
-          if (visible) visibleCount++;
+          const colDiv = card.closest('.col-md-6');
+          if (colDiv) {
+            colDiv.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+          }
         });
 
         resultsCount.textContent = `${visibleCount} 件の記事を表示中`;
