@@ -351,7 +351,10 @@
           const card = colDiv.querySelector('.news-card');
           if (!card) return;
 
-          const category = card.dataset.categorySlug;
+          const category =
+            card.dataset.categorySlug ||
+            card.dataset.category ||
+            card.getAttribute('data-category');
 
           // Clone card with its wrapper
           const clonedCol = colDiv.cloneNode(true);
