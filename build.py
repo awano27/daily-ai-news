@@ -83,6 +83,14 @@ except ImportError:
     ENHANCED_X_AVAILABLE = False
     print("⚠️ Enhanced X Processor: Using fallback")
 
+try:
+    from gemini_news_supplement import GeminiNewsSupplementer
+    GEMINI_SUPPLEMENT_AVAILABLE = True
+    print("✅ Gemini News Supplement: Available")
+except ImportError:
+    GEMINI_SUPPLEMENT_AVAILABLE = False
+    print("⚠️ Gemini News Supplement: Unavailable")
+
 import time
 from urllib.parse import urljoin
 
@@ -107,6 +115,9 @@ def get_config():
         'translate_engine': os.getenv("TRANSLATE_ENGINE", "google").lower(),
         'x_posts_csv': os.getenv("X_POSTS_CSV", ""),
         'gemini_api_key': os.getenv("GEMINI_API_KEY", ""),
+        'gemini_supplement_enabled': os.getenv("GEMINI_SUPPLEMENT_ENABLED", "0") == "1",
+        'gemini_supplement_min_items': int(os.getenv("GEMINI_SUPPLEMENT_MIN_ITEMS", "8")),
+        'gemini_supplement_max_items': int(os.getenv("GEMINI_SUPPLEMENT_MAX_ITEMS", "3")),
         'debug_mode': os.getenv("DEBUG_MODE", "0") == "1"
     }
 
@@ -123,6 +134,14 @@ def get_config():
         print(f"[WARN] Invalid MAX_ITEMS_PER_CATEGORY: {config['max_items_per_category']}, using default 8")
         config['max_items_per_category'] = 8
 
+    if config['gemini_supplement_min_items'] < 1 or config['gemini_supplement_min_items'] > 20:
+        print(f"[WARN] Invalid GEMINI_SUPPLEMENT_MIN_ITEMS: {config['gemini_supplement_min_items']}, using default 8")
+        config['gemini_supplement_min_items'] = 8
+
+    if config['gemini_supplement_max_items'] < 0 or config['gemini_supplement_max_items'] > 10:
+        print(f"[WARN] Invalid GEMINI_SUPPLEMENT_MAX_ITEMS: {config['gemini_supplement_max_items']}, using default 3")
+        config['gemini_supplement_max_items'] = 3
+
     # デバッグモード表示
     if config['debug_mode']:
         print("[DEBUG] Debug mode enabled")
@@ -138,6 +157,9 @@ MAX_ITEMS_PER_CATEGORY = CONFIG['max_items_per_category']
 TRANSLATE_TO_JA = CONFIG['translate_to_ja']
 TRANSLATE_ENGINE = CONFIG['translate_engine']
 X_POSTS_CSV = CONFIG['x_posts_csv']
+GEMINI_SUPPLEMENT_ENABLED = CONFIG['gemini_supplement_enabled']
+GEMINI_SUPPLEMENT_MIN_ITEMS = CONFIG['gemini_supplement_min_items']
+GEMINI_SUPPLEMENT_MAX_ITEMS = CONFIG['gemini_supplement_max_items']
 
 JST = timezone(timedelta(hours=9))
 NOW = datetime.now(JST)
@@ -1552,18 +1574,7 @@ def gather_items(feeds, category_name):
                 print(f"[INFO] Found {entry_count} recent items from {name} (filtered out {filtered_count} non-AI items)")
             else:
                 print(f"[INFO] Found {entry_count} recent items from {name}")
-    # スマートソート: 重要度と時刻を組み合わせて並び替え
-    if category_name == "Business":
-        # ビジネスニュースは重要度順でソート
-        items.sort(key=lambda x: (calculate_importance_score(x), x["_dt"]), reverse=True)
-        print(f"[INFO] {category_name}: Sorted by importance score")
-    elif category_name == "Posts":
-        # SNS/論文ポストは重要度順でソート
-        items.sort(key=lambda x: (calculate_sns_importance_score(x), x["_dt"]), reverse=True)
-        print(f"[INFO] {category_name}: Sorted by SNS importance score")
-    else:
-        # ツールカテゴリは時刻順
-        items.sort(key=lambda x: x["_dt"], reverse=True)
+    items = sort_items_for_category(items, category_name)
     
     # 最終チェック: 403 URLがないことを確認
     items_before_filter = len(items)
@@ -1574,6 +1585,76 @@ def gather_items(feeds, category_name):
         print(f"✅ {category_name}: 最終フィルターで{items_before_filter - items_after_filter}件の403 URLを除外")
     
     print(f"[INFO] {category_name}: Total {len(items)} items found")
+    return items
+
+
+def sort_items_for_category(items, category_name):
+    if category_name == "Business":
+        items.sort(key=lambda x: (calculate_importance_score(x), x["_dt"]), reverse=True)
+        print(f"[INFO] {category_name}: Sorted by importance score")
+    elif category_name == "Posts":
+        items.sort(key=lambda x: (calculate_sns_importance_score(x), x["_dt"]), reverse=True)
+        print(f"[INFO] {category_name}: Sorted by SNS importance score")
+    else:
+        items.sort(key=lambda x: x["_dt"], reverse=True)
+    return items
+
+
+def supplement_items_with_gemini_search(items, category_name, seen_links, seen_titles):
+    if not GEMINI_SUPPLEMENT_ENABLED:
+        return items
+    if not GEMINI_SUPPLEMENT_AVAILABLE:
+        return items
+    if len(items) >= GEMINI_SUPPLEMENT_MIN_ITEMS:
+        return items
+
+    needed = min(GEMINI_SUPPLEMENT_MAX_ITEMS, GEMINI_SUPPLEMENT_MIN_ITEMS - len(items))
+    if needed <= 0:
+        return items
+
+    try:
+        supplementer = GeminiNewsSupplementer()
+    except Exception as e:
+        print(f"[WARN] Failed to initialize Gemini news supplementer: {e}")
+        return items
+
+    if not supplementer.enabled:
+        print(f"[INFO] Gemini supplement disabled for {category_name}")
+        return items
+
+    print(f"[INFO] {category_name}: Collecting up to {needed} supplemental items with Gemini Search...")
+    supplemental_items = supplementer.collect_category_items(category_name, HOURS_LOOKBACK, needed)
+    if not supplemental_items:
+        print(f"[INFO] {category_name}: Gemini supplement returned no items")
+        return items
+
+    added_count = 0
+    for item in supplemental_items:
+        link = (item.get("link") or "").strip()
+        title = (item.get("title") or "").lower().strip()
+        if (link and link in seen_links) or (title and title in seen_titles):
+            continue
+
+        if category_name == "Business":
+            item["_importance_score"] = calculate_importance_score(item)
+        elif category_name == "Posts":
+            item["_importance_score"] = calculate_sns_importance_score(item)
+        else:
+            item["_importance_score"] = item.get("_importance_score", 50)
+
+        items.append(item)
+        if link:
+            seen_links.add(link)
+        if title:
+            seen_titles.add(title)
+        added_count += 1
+
+    if added_count:
+        sort_items_for_category(items, category_name)
+        print(f"[INFO] {category_name}: Added {added_count} Gemini supplemental items")
+    else:
+        print(f"[INFO] {category_name}: Gemini supplement produced only duplicates")
+
     return items
 
 def main():
@@ -1668,6 +1749,10 @@ def main():
     posts = unique_posts
     
     print(f"[INFO] After deduplication: Business={len(business)}, Tools={len(tools)}, Posts={len(posts)}")
+
+    business = supplement_items_with_gemini_search(business, "Business", seen_links, seen_titles)
+    tools = supplement_items_with_gemini_search(tools, "Tools", seen_links, seen_titles)
+    posts = supplement_items_with_gemini_search(posts, "Posts", seen_links, seen_titles)
     
     # Inject X posts
     if X_POSTS_CSV:

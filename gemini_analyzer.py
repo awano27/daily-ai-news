@@ -19,10 +19,8 @@ class GeminiAnalyzer:
         """
         self.api_key = api_key or os.getenv('GEMINI_API_KEY')
         
-        # 最新のGemini 2.5モデルを使用 (2025年8月時点の最新安定版)
-        # gemini-2.5-flash: 最新の安定版（推奨）
-        # gemini-2.5-flash-lite: 低レイテンシ/高スループット版
-        # gemini-2.5-pro: 高度な推論用
+        # Direct API analysis uses the non-lite flash model.
+        # Lite collection is handled separately via Gemini 3.1 Flash-Lite Preview.
         self.model = "gemini-2.5-flash"  # 最新の安定版モデル
         self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
         
