@@ -90,7 +90,7 @@ jobs:
         run: |
           echo "🧪 Quick build test - {timestamp}"
           echo "GEMINI_API_KEY=${{{{ secrets.GEMINI_API_KEY }}}}" > .env
-          echo "GEMINI_MODEL=gemini-2.5-flash" >> .env
+echo "GEMINI_MODEL=gemini-3.1-flash-lite-preview" >> .env
           
           # Simple build test
           timeout 300 python build.py || echo "Build timeout"

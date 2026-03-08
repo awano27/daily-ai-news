@@ -25,7 +25,7 @@ try:
     
     if gemini_key:
         genai.configure(api_key=gemini_key)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
         print("ログ: Gemini API設定完了")
     else:
         model = None

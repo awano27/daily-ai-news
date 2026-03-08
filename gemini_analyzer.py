@@ -6,8 +6,29 @@ import os
 import json
 import time
 import requests
+import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime
+
+
+MODEL_ALIASES = {
+    "gemini-2.5-flash": "gemini-3.1-flash-lite-preview",
+    "gemini 2.5 flash": "gemini-3.1-flash-lite-preview",
+    "gemini25flash": "gemini-3.1-flash-lite-preview",
+    "gemini-2.5-flash-lite": "gemini-3.1-flash-lite-preview",
+    "gemini 2.5 flash lite": "gemini-3.1-flash-lite-preview",
+    "gemini25flashlite": "gemini-3.1-flash-lite-preview",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+    "gemini 3.1 flash lite": "gemini-3.1-flash-lite-preview",
+    "gemini31flashlite": "gemini-3.1-flash-lite-preview",
+}
+
+
+def normalize_model_name(model_name: Optional[str]) -> str:
+    if not model_name:
+        return "gemini-3.1-flash-lite-preview"
+    compact = re.sub(r"[\s_]+", "", model_name.strip().lower())
+    return MODEL_ALIASES.get(compact, model_name.strip())
 
 class GeminiAnalyzer:
     def __init__(self, api_key: Optional[str] = None):
@@ -19,9 +40,9 @@ class GeminiAnalyzer:
         """
         self.api_key = api_key or os.getenv('GEMINI_API_KEY')
         
-        # Direct API analysis uses the non-lite flash model.
-        # Lite collection is handled separately via Gemini 3.1 Flash-Lite Preview.
-        self.model = "gemini-2.5-flash"  # 最新の安定版モデル
+        self.model = "gemini-3.1-flash-lite-preview"
+        self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
+        self.model = normalize_model_name(os.getenv('GEMINI_MODEL', self.model))
         self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
         
         if not self.api_key:

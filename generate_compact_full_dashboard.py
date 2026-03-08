@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-コンパクト版フルダッシュボード - Gemini-2.5-flashでソース検証
+コンパクト版フルダッシュボード - Gemini-3.1-Flash-Lite Previewでソース検証
 """
 
 import json
@@ -25,7 +25,7 @@ try:
     
     if gemini_key:
         genai.configure(api_key=gemini_key)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
         print("✅ Gemini API設定完了")
     else:
         model = None
@@ -500,7 +500,7 @@ def main():
         print(f"✅ コンパクト版フルダッシュボード生成完了: {filename}")
         print(f"📊 検証済み記事: {articles_count}件")
         print(f"📱 厳選投稿: {posts_count}件")
-        print("🤖 全てGemini-2.5-flashで検証済み")
+print("🤖 全てGemini-3.1-Flash-Lite Previewで検証済み")
         
         return True
         

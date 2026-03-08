@@ -191,7 +191,7 @@ def create_env_template():
     
     env_template = """# Gemini API設定
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.1-flash-lite-preview
 
 # Vertex AI使用時（オプション）
 # GOOGLE_GENAI_USE_VERTEXAI=true

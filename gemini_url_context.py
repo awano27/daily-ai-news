@@ -6,6 +6,7 @@ Gemini URL Context Client - GA版URL contextを使った統一的情報収集シ
 import os
 import json
 import logging
+import re
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
@@ -22,6 +23,25 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+MODEL_ALIASES = {
+    "gemini-2.5-flash": "gemini-3.1-flash-lite-preview",
+    "gemini 2.5 flash": "gemini-3.1-flash-lite-preview",
+    "gemini25flash": "gemini-3.1-flash-lite-preview",
+    "gemini-2.5-flash-lite": "gemini-3.1-flash-lite-preview",
+    "gemini 2.5 flash lite": "gemini-3.1-flash-lite-preview",
+    "gemini25flashlite": "gemini-3.1-flash-lite-preview",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+    "gemini 3.1 flash lite": "gemini-3.1-flash-lite-preview",
+    "gemini31flashlite": "gemini-3.1-flash-lite-preview",
+}
+
+
+def normalize_model_name(model_name: Optional[str]) -> str:
+    if not model_name:
+        return "gemini-3.1-flash-lite-preview"
+    compact = re.sub(r"[\s_]+", "", model_name.strip().lower())
+    return MODEL_ALIASES.get(compact, model_name.strip())
+
 class GeminiURLContextClient:
     """Gemini URL Context APIクライアント"""
     
@@ -31,7 +51,9 @@ class GeminiURLContextClient:
             raise ImportError("google-genai パッケージをインストールしてください")
         
         self.client = self._make_client()
-        self.default_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        self.default_model = normalize_model_name(
+            os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
+        )
         
     def _make_client(self) -> 'genai.Client':
         """Geminiクライアント作成（Vertex AI対応）"""
