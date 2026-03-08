@@ -30,6 +30,9 @@ jobs:
       TRANSLATE_ENGINE: "google"
       HOURS_LOOKBACK: "36"
       MAX_ITEMS_PER_CATEGORY: "20"
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_SUPPLEMENT_ENABLED: ${{ secrets.GEMINI_SUPPLEMENT_ENABLED || '1' }}
+      GEMINI_SUPPLEMENT_MODEL: ${{ secrets.GEMINI_SUPPLEMENT_MODEL || 'gemini-3.1-flash-lite-preview' }}
       X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk9zTaFaUyY7HImC-G2mdSqCjdl0P4jLFd_NtVKuMvnTjQyjQJ0_MLGAUbOFKs7Hdmix3OP413Rui8/pub?output=csv' }}
     steps:
       - name: Checkout
@@ -325,6 +328,5 @@ jobs:
           echo "  - CSV file temporarily unavailable"
           echo "  - Network connectivity issues"
           echo "  - Deployment token expired"
-
 
 
