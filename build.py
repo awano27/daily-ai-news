@@ -580,8 +580,8 @@ def enhanced_gather_x_posts_implementation(csv_path: str) -> list[dict]:
 
 
 def gather_x_posts(csv_path: str) -> list[dict]:
-    """X投稿取得 - 強制的にスコア10.0で表示"""
-    print(f"🔥 X投稿取得開始（強制表示モード）: {csv_path}")
+    """X投稿取得 - 内容ベースで重要度を計算して返す。"""
+    print(f"🔥 X投稿取得開始: {csv_path}")
     
     # まず通常の処理を試行
     posts = enhanced_gather_x_posts_implementation(csv_path)
@@ -651,11 +651,16 @@ def gather_x_posts(csv_path: str) -> list[dict]:
                 if len(posts) >= 10:  # 10件まで
                     break
     
-    # 全ての投稿にスコア10.0を設定（確実に表示させるため）
+    # 投稿ごとに内容ベースで重要度を計算
     for post in posts:
-        post['_importance_score'] = 10.0
-    
-    print(f"🎯 X投稿処理完了: {len(posts)}件（全て最高スコア10.0）")
+        existing_score = post.get("_importance_score")
+        calculated_score = calculate_sns_importance_score(post)
+        if existing_score is None:
+            post["_importance_score"] = calculated_score
+        else:
+            post["_importance_score"] = max(float(existing_score), calculated_score)
+
+    print(f"🎯 X投稿処理完了: {len(posts)}件（内容ベースで重要度算出）")
     return posts[:20]
 
 def original_gather_x_posts(csv_path: str) -> list[dict]:
@@ -775,7 +780,7 @@ CARD_TMPL = """
       <div class="news-card__meta-top">
         <span class="news-card__badge news-card__badge--{importance_level}" aria-label="重要度 {importance_label}">{importance_label}</span>
         <span class="news-card__freshness" aria-label="鮮度 {freshness_label}">{freshness_label}</span>
-        <span class="news-card__score" aria-label="重要度スコア {score_aria}">スコア {score_text}</span>
+        <span class="news-card__reason" aria-label="注目理由 {importance_note}">{importance_note}</span>
       </div>
     </div>
   </header>
@@ -805,10 +810,11 @@ CARD_TMPL = """
       </div>
     </dl>
     <div class="news-card__footer-meta">
-      <span class="news-card__trust" aria-label="信頼度 {source_trust}点">
+      <span class="news-card__trust" aria-label="情報源 {source_trust_label}">
         <span class="news-card__trust-bar" style="--trust-level:{source_trust_percent}%"></span>
-        信頼度 {source_trust}/100
+        情報源 {source_trust_label}
       </span>
+      <span class="news-card__trust-note">{source_trust_note}</span>
       <a class="news-card__cta" href="{link}" target="_blank" rel="noopener">原文を開く</a>
     </div>
   </footer>
@@ -1229,6 +1235,52 @@ def categorize_source(source_name: str) -> str:
         return "プレスリリース"
     return "その他"
 
+
+def describe_importance(level: str, score: float, source_category: str) -> tuple[str, str]:
+    """Return a user-facing importance label and short reason."""
+    if level == "high":
+        if source_category in {"公式リリース", "研究・論文"}:
+            return "見逃せない", "公式発表や研究成果など影響が大きい話題"
+        return "見逃せない", "大型アップデートや業界への影響が大きい話題"
+    if level == "medium":
+        if score >= 5.5:
+            return "チェック推奨", "今日の動向を追うなら押さえたい話題"
+        return "チェック推奨", "役立つ更新や注目トピック"
+    if source_category == "コミュニティ・SNS":
+        return "参考メモ", "個人の観測や現場の反応を知るための話題"
+    return "参考メモ", "小さめの更新や補足的な話題"
+
+
+def describe_source_reliability(source_name: str, trust: int) -> tuple[str, str]:
+    """Return a user-facing source label and short explanation."""
+    category = categorize_source(source_name)
+    if category == "公式リリース":
+        return "一次情報", "企業や開発元の公式発表"
+    if category == "研究・論文":
+        return "研究ソース", "論文や研究機関の公開情報"
+    if category == "テックメディア":
+        if trust >= 85:
+            return "主要メディア", "編集付きの報道ソース"
+        return "業界メディア", "専門メディアによる解説や報道"
+    if category == "コミュニティ・SNS":
+        return "コミュニティ", "SNS や投稿ベースの情報"
+    if category == "プレスリリース":
+        return "告知情報", "企業の発表文をそのまま伝える情報"
+    if trust >= 80:
+        return "比較的安定", "発信元が明確で参照しやすい情報"
+    return "参考情報", "補助的に見るのが向いている情報"
+
+
+def describe_freshness_bucket(bucket: str) -> str:
+    """Return a user-facing freshness label."""
+    labels = {
+        "24h": "24時間以内",
+        "72h": "3日以内",
+        "168h": "1週間以内",
+        "all": "少し前"
+    }
+    return labels.get(bucket, "時期不明")
+
 def build_source_list_html(counter: Counter, details: dict, total_items: int) -> tuple[str, str]:
     """主要ソース一覧の HTML（モダン／レガシー用）を生成"""
     if not counter:
@@ -1241,6 +1293,7 @@ def build_source_list_html(counter: Counter, details: dict, total_items: int) ->
         detail = details.get(source, {})
         trust = int(round(detail.get("trust", 50)))
         category = detail.get("category", "その他")
+        trust_label, _ = describe_source_reliability(source, trust)
         share = (count / total_items * 100) if total_items else 0
         share_text = f"{share:.1f}%"
 
@@ -1251,12 +1304,12 @@ def build_source_list_html(counter: Counter, details: dict, total_items: int) ->
             f"<span class=\"source-item__category\">{html.escape(category)}</span>"
             f"<span class=\"source-item__count\" aria-label=\"記事数 {count}件\">{count}件</span>"
             f"<span class=\"source-item__share\" aria-label=\"全体に占める割合 {share_text}\">{share_text}</span>"
-            f"<span class=\"source-item__trust\" aria-label=\"信頼度 {trust}点\">信頼度 {trust}</span>"
+            f"<span class=\"source-item__trust\" aria-label=\"情報源 {html.escape(trust_label)}\">{html.escape(trust_label)}</span>"
             "</li>"
         )
 
         lines_legacy.append(
-            f"      <li>#{idx} {html.escape(source)}（{count}件・信頼度 {trust}・{html.escape(category)}）</li>"
+            f"      <li>#{idx} {html.escape(source)}（{count}件・{html.escape(trust_label)}・{html.escape(category)}）</li>"
         )
 
     modern_html = "\n".join([
@@ -1323,14 +1376,15 @@ def build_cards(items, translator, category_slug: str, category_label: str):
         dt = it.get("_dt")
         raw_summary = html.unescape(it.get("_summary") or "")
         normalized_score = normalize_importance_score(it.get("_importance_score"))
+        source_category = categorize_source(src)
 
         # ソース信頼度計算
         source_trust = int(round(calculate_source_trust(src)))
         source_trust_percent = max(0, min(100, source_trust))
+        source_trust_label, source_trust_note = describe_source_reliability(src, source_trust)
 
         # 鮮度計算
         freshness_score = calculate_freshness_score(dt) if dt else 50
-        freshness_indicator = get_freshness_indicator(freshness_score)
         if dt:
             hours_old = (NOW - dt).total_seconds() / 3600
             if hours_old <= 24:
@@ -1343,6 +1397,7 @@ def build_cards(items, translator, category_slug: str, category_label: str):
                 freshness_bucket = "all"
         else:
             freshness_bucket = "all"
+        freshness_indicator = describe_freshness_bucket(freshness_bucket)
 
         # 翻訳処理
         ja_summary = raw_summary
@@ -1381,10 +1436,10 @@ def build_cards(items, translator, category_slug: str, category_label: str):
             translation_badge = f"原文: {language_label(original_lang_code)}"
 
         importance_level = "high" if normalized_score >= 7 else "medium" if normalized_score >= 4 else "low"
-        importance_label = {"high": "重要度 高", "medium": "重要度 中", "low": "重要度 低"}[importance_level]
+        importance_label, importance_note = describe_importance(
+            importance_level, normalized_score, source_category
+        )
         score_value = f"{normalized_score:.2f}"
-        score_text = f"{normalized_score:.1f}" if normalized_score > 0 else "—"
-        score_aria = score_text if score_text != "—" else "スコア情報なし"
 
         rank_display = f"{idx:02d}"
         rank_aria = str(idx)
@@ -1399,8 +1454,8 @@ def build_cards(items, translator, category_slug: str, category_label: str):
             tags.append("新着")
         elif freshness_bucket == "72h":
             tags.append("最近")
-        if source_trust >= 85:
-            tags.append("公式ソース")
+        if source_category in {"公式リリース", "研究・論文"}:
+            tags.append("一次情報")
 
         tags_html = "\n".join(
             f'      <span class="news-card__tag">{html.escape(tag)}</span>'
@@ -1425,8 +1480,6 @@ def build_cards(items, translator, category_slug: str, category_label: str):
             category_slug=html.escape(category_slug, quote=False),
             importance_level=importance_level,
             score_value=score_value,
-            score_text=score_text,
-            score_aria=score_aria,
             freshness_score=f"{freshness_score:.0f}",
             freshness_label=freshness_indicator,
             freshness_bucket=freshness_bucket,
@@ -1442,9 +1495,11 @@ def build_cards(items, translator, category_slug: str, category_label: str):
             reading_time_text=html.escape(reading_time_text, quote=False),
             published_text=published_text,
             importance_label=importance_label,
+            importance_note=html.escape(importance_note, quote=False),
             tags_html=tags_html,
             tags_filter=html.escape(tags_filter, quote=True),
-            source_trust=str(source_trust),
+            source_trust_label=html.escape(source_trust_label, quote=False),
+            source_trust_note=html.escape(source_trust_note, quote=False),
             source_trust_percent=str(source_trust_percent),
             source_slug=html.escape(source_slug, quote=True)
         ))

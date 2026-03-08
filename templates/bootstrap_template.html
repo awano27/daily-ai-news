@@ -3,171 +3,345 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Daily AI News — %%UPDATED_FULL%%</title>
-  <meta name="description" content="Daily AI News は AI 動向を俯瞰できる日本語ダイジェストです。">
-
-  <!-- Bootstrap 5.3 CSS -->
+  <title>%%PAGE_TITLE%%</title>
+  <meta name="description" content="Daily AI News は、最新のAIニュースを見逃せない順に整理して表示するダイジェストです。">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: 15px;
-    }
-    .navbar-brand {
-      font-weight: 700;
-      font-size: 1.5rem;
-    }
-    .news-card {
-      transition: transform 0.2s, box-shadow 0.2s;
-      height: 100%;
-    }
-    .news-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    .badge-importance-high { background-color: #dc3545; }
-    .badge-importance-medium { background-color: #ffc107; color: #000; }
-    .badge-importance-low { background-color: #6c757d; }
-    .category-badge { font-size: 0.75rem; }
-    [data-bs-theme="dark"] .news-card {
-      background-color: #212529;
-      border-color: #495057;
-    }
-    [data-bs-theme="dark"] .news-card:hover {
-      box-shadow: 0 4px 12px rgba(255,255,255,0.1);
-    }
-    .nav-tabs .nav-link {
-      cursor: pointer;
-    }
-    .search-tags .badge {
-      cursor: pointer;
+    :root {
+      --page-bg: #f3f6fb;
+      --panel-bg: rgba(255, 255, 255, 0.9);
+      --panel-border: rgba(15, 23, 42, 0.08);
+      --panel-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      --text-soft: #64748b;
+      --brand: #0d6efd;
+      --brand-soft: rgba(13, 110, 253, 0.08);
+      --danger-soft: #b42318;
+      --warning-soft: #b54708;
+      --muted-soft: #475467;
     }
 
-    /* Support for legacy card styles from build.py */
+    [data-bs-theme="dark"] {
+      --page-bg: #09111f;
+      --panel-bg: rgba(15, 23, 42, 0.92);
+      --panel-border: rgba(148, 163, 184, 0.14);
+      --panel-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+      --text-soft: #94a3b8;
+      --brand-soft: rgba(96, 165, 250, 0.12);
+      --danger-soft: #fda29b;
+      --warning-soft: #fecd57;
+      --muted-soft: #cbd5e1;
+    }
+
+    body {
+      font-family: "Noto Sans JP", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(13, 110, 253, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(13, 110, 253, 0.04), transparent 26%),
+        var(--page-bg);
+      min-height: 100vh;
+    }
+
+    .navbar-brand {
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .surface-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--panel-shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-copy {
+      max-width: 760px;
+    }
+
+    .hero-note {
+      color: var(--text-soft);
+    }
+
+    .metric-card {
+      height: 100%;
+      border-radius: 1rem;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .metric-label {
+      color: var(--text-soft);
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+      margin-bottom: 0;
+    }
+
+    .guide-chip {
+      height: 100%;
+      border-radius: 1rem;
+      padding: 1rem;
+      background: var(--brand-soft);
+      border: 1px solid rgba(13, 110, 253, 0.12);
+    }
+
+    .guide-chip__label {
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+    }
+
+    .guide-chip__copy {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .news-card {
+      position: relative;
+      height: 100%;
+      border-radius: 1rem;
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      box-shadow: var(--panel-shadow);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      overflow: hidden;
+    }
+
+    .news-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(13, 110, 253, 0.22);
+    }
+
+    .news-card__header,
+    .news-card__body,
+    .news-card__footer {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
     .news-card__header {
-      padding: 1rem 1rem 0.5rem;
+      padding-top: 1rem;
+      padding-bottom: 0.5rem;
     }
+
+    .news-card__body {
+      padding-top: 0.25rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .news-card__footer {
+      padding-top: 0.75rem;
+      padding-bottom: 1rem;
+      border-top: 1px solid var(--panel-border);
+    }
+
+    .news-card__rank {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.78rem;
+    }
+
     .news-card__title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      text-decoration: none;
+      display: inline-block;
       color: inherit;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.06rem;
+      line-height: 1.5;
+      padding-right: 3rem;
     }
+
     .news-card__title:hover {
-      color: #0d6efd;
+      color: var(--brand);
     }
+
     .news-card__meta-top {
       display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
       flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.6rem;
     }
+
+    .news-card__badge,
+    .news-card__freshness,
+    .news-card__reason,
+    .news-card__tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      line-height: 1;
+      padding: 0.45rem 0.7rem;
+    }
+
     .news-card__badge {
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .news-card__badge--high {
+      background: #b42318;
+    }
+
+    .news-card__badge--medium {
+      background: #b54708;
+    }
+
+    .news-card__badge--low {
+      background: #475467;
+    }
+
+    .news-card__freshness {
+      background: rgba(13, 110, 253, 0.1);
+      color: var(--brand);
+      font-weight: 700;
+    }
+
+    .news-card__reason {
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--text-soft);
       font-weight: 600;
     }
-    .news-card__badge--high {
-      background-color: #dc3545;
-      color: white;
+
+    [data-bs-theme="dark"] .news-card__reason {
+      background: rgba(148, 163, 184, 0.12);
     }
-    .news-card__badge--medium {
-      background-color: #ffc107;
-      color: #000;
-    }
-    .news-card__badge--low {
-      background-color: #6c757d;
-      color: white;
-    }
-    .news-card__freshness,
-    .news-card__score {
-      font-size: 0.875rem;
-      color: #6c757d;
-    }
-    .news-card__body {
-      padding: 0.5rem 1rem;
-    }
+
     .news-card__summary {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      margin-bottom: 0.75rem;
+      margin: 0;
+      line-height: 1.7;
+      color: var(--muted-soft);
+      font-size: 0.95rem;
     }
+
     .news-card__taglist {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.25rem;
-      margin-bottom: 0.5rem;
+      gap: 0.4rem;
+      margin-top: 0.85rem;
     }
+
     .news-card__tag {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      background-color: #e9ecef;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
-      text-decoration: none;
-      color: #495057;
-    }
-    .news-card__footer {
-      padding: 0.5rem 1rem 1rem;
-      border-top: 1px solid #dee2e6;
-      font-size: 0.875rem;
-    }
-    .news-card__details {
-      display: flex;
-      gap: 1rem;
-      margin: 0;
-    }
-    .news-card__details > div {
-      display: flex;
-      gap: 0.25rem;
-    }
-    .news-card__details dt {
-      font-weight: 600;
-      color: #6c757d;
-    }
-    .news-card__details dd {
-      margin: 0;
-    }
-    .news-card__rank {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background-color: #0d6efd;
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
+      background: rgba(13, 110, 253, 0.07);
+      color: var(--brand);
       font-weight: 700;
     }
-    .news-card {
+
+    .news-card__details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.8rem;
+      margin: 0;
+    }
+
+    .news-card__details dt {
+      margin-bottom: 0.2rem;
+      font-size: 0.75rem;
+      color: var(--text-soft);
+    }
+
+    .news-card__details dd {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .news-card__footer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.85rem;
+    }
+
+    .news-card__trust {
       position: relative;
-      border: 1px solid #dee2e6;
-      border-radius: 0.5rem;
-      background-color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-weight: 700;
+      padding-left: 1.9rem;
     }
-    [data-bs-theme="dark"] .news-card {
-      background-color: #212529;
-      border-color: #495057;
+
+    .news-card__trust::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 1.5rem;
+      height: 0.36rem;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: rgba(13, 110, 253, 0.12);
     }
-    [data-bs-theme="dark"] .news-card__tag {
-      background-color: #495057;
-      color: #dee2e6;
+
+    .news-card__trust-bar {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: calc(var(--trust-level, 0) * 1%);
+      height: 0.36rem;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: var(--brand);
     }
-    [data-bs-theme="dark"] .news-card__footer {
-      border-top-color: #495057;
+
+    .news-card__trust-note {
+      color: var(--text-soft);
+      font-size: 0.82rem;
+    }
+
+    .news-card__cta {
+      margin-left: auto;
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .news-card__cta:hover {
+      text-decoration: underline;
+    }
+
+    .tab-pane .row > [class*="col-"] {
+      margin-bottom: 0;
+    }
+
+    #legacyData {
+      display: none;
+    }
+
+    @media (max-width: 767.98px) {
+      .metric-value {
+        font-size: 1.7rem;
+      }
+
+      .news-card__title {
+        padding-right: 2.2rem;
+      }
+
+      .news-card__footer-meta {
+        align-items: flex-start;
+      }
+
+      .news-card__cta {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
@@ -175,132 +349,145 @@
       </a>
       <ul class="navbar-nav ms-auto me-3">
         <li class="nav-item">
-          <a class="nav-link text-white" href="research_resources.html">研究論文リソース</a>
+          <a class="nav-link text-white" href="research_resources.html">研究リソース</a>
         </li>
       </ul>
-      <div class="d-flex align-items-center">
-        <span class="text-white me-3 small">
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-white small">
           <i class="bi bi-clock"></i> %%UPDATED_FULL%%
         </span>
-        <button class="btn btn-outline-light btn-sm" id="themeToggle" type="button">
+        <button class="btn btn-outline-light btn-sm" id="themeToggle" type="button" aria-label="テーマ切替">
           <i class="bi bi-moon-stars"></i>
         </button>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid py-4">
-    <!-- Stats -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-3 col-sm-6">
-        <div class="card text-center">
-          <div class="card-body">
-            <h5 class="card-title mb-0">%%TOTAL_ITEMS%%</h5>
-            <p class="card-text text-muted small">総記事数</p>
-          </div>
-        </div>
+  <main class="container-fluid py-4 py-lg-5">
+    <section class="surface-card rounded-4 p-4 p-lg-5 mb-4">
+      <div class="hero-copy">
+        <h1 class="display-6 fw-bold mb-3">今日のAIニュースを、意味が分かる順番でまとめています。</h1>
+        <p class="hero-note mb-0">「スコア 10.0」「信頼度 50/100」のような内部数値は見せず、<strong>見逃せない</strong>、<strong>チェック推奨</strong>、<strong>参考メモ</strong> の3段階で整理しています。</p>
       </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="card text-center">
-          <div class="card-body">
-            <h5 class="card-title mb-0">%%BUSINESS_COUNT%%</h5>
-            <p class="card-text text-muted small">ビジネス</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="card text-center">
-          <div class="card-body">
-            <h5 class="card-title mb-0">%%TOOLS_COUNT%%</h5>
-            <p class="card-text text-muted small">ツール</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="card text-center">
-          <div class="card-body">
-            <h5 class="card-title mb-0">%%POSTS_COUNT%%</h5>
-            <p class="card-text text-muted small">SNS/論文</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <!-- Search and Filters -->
-    <div class="card mb-4">
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control" id="searchInput" placeholder="キーワードで検索...">
-            </div>
-            <div id="searchTags" class="mt-2 search-tags"></div>
+    <section class="row g-3 mb-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="surface-card metric-card p-4">
+          <div class="metric-value">%%TOTAL_ITEMS%%</div>
+          <p class="metric-label">表示中の記事数</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="surface-card metric-card p-4">
+          <div class="metric-value">%%BUSINESS_COUNT%%</div>
+          <p class="metric-label">ビジネス</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="surface-card metric-card p-4">
+          <div class="metric-value">%%TOOLS_COUNT%%</div>
+          <p class="metric-label">ツール</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="surface-card metric-card p-4">
+          <div class="metric-value">%%POSTS_COUNT%%</div>
+          <p class="metric-label">SNS / 論文</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="surface-card rounded-4 p-4 mb-4">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
+        <div>
+          <h2 class="h4 mb-2">このページの見方</h2>
+          <p class="text-secondary-emphasis mb-0">並び順は「影響の大きさ」と「新しさ」をもとに自動で決めています。まず上から見れば、大きな話題を追えます。</p>
+        </div>
+        <div class="small text-secondary-emphasis">
+          更新範囲: %%LOOKBACK_LABEL%%<br>
+          一次情報や主要メディアは上位に来やすくなります
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="guide-chip">
+            <div class="guide-chip__label">見逃せない</div>
+            <p class="guide-chip__copy">公式発表、大型リリース、資金調達、研究成果など、影響が大きい話題です。</p>
           </div>
-          <div class="col-md-2">
-            <select class="form-select" id="importanceFilter">
-              <option value="all">すべての重要度</option>
-              <option value="high">高 (7.0+)</option>
-              <option value="medium">中 (4.0-6.9)</option>
-              <option value="low">低 (0-3.9)</option>
-            </select>
+        </div>
+        <div class="col-md-4">
+          <div class="guide-chip">
+            <div class="guide-chip__label">チェック推奨</div>
+            <p class="guide-chip__copy">今日の動向を追うなら押さえたい更新です。実用的な新機能や業界トピックが入ります。</p>
           </div>
-          <div class="col-md-2">
-            <select class="form-select" id="freshnessFilter">
-              <option value="all">すべての期間</option>
-              <option value="24h">24時間以内</option>
-              <option value="3d">3日以内</option>
-              <option value="7d">7日以内</option>
-            </select>
-          </div>
-          <div class="col-md-2">
-            <button class="btn btn-outline-secondary w-100" id="clearFilters">
-              <i class="bi bi-x-circle"></i> クリア
-            </button>
+        </div>
+        <div class="col-md-4">
+          <div class="guide-chip">
+            <div class="guide-chip__label">参考メモ</div>
+            <p class="guide-chip__copy">個人投稿や補足情報など、背景理解や現場感をつかむための話題です。</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Tabs -->
-    <ul class="nav nav-tabs mb-4" id="categoryTabs" role="tablist">
+    <section class="surface-card rounded-4 p-4 mb-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="searchInput" placeholder="キーワードで絞り込み">
+          </div>
+          <div id="searchTags" class="mt-2"></div>
+        </div>
+        <div class="col-sm-4 col-lg-2">
+          <select class="form-select" id="importanceFilter" aria-label="注目度で絞り込み">
+            <option value="all">すべての注目度</option>
+            <option value="high">見逃せない</option>
+            <option value="medium">チェック推奨</option>
+            <option value="low">参考メモ</option>
+          </select>
+        </div>
+        <div class="col-sm-4 col-lg-2">
+          <select class="form-select" id="freshnessFilter" aria-label="新しさで絞り込み">
+            <option value="all">すべての時期</option>
+            <option value="24h">24時間以内</option>
+            <option value="3d">3日以内</option>
+            <option value="7d">1週間以内</option>
+          </select>
+        </div>
+        <div class="col-sm-4 col-lg-2">
+          <button class="btn btn-outline-secondary w-100" id="clearFilters" type="button">
+            <i class="bi bi-x-circle"></i> 条件をリセット
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <ul class="nav nav-tabs mb-3" id="categoryTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all"
-                type="button" role="tab" data-category="all">
-          <i class="bi bi-grid"></i> すべて
-        </button>
+        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" data-category="all" type="button" role="tab">すべて</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="business-tab" data-bs-toggle="tab" data-bs-target="#business"
-                type="button" role="tab" data-category="business">
-          <i class="bi bi-briefcase"></i> ビジネス
-        </button>
+        <button class="nav-link" id="business-tab" data-bs-toggle="tab" data-bs-target="#business" data-category="business" type="button" role="tab">ビジネス</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tools-tab" data-bs-toggle="tab" data-bs-target="#tools"
-                type="button" role="tab" data-category="tools">
-          <i class="bi bi-tools"></i> ツール
-        </button>
+        <button class="nav-link" id="tools-tab" data-bs-toggle="tab" data-bs-target="#tools" data-category="tools" type="button" role="tab">ツール</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts"
-                type="button" role="tab" data-category="posts">
-          <i class="bi bi-chat-dots"></i> SNS/論文
-        </button>
+        <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" data-category="posts" type="button" role="tab">SNS / 論文</button>
       </li>
     </ul>
 
-    <!-- Results Count -->
-    <div class="alert alert-info" role="status" id="resultsCount">
-      %%TOTAL_ITEMS%% 件の記事を表示中
+    <div class="alert alert-primary mb-4" id="resultsCount" role="status">%%TOTAL_ITEMS%%件を表示中</div>
+
+    <div id="legacyData">
+%%LEGACY_SECTIONS%%
     </div>
 
-    <!-- News Grid -->
     <div class="tab-content" id="categoryTabContent">
       <div class="tab-pane fade show active" id="all" role="tabpanel">
-        <div class="row g-4" id="newsGrid">
-          %%LEGACY_SECTIONS%%
-        </div>
+        <div class="row g-4" id="newsGrid"></div>
       </div>
       <div class="tab-pane fade" id="business" role="tabpanel">
         <div class="row g-4" id="businessGrid"></div>
@@ -312,189 +499,151 @@
         <div class="row g-4" id="postsGrid"></div>
       </div>
     </div>
-  </div>
+  </main>
 
-  <!-- Bootstrap 5.3 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const html = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
       const searchInput = document.getElementById('searchInput');
       const searchTags = document.getElementById('searchTags');
       const importanceFilter = document.getElementById('importanceFilter');
       const freshnessFilter = document.getElementById('freshnessFilter');
       const clearFilters = document.getElementById('clearFilters');
       const resultsCount = document.getElementById('resultsCount');
-      const themeToggle = document.getElementById('themeToggle');
-      const html = document.documentElement;
+      const legacyData = document.getElementById('legacyData');
+      const tabButtons = document.querySelectorAll('#categoryTabs button[data-bs-toggle="tab"]');
 
-      // Wrap news cards in Bootstrap grid columns
-      const newsGrid = document.getElementById('newsGrid');
-      const cards = newsGrid.querySelectorAll('.news-card');
-      cards.forEach(card => {
+      const grids = {
+        all: document.getElementById('newsGrid'),
+        business: document.getElementById('businessGrid'),
+        tools: document.getElementById('toolsGrid'),
+        posts: document.getElementById('postsGrid')
+      };
+
+      const sourceCards = Array.from(legacyData.querySelectorAll('.news-card'));
+
+      function createCol(card) {
         const col = document.createElement('div');
-        col.className = 'col-md-6 col-lg-4';
-        card.parentNode.insertBefore(col, card);
+        col.className = 'col-md-6 col-xl-4';
         col.appendChild(card);
-      });
+        return col;
+      }
 
-      // Populate category tabs with cards
-      function populateCategoryTabs() {
-        const businessGrid = document.getElementById('businessGrid');
-        const toolsGrid = document.getElementById('toolsGrid');
-        const postsGrid = document.getElementById('postsGrid');
+      function populateGrids() {
+        Object.values(grids).forEach((grid) => {
+          grid.innerHTML = '';
+        });
 
-        // Clear existing content
-        businessGrid.innerHTML = '';
-        toolsGrid.innerHTML = '';
-        postsGrid.innerHTML = '';
-
-        // Get all cards and clone them to category tabs
-        const allCards = newsGrid.querySelectorAll('.col-md-6');
-
-        allCards.forEach(colDiv => {
-          const card = colDiv.querySelector('.news-card');
-          if (!card) return;
-
-          const category =
-            card.dataset.categorySlug ||
-            card.dataset.category ||
-            card.getAttribute('data-category');
-
-          // Clone card with its wrapper
-          const clonedCol = colDiv.cloneNode(true);
-
-          // Add to appropriate category grid
-          if (category === 'business') {
-            businessGrid.appendChild(clonedCol);
-          } else if (category === 'tools') {
-            toolsGrid.appendChild(clonedCol);
-          } else if (category === 'posts') {
-            postsGrid.appendChild(clonedCol);
+        sourceCards.forEach((card) => {
+          const category = card.dataset.category || 'all';
+          grids.all.appendChild(createCol(card.cloneNode(true)));
+          if (grids[category]) {
+            grids[category].appendChild(createCol(card.cloneNode(true)));
           }
         });
       }
 
-      // Populate tabs on load
-      populateCategoryTabs();
+      populateGrids();
 
-      // Update visible count when tab changes
-      const tabButtons = document.querySelectorAll('#categoryTabs button[data-bs-toggle="tab"]');
-      tabButtons.forEach(button => {
-        button.addEventListener('shown.bs.tab', (event) => {
-          applyFilters();
-        });
-      });
-
-      // Theme toggle
-      themeToggle.addEventListener('click', () => {
-        const currentTheme = html.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-bs-theme', newTheme);
+      function updateThemeIcon(theme) {
         const icon = themeToggle.querySelector('i');
-        icon.className = newTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-        localStorage.setItem('theme', newTheme);
-      });
-
-      // Load saved theme
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        html.setAttribute('data-bs-theme', savedTheme);
-        const icon = themeToggle.querySelector('i');
-        icon.className = savedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+        icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
       }
 
-      // Search functionality
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        html.setAttribute('data-bs-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-bs-theme', nextTheme);
+        localStorage.setItem('theme', nextTheme);
+        updateThemeIcon(nextTheme);
+      });
+
       let keywords = [];
 
-      searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const value = searchInput.value.trim();
-          if (value && !keywords.includes(value)) {
-            keywords.push(value);
-            renderSearchTags();
-            searchInput.value = '';
-            applyFilters();
-          }
-        }
-      });
-
       function renderSearchTags() {
-        searchTags.innerHTML = keywords.map(keyword =>
-          `<span class="badge bg-primary me-2 mb-2" data-keyword="${keyword}">
-            ${keyword} <i class="bi bi-x" style="cursor:pointer"></i>
-          </span>`
-        ).join('');
+        searchTags.innerHTML = keywords.map((keyword) => (
+          `<button type="button" class="btn btn-sm btn-primary me-2 mb-2" data-keyword="${keyword}">${keyword} <i class="bi bi-x"></i></button>`
+        )).join('');
 
-        searchTags.querySelectorAll('.badge').forEach(badge => {
-          badge.addEventListener('click', (e) => {
-            const keyword = badge.dataset.keyword;
-            keywords = keywords.filter(k => k !== keyword);
+        searchTags.querySelectorAll('[data-keyword]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const keyword = button.dataset.keyword;
+            keywords = keywords.filter((item) => item !== keyword);
             renderSearchTags();
             applyFilters();
           });
         });
       }
 
-      function applyFilters() {
-        // Get active tab
+      searchInput.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        const value = searchInput.value.trim();
+        if (!value || keywords.includes(value)) return;
+        keywords.push(value);
+        searchInput.value = '';
+        renderSearchTags();
+        applyFilters();
+      });
+
+      function matchesFreshness(cardBucket, filterValue) {
+        if (filterValue === 'all') return true;
+        if (filterValue === '24h') return cardBucket === '24h';
+        if (filterValue === '3d') return ['24h', '72h'].includes(cardBucket);
+        if (filterValue === '7d') return ['24h', '72h', '168h'].includes(cardBucket);
+        return true;
+      }
+
+      function activeGrid() {
         const activeTab = document.querySelector('#categoryTabs .nav-link.active');
-        const activeTabId = activeTab ? activeTab.getAttribute('data-bs-target').replace('#', '') : 'all';
+        const category = activeTab ? activeTab.dataset.category : 'all';
+        return grids[category] || grids.all;
+      }
 
-        // Get cards in the active tab
-        let targetGrid;
-        if (activeTabId === 'all') {
-          targetGrid = document.getElementById('newsGrid');
-        } else if (activeTabId === 'business') {
-          targetGrid = document.getElementById('businessGrid');
-        } else if (activeTabId === 'tools') {
-          targetGrid = document.getElementById('toolsGrid');
-        } else if (activeTabId === 'posts') {
-          targetGrid = document.getElementById('postsGrid');
-        }
-
-        if (!targetGrid) return;
-
-        const cards = targetGrid.querySelectorAll('.news-card');
+      function applyFilters() {
         const importance = importanceFilter.value;
         const freshness = freshnessFilter.value;
         let visibleCount = 0;
 
-        cards.forEach(card => {
-          let visible = true;
+        Object.values(grids).forEach((grid) => {
+          grid.querySelectorAll('.news-card').forEach((card) => {
+            let visible = true;
 
-          // Importance filter
-          if (importance !== 'all') {
-            const cardImportance = card.dataset.importance;
-            if (cardImportance !== importance) visible = false;
-          }
+            if (importance !== 'all' && card.dataset.importance !== importance) {
+              visible = false;
+            }
 
-          // Freshness filter
-          if (freshness !== 'all' && visible) {
-            const cardFreshness = card.dataset.freshnessBucket;
-            if (freshness === '24h' && cardFreshness !== '24h') visible = false;
-            if (freshness === '3d' && !['24h', '72h'].includes(cardFreshness)) visible = false;
-            if (freshness === '7d' && !['24h', '72h', '168h'].includes(cardFreshness)) visible = false;
-          }
+            if (visible && !matchesFreshness(card.dataset.freshnessBucket, freshness)) {
+              visible = false;
+            }
 
-          // Keyword filter
-          if (keywords.length > 0 && visible) {
-            const text = card.textContent.toLowerCase();
-            const hasAllKeywords = keywords.every(keyword =>
-              text.includes(keyword.toLowerCase())
-            );
-            if (!hasAllKeywords) visible = false;
-          }
+            if (visible && keywords.length > 0) {
+              const text = card.textContent.toLowerCase();
+              visible = keywords.every((keyword) => text.includes(keyword.toLowerCase()));
+            }
 
-          const colDiv = card.closest('.col-md-6');
-          if (colDiv) {
-            colDiv.style.display = visible ? '' : 'none';
-            if (visible) visibleCount++;
+            const col = card.closest('.col-md-6, .col-xl-4');
+            if (col) {
+              col.style.display = visible ? '' : 'none';
+            }
+          });
+        });
+
+        activeGrid().querySelectorAll('.news-card').forEach((card) => {
+          const col = card.closest('.col-md-6, .col-xl-4');
+          if (col && col.style.display !== 'none') {
+            visibleCount += 1;
           }
         });
 
-        resultsCount.textContent = `${visibleCount} 件の記事を表示中`;
+        resultsCount.textContent = `${visibleCount}件を表示中`;
       }
 
       importanceFilter.addEventListener('change', applyFilters);
@@ -503,13 +652,17 @@
       clearFilters.addEventListener('click', () => {
         searchInput.value = '';
         keywords = [];
-        renderSearchTags();
         importanceFilter.value = 'all';
         freshnessFilter.value = 'all';
+        renderSearchTags();
         applyFilters();
       });
 
-      // Initial filter application
+      tabButtons.forEach((button) => {
+        button.addEventListener('shown.bs.tab', applyFilters);
+      });
+
+      renderSearchTags();
       applyFilters();
     });
   </script>
