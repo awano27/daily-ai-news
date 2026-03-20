@@ -70,6 +70,24 @@ jobs:
             echo "⚠️ CSV may be temporarily unavailable, but continuing..."
           fi
 
+      - name: Collect Bluesky posts
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          echo "🦋 Collecting Bluesky posts..."
+          python bluesky_collector.py || echo "⚠️ Bluesky collection failed, continuing with X + RSS only"
+          if [ -f "_sources/bluesky_posts.csv" ]; then
+            count=$(wc -l < _sources/bluesky_posts.csv)
+            echo "✅ Bluesky: $((count - 1)) posts collected"
+          fi
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          BLUESKY_ACCOUNTS: "ylecun.bsky.social,karpathy.bsky.social,emollick.bsky.social,simonw.bsky.social,benparr.bsky.social"
+          BLUESKY_KEYWORDS: "AI,LLM,GPT,Claude,Gemini,machine learning,neural network"
+          BLUESKY_OUTPUT: "_sources/bluesky_posts.csv"
+          BLUESKY_HOURS: "36"
+
       - name: Build AI News Site from CSV
         timeout-minutes: 15
         continue-on-error: false

@@ -157,6 +157,7 @@ MAX_ITEMS_PER_CATEGORY = CONFIG['max_items_per_category']
 TRANSLATE_TO_JA = CONFIG['translate_to_ja']
 TRANSLATE_ENGINE = CONFIG['translate_engine']
 X_POSTS_CSV = CONFIG['x_posts_csv']
+BLUESKY_CSV = os.getenv("BLUESKY_OUTPUT", "_sources/bluesky_posts.csv")
 GEMINI_SUPPLEMENT_ENABLED = CONFIG['gemini_supplement_enabled']
 GEMINI_SUPPLEMENT_MIN_ITEMS = CONFIG['gemini_supplement_min_items']
 GEMINI_SUPPLEMENT_MAX_ITEMS = CONFIG['gemini_supplement_max_items']
@@ -1829,6 +1830,25 @@ def main():
         except Exception as e:
             print(f"[WARN] Failed to process X posts: {e}")
 
+    # Inject Bluesky posts
+    if Path(BLUESKY_CSV).exists():
+        try:
+            bsky_posts = original_gather_x_posts(BLUESKY_CSV)
+            if bsky_posts:
+                print(f"[INFO] Adding {len(bsky_posts)} Bluesky posts")
+                for bp in bsky_posts:
+                    bp['_source'] = 'Bluesky'
+                    b_link = bp.get('link', '')
+                    b_title = bp.get('title', '').lower().strip()
+                    if b_link not in seen_links and b_title not in seen_titles:
+                        posts.append(bp)
+                        seen_links.add(b_link)
+                        seen_titles.add(b_title)
+                posts = sorted(posts, key=lambda x: x.get('_dt', NOW), reverse=True)
+        except Exception as e:
+            print(f"[WARN] Failed to process Bluesky posts: {e}")
+    else:
+        print(f"[INFO] No Bluesky CSV found at {BLUESKY_CSV}, skipping")
 
     try:
         translator = JaTranslator(engine=TRANSLATE_ENGINE)
