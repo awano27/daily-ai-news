@@ -34,7 +34,7 @@ jobs:
       GEMINI_MODEL: ${{ secrets.GEMINI_MODEL || 'gemini-3.1-flash-lite-preview' }}
       GEMINI_SUPPLEMENT_ENABLED: ${{ secrets.GEMINI_SUPPLEMENT_ENABLED || '1' }}
       GEMINI_SUPPLEMENT_MODEL: ${{ secrets.GEMINI_SUPPLEMENT_MODEL || 'gemini-3.1-flash-lite-preview' }}
-      X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk9zTaFaUyY7HImC-G2mdSqCjdl0P4jLFd_NtVKuMvnTjQyjQJ0_MLGAUbOFKs7Hdmix3OP413Rui8/pub?output=csv' }}
+      X_POSTS_CSV: ${{ github.event.inputs.csv_url || 'https://docs.google.com/spreadsheets/d/1l0VJFjfwmTvASjtLl9-QefUrFbjaKcezcySp1ZmJpDk/export?format=csv&gid=0' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -272,6 +272,34 @@ jobs:
           keep_files: true
           enable_jekyll: false
           force_orphan: false
+
+      - name: Deploy auto_daily_report to presentations
+        continue-on-error: true
+        env:
+          TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        run: |
+          echo "📄 Deploying auto_daily_report.html..."
+          rm -rf report_output || true
+          mkdir -p report_output
+          cp index.html report_output/auto_daily_report.html
+
+          cd report_output
+          git init
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/awano27/ai-news-site.git"
+          git fetch origin main --depth=1
+          git checkout main -- presentations/auto_daily_report.html 2>/dev/null || true
+          cp auto_daily_report.html presentations/auto_daily_report.html 2>/dev/null || {
+            mkdir -p presentations
+            cp auto_daily_report.html presentations/
+          }
+          git add presentations/auto_daily_report.html
+          git diff --cached --quiet && echo "No changes" || {
+            git commit -m "Update auto_daily_report.html ($(date +%Y-%m-%d))"
+            git push origin HEAD:main
+            echo "✅ auto_daily_report.html updated"
+          }
 
       - name: Verify deployment was committed
         run: |
