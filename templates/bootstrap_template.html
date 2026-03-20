@@ -1,511 +1,757 @@
 <!DOCTYPE html>
-<html lang="ja" data-bs-theme="light">
+<html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>%%PAGE_TITLE%%</title>
-  <meta name="description" content="Daily AI News は、最新のAIニュースを見逃せない順に整理して表示するダイジェストです。">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <meta name="description" content="毎日更新。AIニュースを重要度順に整理し、5分でキャッチアップできるダイジェスト。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --page-bg: #f3f6fb;
-      --panel-bg: rgba(255, 255, 255, 0.9);
-      --panel-border: rgba(15, 23, 42, 0.08);
-      --panel-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-      --text-soft: #64748b;
-      --brand: #0d6efd;
-      --brand-soft: rgba(13, 110, 253, 0.08);
-      --danger-soft: #b42318;
-      --warning-soft: #b54708;
-      --muted-soft: #475467;
+      --bg:       #06090d;
+      --bg2:      #0c1018;
+      --bg3:      #121a24;
+      --bg-card:  #0e141c;
+      --border:   #1a2a3a;
+      --border2:  #243040;
+      --cyan:     #00d4f0;
+      --cyan-soft:#58e0f5;
+      --green:    #34d399;
+      --amber:    #f59e0b;
+      --rose:     #fb7185;
+      --violet:   #a78bfa;
+      --muted:    #6b8399;
+      --text:     #d0dde8;
+      --text2:    #8da0b4;
+      --white:    #f0f4f8;
+      --glow-c:   rgba(0, 212, 240, 0.15);
+      --radius:   12px;
+      --radius-sm:8px;
     }
 
-    [data-bs-theme="dark"] {
-      --page-bg: #09111f;
-      --panel-bg: rgba(15, 23, 42, 0.92);
-      --panel-border: rgba(148, 163, 184, 0.14);
-      --panel-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
-      --text-soft: #94a3b8;
-      --brand-soft: rgba(96, 165, 250, 0.12);
-      --danger-soft: #fda29b;
-      --warning-soft: #fecd57;
-      --muted-soft: #cbd5e1;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: "Noto Sans JP", sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(13, 110, 253, 0.12), transparent 28%),
-        linear-gradient(180deg, rgba(13, 110, 253, 0.04), transparent 26%),
-        var(--page-bg);
-      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+      font-weight: 400;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .navbar-brand {
-      font-weight: 800;
-      letter-spacing: 0.01em;
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(100, 160, 200, 0.06) 1px, transparent 0);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .surface-card {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      box-shadow: var(--panel-shadow);
-      backdrop-filter: blur(14px);
+    .wrap { position: relative; z-index: 1; }
+
+    a { color: var(--cyan); }
+    a:hover { color: var(--cyan-soft); }
+
+    :focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
     }
 
-    .hero-copy {
-      max-width: 760px;
+    /* ===== NAV ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 9, 13, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .nav-logo .sigil {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--bg);
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      box-shadow: 0 0 16px var(--glow-c);
+    }
+    .nav-logo .logo-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-right a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text2);
+      text-decoration: none;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-right a:hover {
+      color: var(--white);
+      background: rgba(255,255,255,0.06);
+    }
+    .nav-timestamp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
     }
 
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -10%;
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0,212,240,0.06) 0%, transparent 65%);
+      pointer-events: none;
+      filter: blur(40px);
+    }
+    .hero h1 {
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 0.8rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     .hero-note {
-      color: var(--text-soft);
+      color: var(--text2);
+      font-size: 0.92rem;
+      max-width: 640px;
+      line-height: 1.75;
+    }
+    .hero-note strong {
+      color: var(--white);
+      font-weight: 600;
     }
 
+    /* ===== METRICS ===== */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
     .metric-card {
-      height: 100%;
-      border-radius: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
     }
-
     .metric-value {
-      font-size: 2rem;
-      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-variant-numeric: tabular-nums;
       line-height: 1;
     }
-
     .metric-label {
-      color: var(--text-soft);
-      font-size: 0.9rem;
+      font-size: 0.78rem;
+      color: var(--muted);
       margin-top: 0.4rem;
-      margin-bottom: 0;
     }
 
+    /* ===== GUIDE CHIPS ===== */
+    .guide-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .guide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .guide-header h2 {
+      font-size: 1.1rem;
+      color: var(--white);
+      font-weight: 700;
+    }
+    .guide-header .meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .guide-chips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
     .guide-chip {
-      height: 100%;
-      border-radius: 1rem;
-      padding: 1rem;
-      background: var(--brand-soft);
-      border: 1px solid rgba(13, 110, 253, 0.12);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.2rem;
+      border: 1px solid;
     }
-
+    .guide-chip--high {
+      background: rgba(251, 113, 133, 0.06);
+      border-color: rgba(251, 113, 133, 0.18);
+    }
+    .guide-chip--medium {
+      background: rgba(245, 158, 11, 0.06);
+      border-color: rgba(245, 158, 11, 0.18);
+    }
+    .guide-chip--low {
+      background: rgba(107, 131, 153, 0.06);
+      border-color: rgba(107, 131, 153, 0.18);
+    }
     .guide-chip__label {
-      font-weight: 800;
-      margin-bottom: 0.35rem;
+      font-weight: 700;
+      font-size: 0.88rem;
+      margin-bottom: 0.3rem;
     }
-
+    .guide-chip--high .guide-chip__label { color: var(--rose); }
+    .guide-chip--medium .guide-chip__label { color: var(--amber); }
+    .guide-chip--low .guide-chip__label { color: var(--muted); }
     .guide-chip__copy {
-      margin: 0;
-      color: var(--text-soft);
-      font-size: 0.92rem;
+      color: var(--text2);
+      font-size: 0.82rem;
       line-height: 1.55;
     }
 
+    /* ===== FILTERS ===== */
+    .filter-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .filter-bar .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .filter-bar .search-wrap svg {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: var(--muted);
+      fill: none;
+      stroke-width: 2;
+    }
+    .filter-bar input,
+    .filter-bar select {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.8rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      min-height: 44px;
+      transition: border-color 0.2s;
+    }
+    .filter-bar input {
+      padding-left: 2.4rem;
+      width: 100%;
+    }
+    .filter-bar input:focus,
+    .filter-bar select:focus {
+      border-color: var(--cyan);
+      outline: none;
+    }
+    .filter-bar select {
+      min-width: 140px;
+      cursor: pointer;
+      appearance: auto;
+    }
+    .filter-bar .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      min-height: 44px;
+      font-family: inherit;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .filter-bar .btn-reset:hover {
+      border-color: var(--cyan);
+      color: var(--white);
+    }
+    #searchTags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0 1.5rem;
+    }
+    #searchTags button {
+      background: rgba(0,212,240,0.1);
+      border: 1px solid rgba(0,212,240,0.2);
+      color: var(--cyan);
+      font-size: 0.78rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 99px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: background 0.15s;
+    }
+    #searchTags button:hover {
+      background: rgba(0,212,240,0.2);
+    }
+
+    /* ===== TABS ===== */
+    .tab-bar {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+    .tab-bar button {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.7rem 1.2rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      min-height: 44px;
+      letter-spacing: 0.04em;
+    }
+    .tab-bar button:hover {
+      color: var(--white);
+    }
+    .tab-bar button.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    /* ===== RESULTS COUNT ===== */
+    .results-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      padding: 0.5rem 0.8rem;
+      background: rgba(0,212,240,0.04);
+      border: 1px solid rgba(0,212,240,0.1);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+    }
+
+    /* ===== NEWS CARDS ===== */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
     .news-card {
       position: relative;
-      height: 100%;
-      border-radius: 1rem;
-      border: 1px solid var(--panel-border);
-      background: var(--panel-bg);
-      box-shadow: var(--panel-shadow);
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
     }
-
     .news-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(13, 110, 253, 0.22);
+      border-color: rgba(0, 212, 240, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
     }
-
-    .news-card__header,
-    .news-card__body,
-    .news-card__footer {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-
     .news-card__header {
-      padding-top: 1rem;
-      padding-bottom: 0.5rem;
+      padding: 1.25rem 1.25rem 0.5rem;
     }
-
     .news-card__body {
-      padding-top: 0.25rem;
-      padding-bottom: 0.75rem;
+      padding: 0.25rem 1.25rem 1rem;
+      flex: 1;
     }
-
     .news-card__footer {
-      padding-top: 0.75rem;
-      padding-bottom: 1rem;
-      border-top: 1px solid var(--panel-border);
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
     }
-
     .news-card__rank {
       position: absolute;
       top: 0.75rem;
       right: 0.75rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      background: var(--brand);
-      color: #fff;
-      font-weight: 800;
-      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 99px;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      color: var(--bg);
     }
-
     .news-card__title {
-      display: inline-block;
-      color: inherit;
+      display: block;
+      color: var(--white);
       text-decoration: none;
-      font-weight: 800;
-      font-size: 1.06rem;
-      line-height: 1.5;
-      padding-right: 3rem;
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1.55;
+      padding-right: 2.5rem;
+      transition: color 0.2s;
     }
-
     .news-card__title:hover {
-      color: var(--brand);
+      color: var(--cyan);
     }
-
     .news-card__meta-top {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
+      gap: 0.4rem;
       margin-top: 0.6rem;
     }
-
     .news-card__badge,
     .news-card__freshness,
     .news-card__reason,
     .news-card__tag {
       display: inline-flex;
       align-items: center;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      line-height: 1;
-      padding: 0.45rem 0.7rem;
-    }
-
-    .news-card__badge {
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .news-card__badge--high {
-      background: #b42318;
-    }
-
-    .news-card__badge--medium {
-      background: #b54708;
-    }
-
-    .news-card__badge--low {
-      background: #475467;
-    }
-
-    .news-card__freshness {
-      background: rgba(13, 110, 253, 0.1);
-      color: var(--brand);
-      font-weight: 700;
-    }
-
-    .news-card__reason {
-      background: rgba(15, 23, 42, 0.06);
-      color: var(--text-soft);
+      border-radius: 99px;
+      font-size: 0.72rem;
       font-weight: 600;
+      line-height: 1;
+      padding: 0.35rem 0.65rem;
     }
-
-    [data-bs-theme="dark"] .news-card__reason {
-      background: rgba(148, 163, 184, 0.12);
+    .news-card__badge {
+      font-weight: 700;
+      color: var(--bg);
     }
-
+    .news-card__badge--high {
+      background: var(--rose);
+    }
+    .news-card__badge--medium {
+      background: var(--amber);
+    }
+    .news-card__badge--low {
+      background: var(--muted);
+      color: var(--white);
+    }
+    .news-card__freshness {
+      background: rgba(0, 212, 240, 0.1);
+      color: var(--cyan);
+    }
+    .news-card__reason {
+      background: rgba(107, 131, 153, 0.1);
+      color: var(--text2);
+    }
     .news-card__summary {
       margin: 0;
       line-height: 1.7;
-      color: var(--muted-soft);
-      font-size: 0.95rem;
+      color: var(--text2);
+      font-size: 0.9rem;
     }
-
     .news-card__taglist {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.85rem;
+      gap: 0.35rem;
+      margin-top: 0.8rem;
     }
-
     .news-card__tag {
-      background: rgba(13, 110, 253, 0.07);
-      color: var(--brand);
-      font-weight: 700;
+      background: rgba(0, 212, 240, 0.06);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 212, 240, 0.12);
     }
-
     .news-card__details {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 0.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.6rem;
       margin: 0;
     }
-
     .news-card__details dt {
-      margin-bottom: 0.2rem;
-      font-size: 0.75rem;
-      color: var(--text-soft);
+      margin-bottom: 0.15rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
     }
-
     .news-card__details dd {
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      color: var(--text);
     }
-
     .news-card__footer-meta {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 0.75rem;
-      margin-top: 0.85rem;
+      margin-top: 0.8rem;
     }
-
     .news-card__trust {
       position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 0.55rem;
-      font-weight: 700;
-      padding-left: 1.9rem;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding-left: 1.8rem;
     }
-
     .news-card__trust::before {
-      content: "";
+      content: '';
       position: absolute;
       left: 0;
       top: 50%;
-      width: 1.5rem;
-      height: 0.36rem;
+      width: 1.4rem;
+      height: 0.3rem;
       transform: translateY(-50%);
-      border-radius: 999px;
-      background: rgba(13, 110, 253, 0.12);
+      border-radius: 99px;
+      background: rgba(0, 212, 240, 0.15);
     }
-
     .news-card__trust-bar {
       position: absolute;
       left: 0;
       top: 50%;
       width: calc(var(--trust-level, 0) * 1%);
-      height: 0.36rem;
+      height: 0.3rem;
       transform: translateY(-50%);
-      border-radius: 999px;
-      background: var(--brand);
+      border-radius: 99px;
+      background: var(--cyan);
     }
-
     .news-card__trust-note {
-      color: var(--text-soft);
-      font-size: 0.82rem;
+      color: var(--muted);
+      font-size: 0.78rem;
     }
-
     .news-card__cta {
       margin-left: auto;
-      color: var(--brand);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--cyan);
       text-decoration: none;
-      font-weight: 800;
+      transition: color 0.2s;
     }
-
     .news-card__cta:hover {
-      text-decoration: underline;
+      color: var(--cyan-soft);
     }
 
-    .tab-pane .row > [class*="col-"] {
-      margin-bottom: 0;
+    #legacyData { display: none; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      margin-top: 3rem;
+    }
+    .footer-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .footer-text a {
+      color: var(--cyan);
+      text-decoration: none;
     }
 
-    #legacyData {
-      display: none;
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      nav { padding: 0 1rem; }
+      .container { padding: 0 1rem; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .guide-chips { grid-template-columns: 1fr; }
+      .news-grid { grid-template-columns: 1fr; }
+      .filter-bar { flex-direction: column; }
+      .filter-bar select { width: 100%; }
+      .hero { padding: 2.5rem 0 1.5rem; }
+      .nav-right a.hide-mobile { display: none; }
     }
 
-    @media (max-width: 767.98px) {
-      .metric-value {
-        font-size: 1.7rem;
-      }
-
-      .news-card__title {
-        padding-right: 2.2rem;
-      }
-
-      .news-card__footer-meta {
-        align-items: flex-start;
-      }
-
-      .news-card__cta {
-        margin-left: 0;
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">
-        <i class="bi bi-newspaper"></i> Daily AI News
+  <div class="wrap">
+    <nav aria-label="メインナビゲーション">
+      <a class="nav-logo" href="https://awano27.github.io/ai-news-site/" aria-label="AI Intelligence Hub ホーム">
+        <div class="sigil" aria-hidden="true">AI</div>
+        <span class="logo-text">DAILY NEWS</span>
       </a>
-      <ul class="navbar-nav ms-auto me-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="research_resources.html">研究リソース</a>
-        </li>
-      </ul>
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-white small">
-          <i class="bi bi-clock"></i> %%UPDATED_FULL%%
-        </span>
-        <button class="btn btn-outline-light btn-sm" id="themeToggle" type="button" aria-label="テーマ切替">
-          <i class="bi bi-moon-stars"></i>
-        </button>
+      <div class="nav-right">
+        <a href="https://awano27.github.io/ai-news-site/" class="hide-mobile">Hub に戻る</a>
+        <a href="https://awano27.github.io/ai-news-site/presentations/day_slides_index.html" class="hide-mobile">日次スライド</a>
+        <span class="nav-timestamp">%%UPDATED_FULL%%</span>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main class="container-fluid py-4 py-lg-5">
-    <section class="surface-card rounded-4 p-4 p-lg-5 mb-4">
-      <div class="hero-copy">
-        <h1 class="display-6 fw-bold mb-3">今日のAIニュースを、意味が分かる順番でまとめています。</h1>
-        <p class="hero-note mb-0">「スコア 10.0」「信頼度 50/100」のような内部数値は見せず、<strong>見逃せない</strong>、<strong>チェック推奨</strong>、<strong>参考メモ</strong> の3段階で整理しています。</p>
-      </div>
-    </section>
+    <main class="container">
+      <section class="hero">
+        <h1>今日のAIニュースを、<em>重要度順に5分で把握。</em></h1>
+        <p class="hero-note">内部スコアは非表示。<strong>見逃せない</strong>・<strong>チェック推奨</strong>・<strong>参考メモ</strong>の3段階で、上から読むだけで大きな話題を追えます。</p>
+      </section>
 
-    <section class="row g-3 mb-4">
-      <div class="col-md-3 col-sm-6">
-        <div class="surface-card metric-card p-4">
+      <div class="metrics">
+        <div class="metric-card">
           <div class="metric-value">%%TOTAL_ITEMS%%</div>
-          <p class="metric-label">表示中の記事数</p>
+          <div class="metric-label">記事数</div>
         </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="surface-card metric-card p-4">
+        <div class="metric-card">
           <div class="metric-value">%%BUSINESS_COUNT%%</div>
-          <p class="metric-label">ビジネス</p>
+          <div class="metric-label">ビジネス</div>
         </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="surface-card metric-card p-4">
+        <div class="metric-card">
           <div class="metric-value">%%TOOLS_COUNT%%</div>
-          <p class="metric-label">ツール</p>
+          <div class="metric-label">ツール</div>
         </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="surface-card metric-card p-4">
+        <div class="metric-card">
           <div class="metric-value">%%POSTS_COUNT%%</div>
-          <p class="metric-label">SNS / 論文</p>
+          <div class="metric-label">SNS / 論文</div>
         </div>
       </div>
-    </section>
 
-    <section class="surface-card rounded-4 p-4 mb-4">
-      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
-        <div>
-          <h2 class="h4 mb-2">このページの見方</h2>
-          <p class="text-secondary-emphasis mb-0">並び順は「影響の大きさ」と「新しさ」をもとに自動で決めています。まず上から見れば、大きな話題を追えます。</p>
+      <div class="guide-section">
+        <div class="guide-header">
+          <h2>重要度の見方</h2>
+          <span class="meta">更新範囲: %%LOOKBACK_LABEL%% / 一次情報・主要メディア優先</span>
         </div>
-        <div class="small text-secondary-emphasis">
-          更新範囲: %%LOOKBACK_LABEL%%<br>
-          一次情報や主要メディアは上位に来やすくなります
-        </div>
-      </div>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="guide-chip">
+        <div class="guide-chips">
+          <div class="guide-chip guide-chip--high">
             <div class="guide-chip__label">見逃せない</div>
-            <p class="guide-chip__copy">公式発表、大型リリース、資金調達、研究成果など、影響が大きい話題です。</p>
+            <p class="guide-chip__copy">公式発表・大型リリース・資金調達・研究成果など、業界に大きな影響がある話題。</p>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="guide-chip">
+          <div class="guide-chip guide-chip--medium">
             <div class="guide-chip__label">チェック推奨</div>
-            <p class="guide-chip__copy">今日の動向を追うなら押さえたい更新です。実用的な新機能や業界トピックが入ります。</p>
+            <p class="guide-chip__copy">今日の動向を追うなら押さえたい更新。実用的な新機能や業界トピックが中心。</p>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="guide-chip">
+          <div class="guide-chip guide-chip--low">
             <div class="guide-chip__label">参考メモ</div>
-            <p class="guide-chip__copy">個人投稿や補足情報など、背景理解や現場感をつかむための話題です。</p>
+            <p class="guide-chip__copy">個人投稿や補足情報。背景理解や現場感をつかむための話題。</p>
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="surface-card rounded-4 p-4 mb-4">
-      <div class="row g-3 align-items-center">
-        <div class="col-lg-6">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" id="searchInput" placeholder="キーワードで絞り込み">
-          </div>
-          <div id="searchTags" class="mt-2"></div>
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="キーワードで絞り込み（Enter で追加）" aria-label="キーワード検索">
         </div>
-        <div class="col-sm-4 col-lg-2">
-          <select class="form-select" id="importanceFilter" aria-label="注目度で絞り込み">
-            <option value="all">すべての注目度</option>
-            <option value="high">見逃せない</option>
-            <option value="medium">チェック推奨</option>
-            <option value="low">参考メモ</option>
-          </select>
-        </div>
-        <div class="col-sm-4 col-lg-2">
-          <select class="form-select" id="freshnessFilter" aria-label="新しさで絞り込み">
-            <option value="all">すべての時期</option>
-            <option value="24h">24時間以内</option>
-            <option value="3d">3日以内</option>
-            <option value="7d">1週間以内</option>
-          </select>
-        </div>
-        <div class="col-sm-4 col-lg-2">
-          <button class="btn btn-outline-secondary w-100" id="clearFilters" type="button">
-            <i class="bi bi-x-circle"></i> 条件をリセット
-          </button>
-        </div>
+        <select id="importanceFilter" aria-label="注目度で絞り込み">
+          <option value="all">すべての注目度</option>
+          <option value="high">見逃せない</option>
+          <option value="medium">チェック推奨</option>
+          <option value="low">参考メモ</option>
+        </select>
+        <select id="freshnessFilter" aria-label="新しさで絞り込み">
+          <option value="all">すべての時期</option>
+          <option value="24h">24時間以内</option>
+          <option value="3d">3日以内</option>
+          <option value="7d">1週間以内</option>
+        </select>
+        <button class="btn-reset" id="clearFilters" type="button">リセット</button>
       </div>
-    </section>
+      <div id="searchTags"></div>
 
-    <ul class="nav nav-tabs mb-3" id="categoryTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" data-category="all" type="button" role="tab">すべて</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="business-tab" data-bs-toggle="tab" data-bs-target="#business" data-category="business" type="button" role="tab">ビジネス</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tools-tab" data-bs-toggle="tab" data-bs-target="#tools" data-category="tools" type="button" role="tab">ツール</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" data-category="posts" type="button" role="tab">SNS / 論文</button>
-      </li>
-    </ul>
+      <div class="tab-bar" id="categoryTabs" role="tablist">
+        <button class="active" data-category="all" role="tab" aria-selected="true">すべて</button>
+        <button data-category="business" role="tab" aria-selected="false">ビジネス</button>
+        <button data-category="tools" role="tab" aria-selected="false">ツール</button>
+        <button data-category="posts" role="tab" aria-selected="false">SNS / 論文</button>
+      </div>
 
-    <div class="alert alert-primary mb-4" id="resultsCount" role="status">%%TOTAL_ITEMS%%件を表示中</div>
+      <div class="results-count" id="resultsCount" role="status">%%TOTAL_ITEMS%%件を表示中</div>
 
-    <div id="legacyData">
+      <div id="legacyData">
 %%LEGACY_SECTIONS%%
-    </div>
+      </div>
 
-    <div class="tab-content" id="categoryTabContent">
-      <div class="tab-pane fade show active" id="all" role="tabpanel">
-        <div class="row g-4" id="newsGrid"></div>
+      <div id="tabContent">
+        <div class="tab-pane active" id="pane-all">
+          <div class="news-grid" id="newsGrid"></div>
+        </div>
+        <div class="tab-pane" id="pane-business">
+          <div class="news-grid" id="businessGrid"></div>
+        </div>
+        <div class="tab-pane" id="pane-tools">
+          <div class="news-grid" id="toolsGrid"></div>
+        </div>
+        <div class="tab-pane" id="pane-posts">
+          <div class="news-grid" id="postsGrid"></div>
+        </div>
       </div>
-      <div class="tab-pane fade" id="business" role="tabpanel">
-        <div class="row g-4" id="businessGrid"></div>
-      </div>
-      <div class="tab-pane fade" id="tools" role="tabpanel">
-        <div class="row g-4" id="toolsGrid"></div>
-      </div>
-      <div class="tab-pane fade" id="posts" role="tabpanel">
-        <div class="row g-4" id="postsGrid"></div>
-      </div>
-    </div>
-  </main>
+    </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <footer>
+      <div class="footer-text">
+        <a href="https://awano27.github.io/ai-news-site/">AI INTELLIGENCE HUB</a> &middot; Daily News &middot; Powered by GitHub Pages
+      </div>
+    </footer>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const html = document.documentElement;
-      const themeToggle = document.getElementById('themeToggle');
       const searchInput = document.getElementById('searchInput');
       const searchTags = document.getElementById('searchTags');
       const importanceFilter = document.getElementById('importanceFilter');
@@ -513,7 +759,7 @@
       const clearFilters = document.getElementById('clearFilters');
       const resultsCount = document.getElementById('resultsCount');
       const legacyData = document.getElementById('legacyData');
-      const tabButtons = document.querySelectorAll('#categoryTabs button[data-bs-toggle="tab"]');
+      const tabButtons = document.querySelectorAll('#categoryTabs button');
 
       const grids = {
         all: document.getElementById('newsGrid'),
@@ -522,133 +768,112 @@
         posts: document.getElementById('postsGrid')
       };
 
+      const panes = {
+        all: document.getElementById('pane-all'),
+        business: document.getElementById('pane-business'),
+        tools: document.getElementById('pane-tools'),
+        posts: document.getElementById('pane-posts')
+      };
+
       const sourceCards = Array.from(legacyData.querySelectorAll('.news-card'));
 
       function createCol(card) {
         const col = document.createElement('div');
-        col.className = 'col-md-6 col-xl-4';
         col.appendChild(card);
         return col;
       }
 
       function populateGrids() {
-        Object.values(grids).forEach((grid) => {
-          grid.innerHTML = '';
-        });
-
-        sourceCards.forEach((card) => {
-          const category = card.dataset.category || 'all';
+        Object.values(grids).forEach(g => { g.innerHTML = ''; });
+        sourceCards.forEach(card => {
+          const cat = card.dataset.category || 'all';
           grids.all.appendChild(createCol(card.cloneNode(true)));
-          if (grids[category]) {
-            grids[category].appendChild(createCol(card.cloneNode(true)));
-          }
+          if (grids[cat]) grids[cat].appendChild(createCol(card.cloneNode(true)));
         });
       }
 
       populateGrids();
 
-      function updateThemeIcon(theme) {
-        const icon = themeToggle.querySelector('i');
-        icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-      }
-
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark' || savedTheme === 'light') {
-        html.setAttribute('data-bs-theme', savedTheme);
-        updateThemeIcon(savedTheme);
-      }
-
-      themeToggle.addEventListener('click', () => {
-        const nextTheme = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-bs-theme', nextTheme);
-        localStorage.setItem('theme', nextTheme);
-        updateThemeIcon(nextTheme);
+      // Tabs
+      let activeCategory = 'all';
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabButtons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          activeCategory = btn.dataset.category;
+          Object.entries(panes).forEach(([key, pane]) => {
+            pane.classList.toggle('active', key === activeCategory);
+          });
+          applyFilters();
+        });
       });
 
+      // Search keywords
       let keywords = [];
 
       function renderSearchTags() {
-        searchTags.innerHTML = keywords.map((keyword) => (
-          `<button type="button" class="btn btn-sm btn-primary me-2 mb-2" data-keyword="${keyword}">${keyword} <i class="bi bi-x"></i></button>`
-        )).join('');
-
-        searchTags.querySelectorAll('[data-keyword]').forEach((button) => {
-          button.addEventListener('click', () => {
-            const keyword = button.dataset.keyword;
-            keywords = keywords.filter((item) => item !== keyword);
+        searchTags.innerHTML = keywords.map(kw =>
+          `<button type="button" data-keyword="${kw}">${kw} &times;</button>`
+        ).join('');
+        searchTags.querySelectorAll('[data-keyword]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            keywords = keywords.filter(k => k !== btn.dataset.keyword);
             renderSearchTags();
             applyFilters();
           });
         });
       }
 
-      searchInput.addEventListener('keydown', (event) => {
-        if (event.key !== 'Enter') return;
-        event.preventDefault();
-        const value = searchInput.value.trim();
-        if (!value || keywords.includes(value)) return;
-        keywords.push(value);
+      searchInput.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const v = searchInput.value.trim();
+        if (!v || keywords.includes(v)) return;
+        keywords.push(v);
         searchInput.value = '';
         renderSearchTags();
         applyFilters();
       });
 
-      function matchesFreshness(cardBucket, filterValue) {
-        if (filterValue === 'all') return true;
-        if (filterValue === '24h') return cardBucket === '24h';
-        if (filterValue === '3d') return ['24h', '72h'].includes(cardBucket);
-        if (filterValue === '7d') return ['24h', '72h', '168h'].includes(cardBucket);
+      function matchesFreshness(bucket, filter) {
+        if (filter === 'all') return true;
+        if (filter === '24h') return bucket === '24h';
+        if (filter === '3d') return ['24h', '72h'].includes(bucket);
+        if (filter === '7d') return ['24h', '72h', '168h'].includes(bucket);
         return true;
       }
 
-      function activeGrid() {
-        const activeTab = document.querySelector('#categoryTabs .nav-link.active');
-        const category = activeTab ? activeTab.dataset.category : 'all';
-        return grids[category] || grids.all;
-      }
-
       function applyFilters() {
-        const importance = importanceFilter.value;
-        const freshness = freshnessFilter.value;
-        let visibleCount = 0;
+        const imp = importanceFilter.value;
+        const fresh = freshnessFilter.value;
+        let count = 0;
 
-        Object.values(grids).forEach((grid) => {
-          grid.querySelectorAll('.news-card').forEach((card) => {
-            let visible = true;
-
-            if (importance !== 'all' && card.dataset.importance !== importance) {
-              visible = false;
+        Object.values(grids).forEach(grid => {
+          grid.querySelectorAll('.news-card').forEach(card => {
+            let vis = true;
+            if (imp !== 'all' && card.dataset.importance !== imp) vis = false;
+            if (vis && !matchesFreshness(card.dataset.freshnessBucket, fresh)) vis = false;
+            if (vis && keywords.length > 0) {
+              const txt = card.textContent.toLowerCase();
+              vis = keywords.every(kw => txt.includes(kw.toLowerCase()));
             }
-
-            if (visible && !matchesFreshness(card.dataset.freshnessBucket, freshness)) {
-              visible = false;
-            }
-
-            if (visible && keywords.length > 0) {
-              const text = card.textContent.toLowerCase();
-              visible = keywords.every((keyword) => text.includes(keyword.toLowerCase()));
-            }
-
-            const col = card.closest('.col-md-6, .col-xl-4');
-            if (col) {
-              col.style.display = visible ? '' : 'none';
-            }
+            const col = card.parentElement;
+            if (col) col.style.display = vis ? '' : 'none';
           });
         });
 
-        activeGrid().querySelectorAll('.news-card').forEach((card) => {
-          const col = card.closest('.col-md-6, .col-xl-4');
-          if (col && col.style.display !== 'none') {
-            visibleCount += 1;
-          }
+        const activeGrid = grids[activeCategory] || grids.all;
+        activeGrid.querySelectorAll('.news-card').forEach(card => {
+          const col = card.parentElement;
+          if (col && col.style.display !== 'none') count++;
         });
 
-        resultsCount.textContent = `${visibleCount}件を表示中`;
+        resultsCount.textContent = `${count}件を表示中`;
       }
 
       importanceFilter.addEventListener('change', applyFilters);
       freshnessFilter.addEventListener('change', applyFilters);
-
       clearFilters.addEventListener('click', () => {
         searchInput.value = '';
         keywords = [];
@@ -656,10 +881,6 @@
         freshnessFilter.value = 'all';
         renderSearchTags();
         applyFilters();
-      });
-
-      tabButtons.forEach((button) => {
-        button.addEventListener('shown.bs.tab', applyFilters);
       });
 
       renderSearchTags();

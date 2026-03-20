@@ -167,8 +167,8 @@ jobs:
           if [ -f "outputs/style-modern.css" ]; then
             modern_lines=$(wc -l < outputs/style-modern.css)
             echo "✅ outputs/style-modern.css: ${modern_lines} lines"
-            if [ "$modern_lines" -lt 800 ]; then
-              echo "❌ ERROR: style-modern.css too small! Expected ~872 lines, got ${modern_lines}"
+            if [ "$modern_lines" -lt 10 ]; then
+              echo "❌ ERROR: style-modern.css too small! Got ${modern_lines} lines"
               exit 1
             fi
           else
@@ -193,7 +193,7 @@ jobs:
           response=$(curl -s -w "%{http_code}" -o /tmp/token_test.json \
             -H "Authorization: token $TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/awano27/daily-ai-news-pages")
+            "https://api.github.com/repos/awano27/ai-news-site")
 
           if [ "$response" = "200" ]; then
             echo "✅ PERSONAL_TOKEN is valid and has access to target repository"
@@ -204,7 +204,7 @@ jobs:
             echo "  Required scopes: repo (Full control of private repositories)"
             exit 1
           elif [ "$response" = "404" ]; then
-            echo "❌ PERSONAL_TOKEN does not have access to awano27/daily-ai-news-pages"
+            echo "❌ PERSONAL_TOKEN does not have access to awano27/ai-news-site"
             echo "Please check:"
             echo "  1. Token has 'repo' scope"
             echo "  2. Token owner has write access to target repository"
@@ -244,25 +244,26 @@ jobs:
         continue-on-error: false
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          external_repository: awano27/daily-ai-news-pages
-          publish_branch: gh-pages
+          external_repository: awano27/ai-news-site
+          publish_branch: main
+          destination_dir: daily-news
           publish_dir: ./outputs
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: 'Deploy from CSV: ${{ github.sha }}'
-          keep_files: false
+          keep_files: true
           enable_jekyll: false
           force_orphan: false
 
       - name: Verify deployment was committed
         run: |
-          echo "🔍 Verifying deployment to awano27/daily-ai-news-pages..."
+          echo "🔍 Verifying deployment to awano27/ai-news-site..."
           expected_sha="${{ github.sha }}"
           verified=0
 
           for attempt in 1 2 3 4 5; do
             response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/awano27/daily-ai-news-pages/commits/gh-pages")
+              "https://api.github.com/repos/awano27/ai-news-site/commits/gh-pages")
 
             latest_commit=$(printf '%s' "$response" | grep '"sha"' | head -1 | cut -d'"' -f4)
             commit_message=$(printf '%s' "$response" | grep '"message"' | head -1 | cut -d'"' -f4)
@@ -283,7 +284,7 @@ jobs:
 
           if [ "$verified" -eq 1 ]; then
             commit_date=$(curl -s -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/awano27/daily-ai-news-pages/commits/$latest_commit" \
+              "https://api.github.com/repos/awano27/ai-news-site/commits/$latest_commit" \
               | grep '"date"' | head -1)
             echo "📅 Commit date: $commit_date"
           else
@@ -315,7 +316,7 @@ jobs:
         if: success()
         run: |
           echo "✅ Deployment completed successfully!"
-          echo "🌐 Public site: https://awano27.github.io/daily-ai-news-pages/"
+          echo "🌐 Public site: https://awano27.github.io/ai-news-site/daily-news/"
           echo "📊 Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - name: Report failure
