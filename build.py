@@ -123,7 +123,7 @@ def get_config():
 
     # X投稿CSVのデフォルト値
     if not config['x_posts_csv']:
-        config['x_posts_csv'] = "https://docs.google.com/spreadsheets/d/1uuLKCLIJw--a1vCcO6UGxSpBiLTtN8uGl2cdMb6wcfg/export?format=csv&gid=0"
+        config['x_posts_csv'] = "https://docs.google.com/spreadsheets/d/1l0VJFjfwmTvASjtLl9-QefUrFbjaKcezcySp1ZmJpDk/export?format=csv&gid=0"
 
     # 設定値の検証
     if config['hours_lookback'] < 1 or config['hours_lookback'] > 168:  # 1時間～1週間
