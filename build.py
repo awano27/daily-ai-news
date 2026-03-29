@@ -499,10 +499,10 @@ def _extract_x_data_from_csv(raw: bytes) -> list[dict]:
                         except:
                             continue
                     
-                    # パースに失敗した場合は現在時刻を使用（投稿を表示させるため）
+                    # パースに失敗した場合はスキップ（古い投稿が最新扱いされるのを防止）
                     if dt is None:
-                        print(f"[WARN] Date parse failed for '{date_str}', using current time")
-                        dt = datetime.now(JST)
+                        print(f"[WARN] Date parse failed for '{date_str}', skipping post (username={username})")
+                        continue
                     
                     # 常に投稿を追加（デバッグ情報も含む）
                     data.append({
@@ -586,9 +586,13 @@ def gather_x_posts(csv_path: str) -> list[dict]:
     
     # まず通常の処理を試行
     posts = enhanced_gather_x_posts_implementation(csv_path)
-    # Filter by HOURS_LOOKBACK if timestamp is available, then cap to 20
+    # Filter by HOURS_LOOKBACK: 24h優先、データ不足時は48hまで拡大
     try:
-        posts = [p for p in posts if not p.get('_dt') or (NOW - p['_dt'] <= timedelta(hours=HOURS_LOOKBACK))]
+        fresh = [p for p in posts if p.get('_dt') and (NOW - p['_dt'] <= timedelta(hours=HOURS_LOOKBACK))]
+        if not fresh:
+            # 24h以内がゼロなら48hまで拡大
+            fresh = [p for p in posts if p.get('_dt') and (NOW - p['_dt'] <= timedelta(hours=HOURS_LOOKBACK * 2))]
+        posts = fresh
     except Exception:
         pass
     
@@ -710,9 +714,9 @@ def original_gather_x_posts(csv_path: str) -> list[dict]:
             seen_urls.add(url)
             seen_username_text.add(username_text_key)
             
-            # X投稿は時間フィルター無効化（すべての投稿を含める）
-            # if (NOW - post_date) <= timedelta(days=7):  # 時間フィルター無効化
-            if True:  # すべての投稿を処理
+            # HOURS_LOOKBACKに基づく時間フィルター（デフォルト24h、データ不足時は48hまで拡大）
+            age = NOW - post_date
+            if age <= timedelta(hours=HOURS_LOOKBACK * 2):  # 最大でも LOOKBACK×2 (48h)
                 items.append({
                     "title": f"Xポスト {username}",
                     "link": url,
@@ -722,7 +726,7 @@ def original_gather_x_posts(csv_path: str) -> list[dict]:
                     "_dt": post_date,  # 実際の投稿日時を使用
                 })
         
-        print(f"[INFO] Created {len(items)} X post items (time filter disabled).")
+        print(f"[INFO] Created {len(items)} X post items (filtered to {HOURS_LOOKBACK*2}h).")
     except Exception as e:
         print(f"[WARN] Failed to process X posts CSV: {e}")
     return items
