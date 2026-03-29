@@ -10,6 +10,8 @@ import io
 import hashlib
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+JST = timezone(timedelta(hours=9))
 from urllib.parse import urlparse
 import requests
 
@@ -234,12 +236,33 @@ class EnhancedXProcessor:
                     print(f"[DEBUG] Skipping similar content: {username}")
                     continue
                 
+                # 日付パース（失敗した投稿はスキップ）
+                dt = None
+                date_formats = [
+                    "%B %d, %Y at %I:%M%p",
+                    "%B %d, %Y",
+                    "%Y-%m-%d %H:%M:%S",
+                    "%Y-%m-%d",
+                    "%Y年%m月%d日",
+                    "%m/%d/%Y",
+                ]
+                for fmt in date_formats:
+                    try:
+                        dt = datetime.strptime(date_str, fmt).replace(tzinfo=JST)
+                        break
+                    except (ValueError, TypeError):
+                        continue
+                if dt is None:
+                    print(f"[WARN] Date parse failed for '{date_str}', skipping post (user={username})")
+                    continue
+
                 # 基本的な投稿データを作成
                 post_data = {
                     'username': username.replace('@', ''),
                     'text': text,
                     'url': post_url,
                     'date': date_str,
+                    '_parsed_dt': dt,
                     '_content_hash': content_hash,
                     '_gemini_enhanced': False
                 }
@@ -309,7 +332,7 @@ class EnhancedXProcessor:
                 "_summary": summary,
                 "_full_text": text,
                 "_source": "X / SNS (Enhanced)",
-                "_dt": datetime.now(timezone.utc),
+                "_dt": post.get('_parsed_dt') or datetime.now(timezone.utc),
                 "_enhanced": post.get('_gemini_enhanced', False),
                 "_priority": priority,
                 "_category": post.get('_category', ''),
