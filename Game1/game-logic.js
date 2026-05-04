@@ -1134,6 +1134,52 @@
     return currentPoints + (isCorrect ? POINTS_PER_CORRECT : 0);
   }
 
+  function getSpiritGrowthLevel(growth) {
+    const safeGrowth = Math.max(0, Number(growth || 0));
+    if (safeGrowth >= 7) return 3;
+    if (safeGrowth >= 3) return 2;
+    return 1;
+  }
+
+  function getUnlockedMapStep(totalCorrect) {
+    return Math.min(4, Math.floor(Math.max(0, Number(totalCorrect || 0)) / QUESTION_COUNT));
+  }
+
+  function createEmptyAdventure(source = {}) {
+    const totalCorrect = Math.max(0, Number(source?.totalCorrect || 0));
+    const spirits = {};
+    difficulties.forEach((difficulty) => {
+      const stored = source?.spirits?.[difficulty.id] || {};
+      const growth = Math.max(0, Number(stored.growth || 0));
+      spirits[difficulty.id] = {
+        met: Boolean(stored.met || growth > 0),
+        growth,
+        level: getSpiritGrowthLevel(growth),
+      };
+    });
+    return {
+      totalCorrect,
+      mapStep: getUnlockedMapStep(totalCorrect),
+      spirits,
+    };
+  }
+
+  function applyAdventureAnswer(adventure, difficultyId, isCorrect) {
+    const next = createEmptyAdventure(adventure);
+    if (!isCorrect) return next;
+    const spiritId = difficulties.some((difficulty) => difficulty.id === difficultyId) ? difficultyId : "seed";
+    const spirit = next.spirits[spiritId] || { met: false, growth: 0, level: 1 };
+    const growth = spirit.growth + 1;
+    next.totalCorrect += 1;
+    next.mapStep = getUnlockedMapStep(next.totalCorrect);
+    next.spirits[spiritId] = {
+      met: true,
+      growth,
+      level: getSpiritGrowthLevel(growth),
+    };
+    return next;
+  }
+
   function createRound(difficultyId, subjectId, languageId, randomFn) {
     let safeSubjectId = subjectId;
     let safeLanguageId = languageId;
@@ -1211,6 +1257,10 @@
     generateQuestion,
     isCorrectAnswer,
     calculatePoints,
+    createEmptyAdventure,
+    applyAdventureAnswer,
+    getSpiritGrowthLevel,
+    getUnlockedMapStep,
     createRound,
     answerQuestion,
     nextQuestion,

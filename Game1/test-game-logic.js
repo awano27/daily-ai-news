@@ -140,6 +140,32 @@ assert.strictEqual(GameLogic.isCorrectAnswer(compareQuestion, compareQuestion.an
 assert.strictEqual(GameLogic.isCorrectAnswer(compareQuestion, "Wrong"), false);
 assert.strictEqual(GameLogic.calculatePoints(20, true), 30);
 assert.strictEqual(GameLogic.calculatePoints(20, false), 20);
+assert.strictEqual(GameLogic.getSpiritGrowthLevel(0), 1);
+assert.strictEqual(GameLogic.getSpiritGrowthLevel(3), 2);
+assert.strictEqual(GameLogic.getSpiritGrowthLevel(7), 3);
+assert.strictEqual(GameLogic.getUnlockedMapStep(0), 0);
+assert.strictEqual(GameLogic.getUnlockedMapStep(5), 1);
+assert.strictEqual(GameLogic.getUnlockedMapStep(99), 4);
+
+const emptyAdventure = GameLogic.createEmptyAdventure();
+assert.strictEqual(emptyAdventure.totalCorrect, 0);
+assert.strictEqual(emptyAdventure.mapStep, 0);
+assert.strictEqual(emptyAdventure.spirits.seed.met, false);
+assert.strictEqual(emptyAdventure.spirits.sky.level, 1);
+
+const afterWrongAdventure = GameLogic.applyAdventureAnswer(emptyAdventure, "seed", false);
+assert.strictEqual(afterWrongAdventure.totalCorrect, 0);
+assert.strictEqual(afterWrongAdventure.spirits.seed.growth, 0);
+
+let afterCorrectAdventure = emptyAdventure;
+for (let index = 0; index < 7; index += 1) {
+  afterCorrectAdventure = GameLogic.applyAdventureAnswer(afterCorrectAdventure, "seed", true);
+}
+assert.strictEqual(afterCorrectAdventure.totalCorrect, 7);
+assert.strictEqual(afterCorrectAdventure.mapStep, 1);
+assert.strictEqual(afterCorrectAdventure.spirits.seed.met, true);
+assert.strictEqual(afterCorrectAdventure.spirits.seed.growth, 7);
+assert.strictEqual(afterCorrectAdventure.spirits.seed.level, 3);
 
 let round = GameLogic.createRound("seed", () => 0);
 round = GameLogic.answerQuestion(round, round.question.answer);

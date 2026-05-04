@@ -719,6 +719,326 @@ h1.story-question {
   box-shadow: 0 5px 0 rgba(32, 48, 58, 0.1);
 }
 
+.forest-map {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 3px solid rgba(47, 129, 87, 0.18);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 233, 150, 0.42) 0 44px, transparent 45px),
+    linear-gradient(160deg, rgba(246, 255, 230, 0.96), rgba(218, 244, 225, 0.92));
+  box-shadow: 0 10px 0 rgba(54, 100, 70, 0.12), 0 18px 32px rgba(59, 116, 88, 0.14);
+}
+
+.map-heading,
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.map-heading span,
+.section-heading span {
+  color: var(--leaf-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.map-heading strong,
+.section-heading strong {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.map-path {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  min-height: 104px;
+  align-items: end;
+}
+
+.map-path::before {
+  content: "";
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 44px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d7b98a, #f4d9a5, #d7b98a);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.34);
+}
+
+.map-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.map-node span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 3px solid rgba(32, 48, 58, 0.1);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.map-node.unlocked span {
+  border-color: rgba(85, 174, 113, 0.5);
+  background: linear-gradient(180deg, #faffef, #c9f0cb);
+  color: var(--leaf-dark);
+}
+
+.map-node.current span {
+  border-color: var(--sun);
+  background: linear-gradient(180deg, #fff5bd, #ffd166);
+  color: #6f4d00;
+  box-shadow: 0 0 0 5px rgba(255, 209, 102, 0.18);
+}
+
+.map-node strong {
+  min-height: 30px;
+  font-size: 11px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.map-node.locked {
+  opacity: 0.58;
+}
+
+.creature.map {
+  width: 42px;
+  height: 36px;
+  margin: -10px 0 -3px;
+  box-shadow: 0 6px 0 rgba(32, 48, 58, 0.1);
+}
+
+.creature.map span,
+.creature.map i {
+  top: 13px;
+  width: 6px;
+  height: 8px;
+}
+
+.creature.map span {
+  left: 14px;
+}
+
+.creature.map i {
+  right: 14px;
+}
+
+.creature.map b {
+  top: 21px;
+  width: 12px;
+  height: 6px;
+}
+
+.forest-map p {
+  margin: 0;
+  color: var(--soil);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.spirit-growth-list {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 3px solid rgba(32, 48, 58, 0.1);
+  box-shadow: 0 8px 0 rgba(32, 48, 58, 0.1);
+}
+
+.growth-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.spirit-growth-card {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(250, 255, 248, 0.94), rgba(235, 248, 238, 0.84));
+  border: 2px solid rgba(67, 130, 84, 0.14);
+}
+
+.spirit-growth-card.new {
+  filter: saturate(0.72);
+  opacity: 0.78;
+}
+
+.spirit-growth-card .spirit {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+}
+
+.spirit-growth-card .spirit::before,
+.spirit-growth-card .spirit::after {
+  top: -8px;
+  width: 17px;
+  height: 12px;
+}
+
+.spirit-growth-card .spirit span,
+.spirit-growth-card .spirit i {
+  top: 17px;
+  width: 6px;
+  height: 7px;
+}
+
+.spirit-growth-card .spirit span {
+  left: 15px;
+}
+
+.spirit-growth-card .spirit i {
+  right: 15px;
+}
+
+.spirit-growth-card .spirit b {
+  top: 27px;
+  width: 12px;
+  height: 6px;
+}
+
+.spirit-growth-card strong,
+.spirit-growth-card span {
+  display: block;
+  min-width: 0;
+}
+
+.spirit-growth-card strong {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.spirit-growth-card span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.spirit-growth-card em {
+  display: block;
+  height: 8px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(32, 48, 58, 0.1);
+}
+
+.spirit-growth-card em i {
+  display: block;
+  width: var(--growth);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #75d28d, #ffd166);
+}
+
+.spirit.growth-level-2 {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.42));
+}
+
+.spirit.growth-level-3 {
+  transform: scale(1.16);
+  filter: drop-shadow(0 0 16px rgba(255, 209, 102, 0.66));
+}
+
+.spirit.growth-level-3 strong {
+  background: rgba(255, 243, 150, 0.64);
+}
+
+.adventure-run {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 2px solid rgba(47, 129, 87, 0.12);
+}
+
+.run-path {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+  height: 28px;
+  align-items: center;
+}
+
+.run-path::before {
+  content: "";
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 12px;
+  height: 7px;
+  border-radius: 999px;
+  background: #dfc399;
+}
+
+.run-path span {
+  position: relative;
+  z-index: 1;
+  height: 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(32, 48, 58, 0.08);
+}
+
+.run-path span.cleared {
+  background: linear-gradient(180deg, #fff4b2, #ffd166);
+  border-color: rgba(255, 209, 102, 0.72);
+}
+
+.run-path i {
+  position: absolute;
+  z-index: 2;
+  left: calc((100% - 24px) * var(--step) / 5);
+  top: 1px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50% 45% 50% 45%;
+  background: linear-gradient(145deg, #ff9b75, #e96a52);
+  box-shadow: 0 4px 0 rgba(32, 48, 58, 0.14);
+  transition: left 280ms ease;
+}
+
+.adventure-run p {
+  margin: 0;
+  color: var(--leaf-dark);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
 .buddy-form {
   display: grid;
   gap: 8px;

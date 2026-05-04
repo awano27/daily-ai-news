@@ -9,6 +9,7 @@
   const LANGUAGE_KEY = "maruppu-language";
   const DEFAULT_BUDDY_COLOR = "coral";
   const BUDDY_COLORS = ["coral", "mint", "sky"];
+  const FOREST_AREAS = ["森の入口", "きらめき小道", "花びら広場", "光る葉の丘", "空色の泉"];
   const app = document.querySelector("#app");
 
   const translations = {
@@ -85,7 +86,7 @@
       praise: ["いいね！なかよしムーブ成功", "すごい！光がせいれいに届いたよ", "やったね！せいれいがにこにこだよ", "その調子！チャレンジクリア", "ばっちり！相棒の光がきらり", "すてき！よく考えられたね"],
     },
     en: {
-      appTitle: "Maruppu Mini Game",
+      appTitle: "Maruppu Forest Adventure",
       language: "Language",
       defaultBuddy: "Maruppu",
       defaultProfile: "friend",
@@ -106,8 +107,8 @@
       buddyNamePrompt: "Give your buddy a name",
       buddySpeech: "\"Let's do our best with {name}!\"",
       useBuddy: "Use this buddy",
-      homeTitle: "{name}'s<br />friendly challenge",
-      homeLead: "Play friendly spirit challenges with math or words.",
+      homeTitle: "{name}'s<br />forest adventure",
+      homeLead: "Explore the forest, meet spirits, and help them grow with friendly challenges.",
       seeds: "collected",
       subjectTitle: "What will<br />you play?",
       subjectIntro: "Choose a subject. You can change it anytime.",
@@ -165,6 +166,9 @@
   translations.es = { ...translations.en, appTitle: "Minijuego Maruppu", language: "Idioma", defaultBuddy: "Maruppu", defaultProfile: "amigo", back: "Atrás", home: "Inicio", start: "Empezar", profile: "Perfil", export: "Exportar JSON", exported: "JSON listo. Guárdalo con un adulto.", profileTitle: "¿Quién juega?", profileIntro: "Escribe un nombre para guardar tus puntos.", playerName: "Tu nombre", buddyName: "Nombre del compañero", createProfile: "Crear perfil", buddyIntro: "Elige tu compañero", buddyFor: "Compañero de {name}", buddyKind: "amigo semilla redondo", buddyNamePrompt: "Pon nombre a tu compañero", useBuddy: "Usar este compañero", homeTitle: "Reto amistoso<br />con {name}", homeLead: "Juega retos de matemáticas o lengua con los espíritus.", seeds: "reunidas", subjectTitle: "¿Qué materia<br />quieres?", subjectIntro: "Elige una materia. Puedes cambiarla después.", chooseSpirit: "Elegir espíritu", mathSmall: "Cálculos y problemas", languageSmall: "Lectura y palabras", stagesTitle: "¿Qué espíritu<br />te reta?", stagesIntro: "Elige dificultad de {subject}.", clear: "Logrado", battleStart: "¡Empieza el reto amistoso!", tryAgain: "Este es un poco difícil. Pensemos juntos.", next: "Siguiente", result: "Resultado", resultLabel: "Resultado", resultPerfect: "¡Superaste 5 retos!", resultNice: "¡Seguiste hasta el final muy bien!", total: "Total {points} pt", closing: "Juguemos otra vez.", again: "Otra vez", streakLabel: "Racha diaria", bestLabel: "Mejor racha", day: "día", streakBonus: "¡Bono de racha de hoy!", specialLabel: "Celebración especial", specialTitle: "¡1000 puntos<br />guardados!", specialLead: "Trabajaste mucho con {name}. Habla con un adulto sobre una recompensa." };
 
   Object.assign(translations.ja, {
+    appTitle: "マルップとせいれいの 森のぼうけん",
+    homeTitle: "{name}と<br />森のぼうけん",
+    homeLead: "森を進んで、せいれいと出会い、少しずつ育てていこう。",
     export: "進みぐあいを見る",
     exported: "進みぐあいを表示したよ。",
     progressTitle: "進みぐあい",
@@ -278,6 +282,7 @@
     buddyColor: initialProfile?.buddyColor || DEFAULT_BUDDY_COLOR,
     rewardShown: Boolean(initialProfile?.rewardShown),
     streak: initialProfile?.streak || createEmptyStreak(),
+    adventure: GameLogic.createEmptyAdventure(initialProfile?.adventure),
     lastStreakBonus: null,
     exportMessage: "",
     progressVisible: false,
@@ -393,6 +398,7 @@
       buddyColor: BUDDY_COLORS.includes(profile?.buddyColor) ? profile.buddyColor : DEFAULT_BUDDY_COLOR,
       rewardShown: Boolean(profile?.rewardShown),
       streak: { ...createEmptyStreak(), ...(profile?.streak || {}) },
+      adventure: GameLogic.createEmptyAdventure(profile?.adventure),
     };
   }
 
@@ -418,6 +424,7 @@
     state.buddyColor = profile.buddyColor;
     state.rewardShown = profile.rewardShown;
     state.streak = profile.streak;
+    state.adventure = profile.adventure;
     saveProfileStore();
   }
 
@@ -429,6 +436,7 @@
     state.buddyColor = profile.buddyColor;
     state.rewardShown = profile.rewardShown;
     state.streak = profile.streak;
+    state.adventure = profile.adventure;
   }
 
   async function initCloudSync() {
@@ -526,6 +534,8 @@
       [t("progressPlayer"), profileName()],
       [t("progressBuddy"), profile.companionName],
       [t("progressPoints"), `${profile.totalPoints} pt`],
+      ["ぼうけんの正解", `${profile.adventure.totalCorrect}`],
+      ["今のエリア", FOREST_AREAS[profile.adventure.mapStep] || FOREST_AREAS[0]],
       [t("progressCurrentStreak"), `${streak.current}${t("day")}`],
       [t("progressBestStreak"), `${streak.best}${t("day")}`],
       [t("progressLastPlayed"), profile.streak.lastPlayedDate || t("noProgressDate")],
@@ -599,6 +609,62 @@
     }).join("");
   }
 
+  function renderForestMap(adventure = state.adventure) {
+    const safeAdventure = GameLogic.createEmptyAdventure(adventure);
+    const nodes = FOREST_AREAS.map((area, index) => {
+      const unlocked = index <= safeAdventure.mapStep;
+      const current = index === safeAdventure.mapStep;
+      return `
+        <div class="map-node ${unlocked ? "unlocked" : "locked"} ${current ? "current" : ""}">
+          <span>${index + 1}</span>
+          ${current ? creatureMarkup("map", "happy") : ""}
+          <strong>${area}</strong>
+        </div>`;
+    }).join("");
+    return `
+      <section class="forest-map">
+        <div class="map-heading">
+          <span>森のぼうけん</span>
+          <strong>${FOREST_AREAS[safeAdventure.mapStep] || FOREST_AREAS[0]}</strong>
+        </div>
+        <div class="map-path">${nodes}</div>
+        <p>正解すると、マルップが森を少しずつ進むよ。</p>
+      </section>`;
+  }
+
+  function renderAdventureRun(round) {
+    const progress = Math.min(GameLogic.QUESTION_COUNT, round.correctCount);
+    const steps = Array.from({ length: GameLogic.QUESTION_COUNT }, (_, index) => `<span class="${index < progress ? "cleared" : ""} ${index === progress ? "current" : ""}"></span>`).join("");
+    return `
+      <section class="adventure-run">
+        <div class="run-path">${steps}<i style="--step:${progress}"></i></div>
+        <p>${FOREST_AREAS[GameLogic.getUnlockedMapStep(round.adventureProgress?.totalCorrect || state.adventure.totalCorrect)] || FOREST_AREAS[0]}を ぼうけん中</p>
+      </section>`;
+  }
+
+  function renderSpiritGrowthList(adventure = state.adventure) {
+    const safeAdventure = GameLogic.createEmptyAdventure(adventure);
+    const cards = GameLogic.difficulties.map((base) => {
+      const difficulty = GameLogic.getDifficulty(base.id, state.languageId);
+      const spirit = safeAdventure.spirits[base.id] || { met: false, growth: 0, level: 1 };
+      const level = GameLogic.getSpiritGrowthLevel(spirit.growth);
+      return `
+        <article class="spirit-growth-card growth-level-${level} ${spirit.met ? "met" : "new"}">
+          ${spiritMarkup(`ready growth-level-${level}`, base.id)}
+          <div>
+            <strong>${difficulty.spiritName}</strong>
+            <span>${spirit.met ? `なかよし Lv.${level}` : "これから出会えるよ"}</span>
+            <em style="--growth:${Math.min(100, spirit.growth * 14)}%"><i></i></em>
+          </div>
+        </article>`;
+    }).join("");
+    return `
+      <section class="spirit-growth-list">
+        <div class="section-heading"><span>せいれいの育ちぐあい</span><strong>${safeAdventure.totalCorrect}こ 正解</strong></div>
+        <div class="growth-grid">${cards}</div>
+      </section>`;
+  }
+
   function renderProfile() {
     const profileNames = Object.keys(state.profileStore.profiles);
     const profileButtons = profileNames.map((name) => {
@@ -630,6 +696,7 @@
     const streakClass = streak.current >= 5 ? "hot" : streak.current >= 2 ? "warm" : "";
     return screenShell(`
       <div class="top-bar"><span class="pill">${escapeHtml(profileName())}</span><span class="score-chip">${state.totalPoints} pt</span></div>
+      ${renderForestMap()}
       <section class="hero-panel">
         <div class="sky-bits" aria-hidden="true"><span></span><span></span><span></span></div>
         ${creatureMarkup("hero", "happy")}
@@ -643,6 +710,7 @@
           <p>${streakMessage(streak)}</p>
         </section>
       </section>
+      ${renderSpiritGrowthList()}
       <button class="primary-button" data-action="starter">${t("start")}</button>
       <button class="text-button center" data-action="export">${t("export")}</button>
       ${state.exportMessage ? `<p class="export-message">${state.exportMessage}</p>` : ""}
@@ -719,6 +787,8 @@
     const talkText = round.answered ? (lastAnswer.correct ? (isCombo ? t("talkCombo") : t("talkGood")) : t("talkTry")) : t("talkReady");
     const spiritMood = round.answered ? (lastAnswer.correct ? (isCombo ? "shine combo" : "shine") : "tilt") : "ready";
     const difficulty = round.difficulty;
+    const spiritGrowth = (round.adventureProgress || state.adventure).spirits?.[difficulty.id] || { growth: 0, level: 1 };
+    const spiritLevel = GameLogic.getSpiritGrowthLevel(spiritGrowth.growth);
     const supportText = round.answered ? round.question.explanation : round.question.hint;
     const choices = round.question.choices.map((choice) => {
       const selected = round.answered && String(choice) === String(lastAnswer?.selectedAnswer);
@@ -730,10 +800,11 @@
       ${round.answered && lastAnswer?.correct ? `<div class="screen-glow ${isCombo ? "combo-glow" : ""}" aria-hidden="true"></div>` : ""}
       <div class="top-bar">${backButton()}<span class="pill">${t("clear")} ${round.correctCount} / ${GameLogic.QUESTION_COUNT}</span><span class="score-chip">${state.totalPoints + round.earnedPoints} pt</span></div>
       <section class="challenge-track">${challengeTrack(round)}</section>
+      ${renderAdventureRun(round)}
       <section class="versus-arena ${round.answered ? feedbackClass : ""}">
         <div class="side own-side"><div class="name-tag">${escapeHtml(buddyName())}</div>${creatureMarkup("duel", mood)}<div class="maruppu-talk">${talkText}</div></div>
         <div class="friend-beam ${round.answered && lastAnswer?.correct ? "active" : ""}" aria-hidden="true"></div>
-        <div class="side spirit-side"><div class="name-tag">${difficulty.spiritName}</div>${spiritMarkup(spiritMood, difficulty.id)}<div class="spirit-talk">${round.answered && lastAnswer?.correct ? t("spiritGood") : t("spiritReady")}</div></div>
+        <div class="side spirit-side"><div class="name-tag">${difficulty.spiritName} Lv.${spiritLevel}</div>${spiritMarkup(`${spiritMood} growth-level-${spiritLevel}`, difficulty.id)}<div class="spirit-talk">${round.answered && lastAnswer?.correct ? t("spiritGood") : t("spiritReady")}</div></div>
         ${sparkleMarkup(round.answered && lastAnswer?.correct)}
       </section>
       <section class="battle-scene">
@@ -820,12 +891,15 @@
     state.selectedDifficultyId = difficultyId;
     state.lastStreakBonus = null;
     state.round = GameLogic.createRound(difficultyId, state.selectedSubjectId, state.languageId);
+    state.round.adventureProgress = GameLogic.createEmptyAdventure(state.adventure);
     setScreen("battle");
   }
 
   function handleAnswer(answer) {
     if (!state.round || state.round.answered) return;
     state.round = GameLogic.answerQuestion(state.round, answer);
+    const lastAnswer = state.round.answers.at(-1);
+    state.round.adventureProgress = GameLogic.applyAdventureAnswer(state.round.adventureProgress || state.adventure, state.round.difficulty.id, Boolean(lastAnswer?.correct));
     render();
   }
 
@@ -840,6 +914,7 @@
       updateCurrentProfile({
         totalPoints: afterTotal,
         streak: { current: streakResult.current, best: streakResult.best, lastPlayedDate: streakResult.lastPlayedDate, lastBonusDate: streakResult.lastBonusDate },
+        adventure: state.round.adventureProgress || state.adventure,
       });
       if (shouldShowReward) {
         saveRewardShown();
