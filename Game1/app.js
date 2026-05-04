@@ -164,6 +164,105 @@
   translations.de = { ...translations.en, appTitle: "Maruppu Minispiel", language: "Sprache", defaultBuddy: "Maruppu", defaultProfile: "Freund", back: "Zurück", home: "Start", start: "Start", profile: "Profil", export: "JSON exportieren", exported: "Fortschritts-JSON ist fertig. Bitte mit einem Erwachsenen speichern.", profileTitle: "Wer spielt?", profileIntro: "Gib einen Namen ein, um eigene Punkte zu speichern.", playerName: "Dein Name", buddyName: "Name des Partners", createProfile: "Profil erstellen", buddyIntro: "Wähle deinen Partner", buddyFor: "Partner von {name}", buddyKind: "runder Samenfreund", buddyNamePrompt: "Gib deinem Partner einen Namen", useBuddy: "Diesen Partner wählen", homeTitle: "{name}s<br />Freundschaftsduell", homeLead: "Spiele freundliche Aufgaben mit Mathe oder Sprache.", seeds: "gesammelt", subjectTitle: "Womit<br />spielen?", subjectIntro: "Wähle ein Fach. Du kannst später wechseln.", chooseSpirit: "Geist wählen", mathSmall: "Rechnen und Sachaufgaben", languageSmall: "Lesen und Wörter", stagesTitle: "Welcher Geist<br />fordert dich?", stagesIntro: "Wähle die Schwierigkeit für {subject}.", clear: "Geschafft", battleStart: "Freundschaftsduell startet!", tryAgain: "Das ist knifflig. Denken wir zusammen nach.", next: "Weiter", result: "Ergebnis", resultLabel: "Ergebnis", resultPerfect: "Du hast 5 Aufgaben geschafft!", resultNice: "Du hast toll durchgehalten!", total: "Gesamt {points} pt", closing: "Bis zum nächsten Spiel.", again: "Nochmal", streakLabel: "Tages-Serie", bestLabel: "Rekord", day: "Tag", streakBonus: "Heutiger Serienbonus!", specialLabel: "Besondere Feier", specialTitle: "1000 Punkte<br />gesammelt!", specialLead: "Du hast mit {name} toll gearbeitet. Sprich mit einem Erwachsenen über eine Belohnung!" };
   translations.es = { ...translations.en, appTitle: "Minijuego Maruppu", language: "Idioma", defaultBuddy: "Maruppu", defaultProfile: "amigo", back: "Atrás", home: "Inicio", start: "Empezar", profile: "Perfil", export: "Exportar JSON", exported: "JSON listo. Guárdalo con un adulto.", profileTitle: "¿Quién juega?", profileIntro: "Escribe un nombre para guardar tus puntos.", playerName: "Tu nombre", buddyName: "Nombre del compañero", createProfile: "Crear perfil", buddyIntro: "Elige tu compañero", buddyFor: "Compañero de {name}", buddyKind: "amigo semilla redondo", buddyNamePrompt: "Pon nombre a tu compañero", useBuddy: "Usar este compañero", homeTitle: "Reto amistoso<br />con {name}", homeLead: "Juega retos de matemáticas o lengua con los espíritus.", seeds: "reunidas", subjectTitle: "¿Qué materia<br />quieres?", subjectIntro: "Elige una materia. Puedes cambiarla después.", chooseSpirit: "Elegir espíritu", mathSmall: "Cálculos y problemas", languageSmall: "Lectura y palabras", stagesTitle: "¿Qué espíritu<br />te reta?", stagesIntro: "Elige dificultad de {subject}.", clear: "Logrado", battleStart: "¡Empieza el reto amistoso!", tryAgain: "Este es un poco difícil. Pensemos juntos.", next: "Siguiente", result: "Resultado", resultLabel: "Resultado", resultPerfect: "¡Superaste 5 retos!", resultNice: "¡Seguiste hasta el final muy bien!", total: "Total {points} pt", closing: "Juguemos otra vez.", again: "Otra vez", streakLabel: "Racha diaria", bestLabel: "Mejor racha", day: "día", streakBonus: "¡Bono de racha de hoy!", specialLabel: "Celebración especial", specialTitle: "¡1000 puntos<br />guardados!", specialLead: "Trabajaste mucho con {name}. Habla con un adulto sobre una recompensa." };
 
+  Object.assign(translations.ja, {
+    export: "進みぐあいを見る",
+    exported: "進みぐあいを表示したよ。",
+    progressTitle: "進みぐあい",
+    progressPlayer: "あそんでいる人",
+    progressBuddy: "相棒",
+    progressPoints: "ポイント",
+    progressCurrentStreak: "今の連続",
+    progressBestStreak: "最高きろく",
+    progressLastPlayed: "最後に遊んだ日",
+    progressStorage: "保存先",
+    progressNote: "おうちの人が、今のがんばりを確認するための画面です。",
+    noProgressDate: "まだ記録なし",
+  });
+  Object.assign(translations.en, {
+    export: "View progress",
+    exported: "Progress is shown on screen.",
+    progressTitle: "Progress",
+    progressPlayer: "Player",
+    progressBuddy: "Buddy",
+    progressPoints: "Points",
+    progressCurrentStreak: "Current streak",
+    progressBestStreak: "Best streak",
+    progressLastPlayed: "Last played",
+    progressStorage: "Storage",
+    progressNote: "A simple screen for grown-ups to check current progress.",
+    noProgressDate: "No record yet",
+  });
+  Object.assign(translations.ko, {
+    export: "진행 보기",
+    exported: "진행 상황을 화면에 보여줘요.",
+    progressTitle: "진행 상황",
+    progressPlayer: "플레이어",
+    progressBuddy: "상棒",
+    progressPoints: "포인트",
+    progressCurrentStreak: "현재 연속",
+    progressBestStreak: "최고 기록",
+    progressLastPlayed: "마지막으로 논 날",
+    progressStorage: "저장 위치",
+    progressNote: "어른이 지금의 진행 상황을 확인하는 화면이에요.",
+    noProgressDate: "아직 기록 없음",
+  });
+  Object.assign(translations.zh, {
+    export: "查看进度",
+    exported: "进度已显示在画面上。",
+    progressTitle: "进度",
+    progressPlayer: "玩家",
+    progressBuddy: "伙伴",
+    progressPoints: "积分",
+    progressCurrentStreak: "当前连续",
+    progressBestStreak: "最高记录",
+    progressLastPlayed: "上次游玩",
+    progressStorage: "保存位置",
+    progressNote: "这是给家人查看当前进度的画面。",
+    noProgressDate: "还没有记录",
+  });
+  Object.assign(translations.fr, {
+    export: "Voir la progression",
+    exported: "La progression est affichée.",
+    progressTitle: "Progression",
+    progressPlayer: "Joueur",
+    progressBuddy: "Compagnon",
+    progressPoints: "Points",
+    progressCurrentStreak: "Suite actuelle",
+    progressBestStreak: "Record",
+    progressLastPlayed: "Dernière partie",
+    progressStorage: "Stockage",
+    progressNote: "Un écran simple pour que les adultes vérifient la progression.",
+    noProgressDate: "Aucun record",
+  });
+  Object.assign(translations.de, {
+    export: "Fortschritt ansehen",
+    exported: "Der Fortschritt wird angezeigt.",
+    progressTitle: "Fortschritt",
+    progressPlayer: "Spieler",
+    progressBuddy: "Partner",
+    progressPoints: "Punkte",
+    progressCurrentStreak: "Aktuelle Serie",
+    progressBestStreak: "Rekord",
+    progressLastPlayed: "Zuletzt gespielt",
+    progressStorage: "Speicher",
+    progressNote: "Eine einfache Ansicht, damit Erwachsene den Fortschritt prüfen können.",
+    noProgressDate: "Noch kein Eintrag",
+  });
+  Object.assign(translations.es, {
+    export: "Ver progreso",
+    exported: "El progreso se muestra en pantalla.",
+    progressTitle: "Progreso",
+    progressPlayer: "Jugador",
+    progressBuddy: "Compañero",
+    progressPoints: "Puntos",
+    progressCurrentStreak: "Racha actual",
+    progressBestStreak: "Mejor racha",
+    progressLastPlayed: "Última partida",
+    progressStorage: "Guardado",
+    progressNote: "Una pantalla simple para que un adulto revise el progreso.",
+    noProgressDate: "Sin registro aún",
+  });
+
   let activeLanguageId = loadLanguage();
   const loadedProfileStore = loadProfileStore();
   const initialProfile = getActiveProfile(loadedProfileStore);
@@ -181,6 +280,7 @@
     streak: initialProfile?.streak || createEmptyStreak(),
     lastStreakBonus: null,
     exportMessage: "",
+    progressVisible: false,
     cloudStatus: window.MaruppuCloudStore?.isConfigured() ? "loading" : "local",
     round: null,
   };
@@ -410,20 +510,35 @@
   function exportProfileProgress() {
     const profile = getActiveProfile();
     if (!profile) return;
-    const data = {
-      exportedAt: new Date().toISOString(),
-      currentProfile: state.profileStore.currentProfile,
-      profile: { ...profile, note: t("progressNote") },
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `maruppu-progress-${state.profileStore.currentProfile || "profile"}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+    state.progressVisible = !state.progressVisible;
     state.exportMessage = t("exported");
     render();
+  }
+
+  function progressPanel() {
+    if (!state.progressVisible) return "";
+    const profile = normalizeProfile(getActiveProfile());
+    const streak = visibleStreak();
+    const storageLabel = state.cloudStatus === "synced" || state.cloudStatus === "saving" || state.cloudStatus === "loading"
+      ? "Supabase"
+      : "localStorage";
+    const rows = [
+      [t("progressPlayer"), profileName()],
+      [t("progressBuddy"), profile.companionName],
+      [t("progressPoints"), `${profile.totalPoints} pt`],
+      [t("progressCurrentStreak"), `${streak.current}${t("day")}`],
+      [t("progressBestStreak"), `${streak.best}${t("day")}`],
+      [t("progressLastPlayed"), profile.streak.lastPlayedDate || t("noProgressDate")],
+      [t("progressStorage"), storageLabel],
+    ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+
+    return `
+      <section class="progress-panel">
+        <h2>${t("progressTitle")}</h2>
+        <p>${t("progressNote")}</p>
+        <div class="progress-grid">${rows}</div>
+      </section>
+    `;
   }
 
   function escapeHtml(value) {
@@ -531,6 +646,7 @@
       <button class="primary-button" data-action="starter">${t("start")}</button>
       <button class="text-button center" data-action="export">${t("export")}</button>
       ${state.exportMessage ? `<p class="export-message">${state.exportMessage}</p>` : ""}
+      ${progressPanel()}
       <button class="text-button center" data-action="profile">${t("profile")}</button>
     `, "home-screen");
   }
