@@ -520,8 +520,8 @@
     const profile = normalizeProfile(getActiveProfile());
     const streak = visibleStreak();
     const storageLabel = state.cloudStatus === "synced" || state.cloudStatus === "saving" || state.cloudStatus === "loading"
-      ? "Supabase"
-      : "localStorage";
+      ? "ネットに保存中"
+      : "この端末に保存中";
     const rows = [
       [t("progressPlayer"), profileName()],
       [t("progressBuddy"), profile.companionName],
@@ -563,12 +563,12 @@
 
   function cloudStatusBadge() {
     const labels = {
-      local: "localStorage",
-      loading: "DB loading",
-      saving: "DB saving",
-      synced: "DB synced",
-      empty: "DB ready",
-      error: "local fallback",
+      local: "この端末に保存中",
+      loading: "保存を確認中",
+      saving: "保存中",
+      synced: "ネットに保存中",
+      empty: "保存準備OK",
+      error: "この端末に保存中",
     };
     const status = state.cloudStatus || "local";
     return `<span class="cloud-status ${status}">${labels[status] || labels.local}</span>`;
