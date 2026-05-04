@@ -97,6 +97,14 @@ button {
     rgba(255, 255, 255, 0.2);
 }
 
+.screen-glow.level-glow {
+  background:
+    radial-gradient(circle at 52% 35%, rgba(255, 244, 166, 0.82), transparent 34%),
+    radial-gradient(circle at 70% 44%, rgba(135, 199, 255, 0.42), transparent 28%),
+    radial-gradient(circle at 28% 62%, rgba(245, 143, 177, 0.34), transparent 24%),
+    rgba(255, 255, 255, 0.25);
+}
+
 .top-bar {
   display: flex;
   align-items: center;
@@ -835,6 +843,17 @@ h1.story-question {
   overflow-wrap: anywhere;
 }
 
+.map-node small {
+  min-height: 18px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--leaf-dark);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
 .map-node.locked {
   opacity: 0.58;
 }
@@ -875,6 +894,22 @@ h1.story-question {
   text-align: center;
 }
 
+.map-focus {
+  justify-self: center;
+  max-width: 100%;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--soil);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.map-focus strong {
+  color: var(--leaf-dark);
+}
+
 .spirit-growth-list {
   display: grid;
   gap: 12px;
@@ -901,6 +936,26 @@ h1.story-question {
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(250, 255, 248, 0.94), rgba(235, 248, 238, 0.84));
   border: 2px solid rgba(67, 130, 84, 0.14);
+}
+
+.spirit-growth-card.growth-level-4,
+.collection-card.growth-level-4 {
+  border-color: rgba(135, 199, 255, 0.42);
+  background:
+    radial-gradient(circle at 90% 14%, rgba(135, 199, 255, 0.22), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(232, 248, 239, 0.9));
+}
+
+.spirit-growth-card.growth-level-5,
+.collection-card.growth-level-5 {
+  border-color: rgba(255, 209, 102, 0.64);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 209, 102, 0.3), transparent 30%),
+    radial-gradient(circle at 92% 18%, rgba(245, 143, 177, 0.2), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 249, 224, 0.9));
+  box-shadow:
+    0 9px 0 rgba(121, 81, 0, 0.1),
+    0 18px 30px rgba(121, 81, 0, 0.12);
 }
 
 .spirit-growth-card.new {
@@ -989,6 +1044,36 @@ h1.story-question {
 
 .spirit.growth-level-3 strong {
   background: rgba(255, 243, 150, 0.64);
+}
+
+.spirit.growth-level-4 {
+  transform: scale(1.22) rotate(-2deg);
+  filter:
+    drop-shadow(0 0 14px rgba(255, 209, 102, 0.68))
+    drop-shadow(0 0 8px rgba(135, 199, 255, 0.34));
+}
+
+.spirit.growth-level-4 strong {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 243, 150, 0.74);
+  box-shadow: 18px 4px 0 rgba(135, 199, 255, 0.4);
+}
+
+.spirit.growth-level-5 {
+  transform: scale(1.3);
+  filter:
+    drop-shadow(0 0 18px rgba(255, 209, 102, 0.78))
+    drop-shadow(0 0 14px rgba(245, 143, 177, 0.4));
+}
+
+.spirit.growth-level-5 strong {
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 243, 150, 0.82);
+  box-shadow:
+    18px -2px 0 rgba(135, 199, 255, 0.45),
+    -16px 4px 0 rgba(245, 143, 177, 0.36);
 }
 
 .collection-screen {
@@ -1114,6 +1199,43 @@ h1.story-question {
   font-weight: 900;
 }
 
+.memory-chip {
+  display: grid;
+  gap: 3px;
+  margin-top: 10px;
+  padding: 9px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2px solid rgba(32, 48, 58, 0.08);
+}
+
+.memory-chip span {
+  color: var(--soil);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.memory-chip strong {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+  border-radius: 0;
+}
+
+.memory-chip.locked {
+  opacity: 0.72;
+}
+
+.memory-chip.unlocked {
+  border-color: rgba(255, 209, 102, 0.54);
+  background:
+    radial-gradient(circle at 90% 18%, rgba(255, 209, 102, 0.34), transparent 30%),
+    rgba(255, 255, 255, 0.82);
+}
+
 .adventure-run {
   display: grid;
   gap: 6px;
@@ -1205,6 +1327,37 @@ h1.story-question {
     linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(232, 249, 226, 0.92));
   border: 2px solid rgba(116, 182, 120, 0.28);
   animation: noticePop 520ms cubic-bezier(0.2, 1.35, 0.34, 1);
+}
+
+.growth-notice strong,
+.growth-notice span {
+  display: block;
+}
+
+.growth-notice strong {
+  font-size: 15px;
+}
+
+.growth-notice span {
+  margin-top: 2px;
+  color: var(--soil);
+  font-size: 11px;
+}
+
+.growth-notice.level-up {
+  padding: 11px 16px;
+  border-color: rgba(255, 209, 102, 0.72);
+  background:
+    radial-gradient(circle at 18% 28%, rgba(255, 209, 102, 0.52), transparent 34%),
+    radial-gradient(circle at 88% 50%, rgba(245, 143, 177, 0.34), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 207, 0.94));
+  box-shadow:
+    0 8px 0 rgba(121, 81, 0, 0.12),
+    0 0 0 6px rgba(255, 209, 102, 0.18);
+}
+
+.growth-notice.level-up strong {
+  font-size: 17px;
 }
 
 .buddy-form {
@@ -1670,6 +1823,14 @@ h1.story-question {
 
 .versus-arena.good {
   animation: arenaFlash 620ms ease-out;
+}
+
+.versus-arena.level-up-arena {
+  border-color: rgba(255, 209, 102, 0.56);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 0 0 6px rgba(255, 209, 102, 0.14),
+    0 18px 30px rgba(121, 81, 0, 0.12);
 }
 
 .side {

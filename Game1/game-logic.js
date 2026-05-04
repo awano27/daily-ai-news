@@ -1355,6 +1355,8 @@
 
   function getSpiritGrowthLevel(growth) {
     const safeGrowth = Math.max(0, Number(growth || 0));
+    if (safeGrowth >= 18) return 5;
+    if (safeGrowth >= 12) return 4;
     if (safeGrowth >= 7) return 3;
     if (safeGrowth >= 3) return 2;
     return 1;

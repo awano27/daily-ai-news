@@ -148,6 +148,8 @@ assert.strictEqual(GameLogic.calculatePoints(20, false), 20);
 assert.strictEqual(GameLogic.getSpiritGrowthLevel(0), 1);
 assert.strictEqual(GameLogic.getSpiritGrowthLevel(3), 2);
 assert.strictEqual(GameLogic.getSpiritGrowthLevel(7), 3);
+assert.strictEqual(GameLogic.getSpiritGrowthLevel(12), 4);
+assert.strictEqual(GameLogic.getSpiritGrowthLevel(18), 5);
 assert.strictEqual(GameLogic.getUnlockedMapStep(0), 0);
 assert.strictEqual(GameLogic.getUnlockedMapStep(5), 1);
 assert.strictEqual(GameLogic.getUnlockedMapStep(99), 4);
@@ -176,6 +178,10 @@ assert.strictEqual(afterCorrectAdventure.mapStep, 1);
 assert.strictEqual(afterCorrectAdventure.spirits.seed.met, true);
 assert.strictEqual(afterCorrectAdventure.spirits.seed.growth, 7);
 assert.strictEqual(afterCorrectAdventure.spirits.seed.level, 3);
+
+const legacyAdventure = GameLogic.createEmptyAdventure({ spirits: { seed: { met: true, growth: 18 } } });
+assert.strictEqual(legacyAdventure.spirits.seed.level, 5);
+assert.strictEqual(legacyAdventure.spirits.seed.growth, 18);
 
 let round = GameLogic.createRound("seed", () => 0);
 assert.strictEqual(round.usedQuestionSignatures.length, 1);

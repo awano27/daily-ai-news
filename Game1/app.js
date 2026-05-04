@@ -174,14 +174,21 @@
     collectionIntro: "出会ったせいれいと、育ちぐあいを見られるよ。",
     collectionMet: "なかよし",
     collectionNew: "まだ出会っていないよ",
-    collectionGrowth: "育ちぐあい {growth}/7",
+    collectionGrowth: "育ちぐあい {growth}こ",
     collectionNext: "あと {count}こで もっとすてきに育つよ",
-    collectionMax: "すてきに育っているよ",
+    collectionMax: "すてきに育ちきったよ",
+    collectionMemoryTitle: "思い出",
+    collectionMemoryLocked: "Lv.3で思い出がひらくよ",
+    collectionMemoryFirst: "{spirit}と森で小さな光を見つけたよ",
+    collectionMemoryFinal: "{spirit}と森の奥まで進めたよ",
+    mapSpiritFocus: "この場所で育てやすいせいれい",
+    nextLevelLine: "次のLvまで あと {count}こ",
+    maxLevelLine: "最高Lvまで育ったよ",
     adventureGoal: "つぎの場所まで あと {count}こ",
     adventureGoalDone: "森の奥まで進めたよ",
     encounter: "はじめての出会い",
     growNotice: "{spirit}が少し育ったよ",
-    levelUpNotice: "{spirit}がもっとすてきに育ったよ",
+    levelUpNotice: "{spirit}がLv.{level}に育ったよ",
     areaOpenNotice: "新しい場所に進めるようになったよ",
     roundAdventureTitle: "今日のぼうけん",
     roundAdventureLead: "{spirit}と なかよしが {count}こ ふえたよ",
@@ -204,14 +211,21 @@
     collectionIntro: "See the spirits you met and how much they have grown.",
     collectionMet: "Friend",
     collectionNew: "Not met yet",
-    collectionGrowth: "Growth {growth}/7",
+    collectionGrowth: "Growth {growth}",
     collectionNext: "{count} more clears to grow again",
-    collectionMax: "Growing beautifully",
+    collectionMax: "Fully grown",
+    collectionMemoryTitle: "Memory",
+    collectionMemoryLocked: "Memory opens at Lv.3",
+    collectionMemoryFirst: "You found a small forest light with {spirit}",
+    collectionMemoryFinal: "You reached the deep forest with {spirit}",
+    mapSpiritFocus: "Spirit to grow here",
+    nextLevelLine: "{count} more to next Lv.",
+    maxLevelLine: "Max Lv. reached",
     adventureGoal: "{count} more clears to the next place",
     adventureGoalDone: "You reached the deep forest",
     encounter: "First meeting",
     growNotice: "{spirit} grew a little",
-    levelUpNotice: "{spirit} grew brighter",
+    levelUpNotice: "{spirit} reached Lv.{level}",
     areaOpenNotice: "A new place opened",
     roundAdventureTitle: "Today's adventure",
     roundAdventureLead: "{spirit} gained {count} friendship sparkles",
@@ -642,6 +656,42 @@
     }).join("");
   }
 
+  function growthLevelStart(level) {
+    return [0, 0, 3, 7, 12, 18][Math.max(1, Math.min(5, Number(level || 1)))] || 0;
+  }
+
+  function growthNextCount(growth) {
+    const safeGrowth = Math.max(0, Number(growth || 0));
+    const level = GameLogic.getSpiritGrowthLevel(safeGrowth);
+    if (level >= 5) return 0;
+    return growthLevelStart(level + 1) - safeGrowth;
+  }
+
+  function growthProgressPercent(growth) {
+    const safeGrowth = Math.max(0, Number(growth || 0));
+    const level = GameLogic.getSpiritGrowthLevel(safeGrowth);
+    if (level >= 5) return 100;
+    const start = growthLevelStart(level);
+    const next = growthLevelStart(level + 1);
+    return Math.max(8, Math.min(100, ((safeGrowth - start) / (next - start)) * 100));
+  }
+
+  function spiritMemoryText(spirit, spiritName) {
+    const level = GameLogic.getSpiritGrowthLevel(spirit?.growth || 0);
+    if (!spirit?.met || level < 3) return t("collectionMemoryLocked");
+    if (level >= 5) return t("collectionMemoryFinal", { spirit: spiritName });
+    return t("collectionMemoryFirst", { spirit: spiritName });
+  }
+
+  function mapFocusSpirit(index, adventure = state.adventure) {
+    const safeAdventure = GameLogic.createEmptyAdventure(adventure);
+    const focusIds = ["seed", "grass", "flower", "sky", "sky"];
+    const focusId = focusIds[Math.max(0, Math.min(focusIds.length - 1, index))] || "seed";
+    const difficulty = GameLogic.getDifficulty(focusId, state.languageId);
+    const spirit = safeAdventure.spirits[focusId] || { growth: 0 };
+    return { difficulty, level: GameLogic.getSpiritGrowthLevel(spirit.growth) };
+  }
+
   function renderForestMap(adventure = state.adventure) {
     const safeAdventure = GameLogic.createEmptyAdventure(adventure);
     const stepRemainder = safeAdventure.totalCorrect % GameLogic.QUESTION_COUNT;
@@ -650,13 +700,16 @@
     const nodes = FOREST_AREAS.map((area, index) => {
       const unlocked = index <= safeAdventure.mapStep;
       const current = index === safeAdventure.mapStep;
+      const focus = mapFocusSpirit(index, safeAdventure);
       return `
         <div class="map-node ${unlocked ? "unlocked" : "locked"} ${current ? "current" : ""}">
           <span>${index + 1}</span>
           ${current ? creatureMarkup("map", "happy") : ""}
           <strong>${area}</strong>
+          <small>${focus.difficulty.spiritName} Lv.${focus.level}</small>
         </div>`;
     }).join("");
+    const currentFocus = mapFocusSpirit(safeAdventure.mapStep, safeAdventure);
     return `
       <section class="forest-map">
         <div class="map-heading">
@@ -664,6 +717,7 @@
           <strong>${FOREST_AREAS[safeAdventure.mapStep] || FOREST_AREAS[0]}</strong>
         </div>
         <div class="map-path">${nodes}</div>
+        <div class="map-focus">${t("mapSpiritFocus")}：<strong>${currentFocus.difficulty.spiritName} Lv.${currentFocus.level}</strong></div>
         <p>${isComplete ? t("adventureGoalDone") : t("adventureGoal", { count: nextClearCount })}</p>
       </section>`;
   }
@@ -690,7 +744,7 @@
           <div>
             <strong>${difficulty.spiritName}</strong>
             <span>${spirit.met ? `なかよし Lv.${level}` : "これから出会えるよ"}</span>
-            <em style="--growth:${Math.min(100, spirit.growth * 14)}%"><i></i></em>
+            <em style="--growth:${growthProgressPercent(spirit.growth)}%"><i></i></em>
           </div>
         </article>`;
     }).join("");
@@ -699,13 +753,6 @@
         <div class="section-heading"><span>せいれいの育ちぐあい</span><strong>${safeAdventure.totalCorrect}こ 正解</strong></div>
         <div class="growth-grid">${cards}</div>
       </section>`;
-  }
-
-  function growthNextCount(growth) {
-    const safeGrowth = Math.max(0, Number(growth || 0));
-    if (safeGrowth < 3) return 3 - safeGrowth;
-    if (safeGrowth < 7) return 7 - safeGrowth;
-    return 0;
   }
 
   function renderCollection() {
@@ -719,15 +766,19 @@
         ? (nextCount > 0 ? t("collectionNext", { count: nextCount }) : t("collectionMax"))
         : t("collectionNew");
       return `
-        <article class="collection-card ${spirit.met ? "met" : "new"} growth-level-${level}">
+        <article class="collection-card ${base.id} ${spirit.met ? "met" : "new"} growth-level-${level}">
           <div class="collection-spirit-wrap">${spiritMarkup(`ready growth-level-${level}`, base.id)}</div>
           <div class="collection-info">
             <span class="tiny-label">${difficulty.description}</span>
             <h2>${difficulty.spiritName}</h2>
             <strong>${spirit.met ? `${t("collectionMet")} Lv.${level}` : t("collectionNew")}</strong>
             <p>${growthText}</p>
-            <em style="--growth:${Math.min(100, spirit.growth * 14)}%"><i></i></em>
+            <em style="--growth:${growthProgressPercent(spirit.growth)}%"><i></i></em>
             <small>${t("collectionGrowth", { growth: spirit.growth })}</small>
+            <div class="memory-chip ${spirit.met && level >= 3 ? "unlocked" : "locked"}">
+              <span>${t("collectionMemoryTitle")}</span>
+              <strong>${spiritMemoryText(spirit, difficulty.spiritName)}</strong>
+            </div>
           </div>
         </article>`;
     }).join("");
@@ -852,13 +903,15 @@
 
   function renderBattleGrowthNotice(round, lastAnswer, difficulty, spiritLevel) {
     if (!round.answered || !lastAnswer?.correct) return "";
-    const beforeAdventure = GameLogic.createEmptyAdventure(round.startAdventure || state.adventure);
-    const beforeSpirit = beforeAdventure.spirits[difficulty.id] || { growth: 0, level: 1 };
-    const beforeLevel = GameLogic.getSpiritGrowthLevel(beforeSpirit.growth);
+    const afterAdventure = GameLogic.createEmptyAdventure(round.adventureProgress || state.adventure);
+    const afterSpirit = afterAdventure.spirits[difficulty.id] || { growth: 0, level: 1 };
+    const beforeLevel = GameLogic.getSpiritGrowthLevel(Math.max(0, afterSpirit.growth - 1));
+    const levelUp = spiritLevel > beforeLevel;
     const text = spiritLevel > beforeLevel
-      ? t("levelUpNotice", { spirit: difficulty.spiritName })
+      ? t("levelUpNotice", { spirit: difficulty.spiritName, level: spiritLevel })
       : t("growNotice", { spirit: difficulty.spiritName });
-    return `<div class="growth-notice">${text}</div>`;
+    const nextCount = growthNextCount(afterSpirit.growth);
+    return `<div class="growth-notice ${levelUp ? "level-up" : ""}"><strong>${text}</strong><span>${nextCount > 0 ? t("nextLevelLine", { count: nextCount }) : t("maxLevelLine")}</span></div>`;
   }
 
   function renderBattle() {
@@ -879,6 +932,8 @@
     const difficulty = round.difficulty;
     const spiritGrowth = (round.adventureProgress || state.adventure).spirits?.[difficulty.id] || { growth: 0, level: 1 };
     const spiritLevel = GameLogic.getSpiritGrowthLevel(spiritGrowth.growth);
+    const previousSpiritLevel = round.answered && lastAnswer?.correct ? GameLogic.getSpiritGrowthLevel(Math.max(0, spiritGrowth.growth - 1)) : spiritLevel;
+    const justLeveledUp = Boolean(round.answered && lastAnswer?.correct && spiritLevel > previousSpiritLevel);
     const isFirstMeeting = !GameLogic.createEmptyAdventure(round.startAdventure || state.adventure).spirits[difficulty.id]?.met;
     const supportText = round.answered ? round.question.explanation : round.question.hint;
     const choices = round.question.choices.map((choice) => {
@@ -888,12 +943,12 @@
     }).join("");
 
     return screenShell(`
-      ${round.answered && lastAnswer?.correct ? `<div class="screen-glow ${isCombo ? "combo-glow" : ""}" aria-hidden="true"></div>` : ""}
+      ${round.answered && lastAnswer?.correct ? `<div class="screen-glow ${isCombo ? "combo-glow" : ""} ${justLeveledUp ? "level-glow" : ""}" aria-hidden="true"></div>` : ""}
       <div class="top-bar">${backButton()}<span class="pill">${t("clear")} ${round.correctCount} / ${GameLogic.QUESTION_COUNT}</span><span class="score-chip">${state.totalPoints + round.earnedPoints} pt</span></div>
       ${isFirstMeeting ? `<div class="encounter-banner">${t("encounter")}：${difficulty.spiritName}</div>` : ""}
       <section class="challenge-track">${challengeTrack(round)}</section>
       ${renderAdventureRun(round)}
-      <section class="versus-arena ${round.answered ? feedbackClass : ""}">
+      <section class="versus-arena ${round.answered ? feedbackClass : ""} ${justLeveledUp ? "level-up-arena" : ""}">
         <div class="side own-side"><div class="name-tag">${escapeHtml(buddyName())}</div>${creatureMarkup("duel", mood)}<div class="maruppu-talk">${talkText}</div></div>
         <div class="friend-beam ${round.answered && lastAnswer?.correct ? "active" : ""}" aria-hidden="true"></div>
         <div class="side spirit-side"><div class="name-tag">${difficulty.spiritName} Lv.${spiritLevel}</div>${spiritMarkup(`${spiritMood} growth-level-${spiritLevel}`, difficulty.id)}<div class="spirit-talk">${round.answered && lastAnswer?.correct ? t("spiritGood") : t("spiritReady")}</div></div>
@@ -924,6 +979,8 @@
     const beforeSpirit = beforeAdventure.spirits[round.difficulty.id] || { growth: 0, level: 1 };
     const spiritGrowthDelta = Math.max(0, spirit.growth - beforeSpirit.growth);
     const areaOpened = afterAdventure.mapStep > beforeAdventure.mapStep;
+    const level = GameLogic.getSpiritGrowthLevel(spirit.growth);
+    const nextCount = growthNextCount(spirit.growth);
     return screenShell(`
       <section class="result-panel">
         <p class="tiny-label">${t("resultLabel")}</p>
@@ -936,7 +993,7 @@
         <section class="adventure-summary">
           <span>${t("roundAdventureTitle")}</span>
           <strong>${t("roundAdventureLead", { spirit: round.difficulty.spiritName, count: spiritGrowthDelta })}</strong>
-          <p>${areaOpened ? t("areaOpenNotice") : `${round.difficulty.spiritName} Lv.${GameLogic.getSpiritGrowthLevel(spirit.growth)}`}</p>
+          <p>${areaOpened ? t("areaOpenNotice") : `${round.difficulty.spiritName} Lv.${level}・${nextCount > 0 ? t("nextLevelLine", { count: nextCount }) : t("maxLevelLine")}`}</p>
         </section>
         <div class="total-box">${t("total", { points: state.totalPoints })}</div>
         <p class="closing-line">${t("closing")}</p>
