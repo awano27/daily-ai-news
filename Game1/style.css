@@ -627,6 +627,63 @@ h1.story-question {
     0 0 0 5px rgba(255, 209, 102, 0.25);
 }
 
+.subject-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.subject-card {
+  display: grid;
+  gap: 8px;
+  min-height: 128px;
+  padding: 18px;
+  border: 3px solid rgba(32, 48, 58, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 253, 247, 0.88));
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 8px 0 rgba(32, 48, 58, 0.1), 0 18px 30px rgba(32, 48, 58, 0.08);
+}
+
+.subject-card span {
+  justify-self: start;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--leaf-dark);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.subject-card strong {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.subject-card small {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.subject-card.math {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(255, 209, 102, 0.34), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(241, 252, 232, 0.9));
+}
+
+.subject-card.japanese {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(245, 143, 177, 0.28), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 244, 255, 0.9));
+}
+
+.subject-card.selected-subject {
+  border-color: var(--leaf);
+  box-shadow: 0 8px 0 rgba(58, 126, 72, 0.2), 0 0 0 5px rgba(116, 182, 120, 0.15);
+}
+
 .stack {
   display: grid;
   gap: 14px;

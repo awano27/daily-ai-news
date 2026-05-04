@@ -4,6 +4,23 @@
   const POINTS_PER_CORRECT = 10;
   const QUESTION_COUNT = 5;
 
+  const subjects = [
+    {
+      id: "math",
+      name: "算数",
+      actionLabel: "算数で戦う",
+      challengeLabel: "算数のチャレンジ",
+      homeLabel: "さんすうの たねあつめ",
+    },
+    {
+      id: "japanese",
+      name: "国語",
+      actionLabel: "国語で戦う",
+      challengeLabel: "国語のチャレンジ",
+      homeLabel: "ことばの たねあつめ",
+    },
+  ];
+
   const difficulties = [
     {
       id: "seed",
@@ -14,6 +31,10 @@
       reward: "きらきらの たね",
       operations: ["add", "subtract"],
       questionTypes: ["straight", "straight", "blank", "word"],
+      subjectLabels: {
+        math: "たし算・ひき算",
+        japanese: "漢字の読み・ことば",
+      },
     },
     {
       id: "grass",
@@ -24,6 +45,10 @@
       reward: "ふわふわの 花びら",
       operations: ["multiply", "multiply", "divide"],
       questionTypes: ["word", "word", "compare", "blank", "twoStep", "straight"],
+      subjectLabels: {
+        math: "かけ算中心",
+        japanese: "反対語・文づくり",
+      },
     },
     {
       id: "flower",
@@ -34,8 +59,70 @@
       reward: "ひかる 木の葉",
       operations: ["largeMultiply", "largeDivide", "mixed"],
       questionTypes: ["twoStep", "twoStep", "word", "compare", "blank", "straight"],
+      subjectLabels: {
+        math: "大きめ計算",
+        japanese: "読解・使い分け",
+      },
     },
   ];
+
+  const japaneseQuestions = {
+    seed: {
+      types: ["kanjiReading", "kanjiReading", "sentence", "meaning"],
+      kanjiReading: [
+        ["山", "やま", ["かわ", "もり", "そら"], "形が山に見える漢字だよ。", "「山」は「やま」と読むよ。"],
+        ["川", "かわ", ["やま", "うみ", "いけ"], "水が流れるところを表す漢字だよ。", "「川」は「かわ」と読むよ。"],
+        ["木", "き", ["ひ", "め", "て"], "森にたくさんあるものだよ。", "「木」は「き」と読むよ。"],
+        ["雨", "あめ", ["ゆき", "くも", "かぜ"], "空から水がふってくるよ。", "「雨」は「あめ」と読むよ。"],
+        ["花", "はな", ["くさ", "たね", "み"], "きれいに さくものだよ。", "「花」は「はな」と読むよ。"],
+      ],
+      meaning: [
+        ["はし", "川をわたるところ", ["ごはんを食べる道具", "走ること", "明るい空"], "文の中で何を表しているか考えよう。", "ここでは「はし」は橋、川をわたるところだよ。"],
+        ["あさ", "一日のはじめのころ", ["夜のあとすぐ", "食べものの名前", "大きな音"], "時間を表すことばだよ。", "「あさ」は一日のはじめのころだよ。"],
+      ],
+      sentence: [
+        ["今日は雨が ___ います。", "ふって", ["さいて", "はしって", "ねて"], "雨に合う動きを選ぼう。", "雨は「ふって」います、が自然だよ。"],
+        ["花が きれいに ___ 。", "さいた", ["のんだ", "とんだ", "よんだ"], "花がどうなるか思い出そう。", "花は「さいた」と言うよ。"],
+      ],
+    },
+    grass: {
+      types: ["synonymAntonym", "synonymAntonym", "sentence", "kanjiReading", "reading"],
+      kanjiReading: [
+        ["学校", "がっこう", ["がくせい", "こうえん", "せんせい"], "べんきょうする場所だよ。", "「学校」は「がっこう」と読むよ。"],
+        ["先生", "せんせい", ["せいと", "せんろ", "さき"], "教えてくれる人だよ。", "「先生」は「せんせい」と読むよ。"],
+      ],
+      synonymAntonym: [
+        ["「大きい」の反対語はどれ？", "小さい", ["広い", "長い", "明るい"], "反対の意味になる言葉を選ぼう。", "「大きい」の反対は「小さい」だよ。"],
+        ["「早い」の反対語はどれ？", "おそい", ["近い", "強い", "楽しい"], "スピードが反対になる言葉だよ。", "「早い」の反対は「おそい」だよ。"],
+        ["「うれしい」と似ている言葉はどれ？", "楽しい", ["かなしい", "くらい", "重い"], "近い気もちの言葉を選ぼう。", "「うれしい」と「楽しい」は近い気もちだよ。"],
+      ],
+      sentence: [
+        ["本を ___ 読みました。", "しずかに", ["赤く", "丸く", "高く"], "読む様子に合う言葉を選ぼう。", "本は「しずかに」読む、が自然だよ。"],
+        ["友だちに ___ あいさつをしました。", "元気に", ["冷たく", "細く", "古く"], "あいさつの様子に合う言葉だよ。", "「元気に あいさつ」が自然だよ。"],
+      ],
+      reading: [
+        ["マルップは朝、森で小さなたねを見つけました。たねは光っていて、近くの花もにこにこしていました。マルップはそっと手にのせました。", "マルップが見つけたものはどれ？", "小さなたね", ["大きな石", "赤い本", "青いかさ"], "文章のはじめを見てみよう。", "マルップは森で小さなたねを見つけたよ。"],
+      ],
+    },
+    flower: {
+      types: ["reading", "reading", "meaning", "synonymAntonym", "sentence"],
+      meaning: [
+        ["「あつい」の意味として、天気の話に合うのはどれ？", "気温が高い", ["本が分厚い", "味がからい", "音が小さい"], "同じ音でも意味が変わることがあるよ。", "天気の「あつい」は気温が高いことだよ。"],
+        ["「かえる」を動物の意味で使う文はどれ？", "池でかえるが鳴く。", ["家にかえる。", "色をかえる。", "ページをかえる。"], "生きものが出てくる文を選ぼう。", "池で鳴く「かえる」は動物のことだよ。"],
+      ],
+      synonymAntonym: [
+        ["「安全」の反対に近い言葉はどれ？", "きけん", ["安心", "しずか", "便利"], "安心できない様子を表す言葉だよ。", "「安全」の反対に近い言葉は「きけん」だよ。"],
+        ["「美しい」と似ている言葉はどれ？", "きれい", ["むずかしい", "すばやい", "あたたかい"], "見た目をほめる言葉を選ぼう。", "「美しい」と「きれい」は近い意味だよ。"],
+      ],
+      sentence: [
+        ["森の道を歩くと、鳥の声が ___ 聞こえました。", "やさしく", ["からく", "四角く", "古く"], "聞こえ方に合う言葉を選ぼう。", "鳥の声は「やさしく」聞こえました、が自然だよ。"],
+      ],
+      reading: [
+        ["ルミは夕方の森を歩いていました。空が少し暗くなると、葉っぱの光が道をてらしました。ピコとモコは、その光をたよりに広場へ進みました。みんなで着くと、花がふわりと開きました。", "みんなが広場へ進むとき、何をたよりにしましたか？", "葉っぱの光", ["雨の音", "赤い橋", "大きな石"], "道をてらしたものを探そう。", "葉っぱの光が道をてらしたので、それをたよりにしたよ。"],
+        ["朝の広場に、三つのたねがならんでいました。一つ目は丸く、二つ目は細長く、三つ目は星のような形でした。マルップは星の形のたねを見て、にっこりしました。", "マルップがにっこりしたのは、どんな形のたねを見たとき？", "星のような形", ["丸い形", "細長い形", "四角い形"], "最後の文を読んでみよう。", "マルップは星のような形のたねを見て、にっこりしたよ。"],
+      ],
+    },
+  };
 
   function randomInt(min, max, randomFn) {
     return Math.floor(randomFn() * (max - min + 1)) + min;
@@ -58,7 +145,8 @@
 
   function buildChoices(answer, randomFn, traps = []) {
     if (typeof answer !== "number") {
-      return shuffle(["左", "右", "おなじ"], randomFn);
+      const values = traps.length ? [answer].concat(traps) : ["左", "右", "おなじ"];
+      return shuffle(Array.from(new Set(values)).slice(0, 4), randomFn);
     }
 
     const choices = new Set([answer]);
@@ -333,6 +421,71 @@
     }, "twoStep", "左からじゅんに、ひいてから たそう。", `${first} - ${second} = ${first - second}、${first - second} + ${third} = ${first - second + third}だよ。`);
   }
 
+  function makeJapaneseKanjiReadingQuestion(difficulty, randomFn) {
+    const source = choose(japaneseQuestions[difficulty.id].kanjiReading, randomFn);
+    const [kanji, answer, traps, hint, explanation] = source;
+    return withDetails({
+      answer,
+      text: kanji,
+      story: `「${kanji}」という漢字の読みはどれ？`,
+      operation: "kanjiReading",
+      choiceTraps: traps,
+      subject: "japanese",
+    }, "kanjiReading", hint, explanation, "読みを えらぼう");
+  }
+
+  function makeJapaneseMeaningQuestion(difficulty, randomFn) {
+    const source = choose(japaneseQuestions[difficulty.id].meaning || japaneseQuestions.seed.meaning, randomFn);
+    const [prompt, answer, traps, hint, explanation] = source;
+    return withDetails({
+      answer,
+      text: prompt,
+      story: prompt,
+      operation: "meaning",
+      choiceTraps: traps,
+      subject: "japanese",
+    }, "meaning", hint, explanation, "意味に合うものを えらぼう");
+  }
+
+  function makeJapaneseSynonymAntonymQuestion(difficulty, randomFn) {
+    const source = choose(japaneseQuestions[difficulty.id].synonymAntonym || japaneseQuestions.grass.synonymAntonym, randomFn);
+    const [prompt, answer, traps, hint, explanation] = source;
+    return withDetails({
+      answer,
+      text: prompt,
+      story: prompt,
+      operation: "synonymAntonym",
+      choiceTraps: traps,
+      subject: "japanese",
+    }, "synonymAntonym", hint, explanation, "ことばを えらぼう");
+  }
+
+  function makeJapaneseSentenceQuestion(difficulty, randomFn) {
+    const source = choose(japaneseQuestions[difficulty.id].sentence, randomFn);
+    const [prompt, answer, traps, hint, explanation] = source;
+    return withDetails({
+      answer,
+      text: prompt,
+      story: `文に合うことばを えらぼう。${prompt}`,
+      operation: "sentence",
+      choiceTraps: traps,
+      subject: "japanese",
+    }, "sentence", hint, explanation, prompt);
+  }
+
+  function makeJapaneseReadingQuestion(difficulty, randomFn) {
+    const source = choose(japaneseQuestions[difficulty.id].reading || japaneseQuestions.grass.reading, randomFn);
+    const [passage, prompt, answer, traps, hint, explanation] = source;
+    return withDetails({
+      answer,
+      text: prompt,
+      story: `${passage}\n\n${prompt}`,
+      operation: "reading",
+      choiceTraps: traps,
+      subject: "japanese",
+    }, "reading", hint, explanation, "文を読んで こたえよう");
+  }
+
   function buildQuestionByOperation(operation, randomFn) {
     const builders = {
       add: makeAddQuestion,
@@ -357,20 +510,58 @@
     return (builders[type] || builders.straight)();
   }
 
-  function generateQuestion(difficulty, randomFn) {
-    const safeRandom = typeof randomFn === "function" ? randomFn : Math.random;
+  function buildJapaneseQuestion(difficulty, randomFn) {
+    const questionType = choose(japaneseQuestions[difficulty.id].types, randomFn);
+    const builders = {
+      kanjiReading: () => makeJapaneseKanjiReadingQuestion(difficulty, randomFn),
+      meaning: () => makeJapaneseMeaningQuestion(difficulty, randomFn),
+      synonymAntonym: () => makeJapaneseSynonymAntonymQuestion(difficulty, randomFn),
+      sentence: () => makeJapaneseSentenceQuestion(difficulty, randomFn),
+      reading: () => makeJapaneseReadingQuestion(difficulty, randomFn),
+    };
+    return builders[questionType]();
+  }
+
+  function getSubject(subjectId) {
+    return subjects.find((subject) => subject.id === subjectId) || subjects[0];
+  }
+
+  function generateQuestion(difficulty, subjectId, randomFn) {
+    let safeSubjectId = subjectId;
+    let safeRandom = randomFn;
+
+    if (typeof subjectId === "function") {
+      safeRandom = subjectId;
+      safeSubjectId = "math";
+    }
+
+    safeRandom = typeof safeRandom === "function" ? safeRandom : Math.random;
+    const subject = getSubject(safeSubjectId);
+    if (subject.id === "japanese") {
+      const question = buildJapaneseQuestion(difficulty, safeRandom);
+      return {
+        id: `${difficulty.id}-${subject.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
+        ...question,
+        subject: subject.id,
+        choices: buildChoices(question.answer, safeRandom, question.choiceTraps || []),
+      };
+    }
+
     const questionType = choose(difficulty.questionTypes || ["straight"], safeRandom);
     const question = buildQuestionByType(questionType, difficulty, safeRandom);
-    const traps = [
-      question.left + question.right,
-      Math.abs(question.left - question.right),
-      question.answer + 10,
-      question.answer - 10,
-    ];
+    const traps = typeof question.answer === "number"
+      ? [
+          question.left + question.right,
+          Math.abs(question.left - question.right),
+          question.answer + 10,
+          question.answer - 10,
+        ]
+      : question.choiceTraps || [];
 
     return {
       id: `${difficulty.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
       ...question,
+      subject: subject.id,
       choices: buildChoices(question.answer, safeRandom, traps),
     };
   }
@@ -383,17 +574,25 @@
     return currentPoints + (isCorrect ? POINTS_PER_CORRECT : 0);
   }
 
-  function createRound(difficultyId, randomFn) {
+  function createRound(difficultyId, subjectId, randomFn) {
+    let safeSubjectId = subjectId;
+    let safeRandom = randomFn;
+    if (typeof subjectId === "function") {
+      safeRandom = subjectId;
+      safeSubjectId = "math";
+    }
     const difficulty = difficulties.find((item) => item.id === difficultyId) || difficulties[0];
+    const subject = getSubject(safeSubjectId);
     return {
       difficulty,
       stage: difficulty,
+      subject,
       currentIndex: 0,
       earnedPoints: 0,
       correctCount: 0,
       currentStreak: 0,
       bestStreak: 0,
-      question: generateQuestion(difficulty, randomFn),
+      question: generateQuestion(difficulty, subject.id, safeRandom),
       answered: false,
       answers: [],
     };
@@ -439,7 +638,7 @@
     return {
       ...round,
       currentIndex: nextIndex,
-      question: generateQuestion(round.difficulty, randomFn),
+      question: generateQuestion(round.difficulty, round.subject?.id || "math", randomFn),
       answered: false,
     };
   }
@@ -447,8 +646,10 @@
   global.GameLogic = {
     POINTS_PER_CORRECT,
     QUESTION_COUNT,
+    subjects,
     difficulties,
     stages: difficulties,
+    getSubject,
     generateQuestion,
     isCorrectAnswer,
     calculatePoints,

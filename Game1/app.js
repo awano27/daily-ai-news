@@ -20,6 +20,7 @@
     profileName: loadedProfileStore.currentProfile || "",
     totalPoints: initialProfile?.totalPoints || 0,
     selectedStarter: "maruppu",
+    selectedSubjectId: "math",
     selectedDifficultyId: "seed",
     buddyName: initialProfile?.companionName || DEFAULT_BUDDY_NAME,
     buddyColor: initialProfile?.buddyColor || DEFAULT_BUDDY_COLOR,
@@ -186,6 +187,10 @@
     return escapeHtml(state.profileName || DEFAULT_PROFILE_NAME);
   }
 
+  function selectedSubject() {
+    return GameLogic.getSubject(state.selectedSubjectId);
+  }
+
   function setScreen(screen) {
     state.screen = getActiveProfile() || screen === "profile" ? screen : "profile";
     render();
@@ -195,7 +200,8 @@
     const routes = {
       profile: getActiveProfile() ? "home" : "profile",
       starter: "home",
-      stages: "starter",
+      subject: "starter",
+      stages: "subject",
       battle: "stages",
       result: "stages",
       specialReward: "home",
@@ -325,9 +331,9 @@
       <section class="hero-panel">
         <div class="sky-bits" aria-hidden="true"><span></span><span></span><span></span></div>
         ${creatureMarkup("hero", "happy")}
-        <p class="tiny-label">さんすうの たねあつめ</p>
+        <p class="tiny-label">${selectedSubject().homeLabel}</p>
         <h1>${name}と<br />なかよししょうぶ</h1>
-        <p class="lead">こたえると、たねが ふえるよ。</p>
+        <p class="lead">算数でも 国語でも、せいれいと なかよく チャレンジできるよ。</p>
         <div class="seed-meter" aria-label="あつめたたね">
           <strong>${seedCount}</strong>
           <span>こ あつめたよ</span>
@@ -350,7 +356,7 @@
       ${backButton()}
       <h1 class="page-title">相棒を きめよう</h1>
       <p class="stage-intro">${profileName()}の相棒だよ。</p>
-      <button class="starter-card selected" data-action="stages" aria-label="マルップをえらぶ">
+      <button class="starter-card selected" data-action="subject" aria-label="マルップをえらぶ">
         ${creatureMarkup("small", "happy")}
         <span>
           <strong>${name}</strong>
@@ -365,7 +371,27 @@
         ${colorButtons}
       </div>
       <div class="speech">「${name}と いっしょに がんばろうね」</div>
-      <button class="primary-button" data-action="stages">この子で いく</button>
+      <button class="primary-button" data-action="subject">この子で いく</button>
+    `);
+  }
+
+  function renderSubject() {
+    const subjectButtons = GameLogic.subjects
+      .map((subject) => `
+        <button class="subject-card ${subject.id} ${state.selectedSubjectId === subject.id ? "selected-subject" : ""}" data-action="subject-select" data-subject-id="${subject.id}">
+          <span>${subject.name}</span>
+          <strong>${subject.actionLabel}</strong>
+          <small>${subject.id === "math" ? "計算や文章題で しょうぶ" : "漢字やことばで しょうぶ"}</small>
+        </button>
+      `)
+      .join("");
+
+    return screenShell(`
+      ${backButton()}
+      <h1 class="page-title">どっちで<br />しょうぶする？</h1>
+      <p class="stage-intro">好きな科目をえらぼう。あとで いつでも かえられるよ。</p>
+      <div class="subject-grid">${subjectButtons}</div>
+      <button class="primary-button" data-action="stages">せいれいを えらぶ</button>
     `);
   }
 
@@ -375,7 +401,7 @@
         <button class="stage-card difficulty-card ${difficulty.id}" data-action="start" data-difficulty-id="${difficulty.id}">
           <span class="stage-number">${index + 1}</span>
           <strong>${difficulty.spiritName}</strong>
-          <small>${difficulty.gradeLabel}・${difficulty.label}</small>
+          <small>${difficulty.gradeLabel}・${difficulty.subjectLabels?.[state.selectedSubjectId] || difficulty.label}</small>
           <em>${difficulty.description}</em>
         </button>
       `)
@@ -384,7 +410,7 @@
     return screenShell(`
       ${backButton()}
       <h1 class="page-title">どのせいれいと<br />しょうぶする？</h1>
-      <p class="stage-intro">むずかしさを えらぼう。</p>
+      <p class="stage-intro">${selectedSubject().name}のむずかしさを えらぼう。</p>
       <div class="stack">${stageButtons}</div>
     `);
   }
@@ -450,7 +476,7 @@
       </section>
       <section class="battle-scene">
         <div class="question-panel">
-          <p>${difficulty.spiritName}の チャレンジ・${questionNumber}かいめ</p>
+          <p>${difficulty.spiritName}の ${round.subject.challengeLabel}・${questionNumber}かいめ</p>
           <h1 class="story-question">${round.question.story}</h1>
           <div class="equation-hint">${round.question.hintText || `${round.question.text} = ?`}</div>
         </div>
@@ -518,6 +544,7 @@
       profile: renderProfile,
       home: renderHome,
       starter: renderStarter,
+      subject: renderSubject,
       stages: renderStages,
       battle: renderBattle,
       result: renderResult,
@@ -532,7 +559,7 @@
       return;
     }
     state.selectedDifficultyId = difficultyId;
-    state.round = GameLogic.createRound(difficultyId);
+    state.round = GameLogic.createRound(difficultyId, state.selectedSubjectId);
     setScreen("battle");
   }
 
@@ -588,6 +615,11 @@
       setScreen("home");
     }
     if (action === "starter") setScreen("starter");
+    if (action === "subject") setScreen("subject");
+    if (action === "subject-select") {
+      state.selectedSubjectId = target.dataset.subjectId || "math";
+      setScreen("stages");
+    }
     if (action === "stages") setScreen("stages");
     if (action === "start") startRound(target.dataset.difficultyId);
     if (action === "color") {
