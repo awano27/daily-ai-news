@@ -37,6 +37,29 @@ const flowerQuestion = GameLogic.generateQuestion(flower, () => 0);
 assert.strictEqual(flowerQuestion.type, "twoStep");
 assert.strictEqual(typeof flowerQuestion.answer, "number");
 
+const parenthesesQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.55);
+assert.strictEqual(parenthesesQuestion.type, "parentheses");
+assert.strictEqual(typeof parenthesesQuestion.answer, "number");
+assert.ok(parenthesesQuestion.text.includes("("));
+
+const remainderQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.65);
+assert.strictEqual(remainderQuestion.type, "remainder");
+assert.strictEqual(typeof remainderQuestion.answer, "string");
+assert.ok(remainderQuestion.answer.includes("R"));
+
+const timeQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.75);
+assert.strictEqual(timeQuestion.type, "time");
+assert.strictEqual(typeof timeQuestion.answer, "string");
+assert.ok(timeQuestion.answer.includes(":"));
+
+const moneyQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.85);
+assert.strictEqual(moneyQuestion.type, "money");
+assert.strictEqual(typeof moneyQuestion.answer, "number");
+
+const unitQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.95);
+assert.strictEqual(unitQuestion.type, "unit");
+assert.strictEqual(typeof unitQuestion.answer, "number");
+
 const blankQuestion = GameLogic.generateQuestion(seed, () => 0.6);
 assert.strictEqual(blankQuestion.type, "blank");
 assert.ok(blankQuestion.hintText.includes("□"));

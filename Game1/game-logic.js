@@ -121,7 +121,7 @@
       reward: "ひかる 木の葉",
       subjectLabels: { math: "大きめ計算", japanese: "読解・意味" },
       operations: ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: ["twoStep", "word", "compare", "blank", "straight"],
+      questionTypes: ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit"],
     },
   ];
 
@@ -337,6 +337,64 @@
     },
   };
 
+  const advancedLanguageQuestions = {
+    ja: [
+      q("言葉をならべて、自然な文になるものはどれ？", "ルミは森で光を見つけた。", ["光はルミで森を見つけた。", "森を見つけた光はルミ。", "見つけた森はルミで光。"], "主語と動きを考えよう。", "「ルミは」が主語で、「見つけた」が動きだよ。"),
+      q("「森がしんとしている」の「しんとしている」に近い意味は？", "とても静か", ["とても明るい", "とても重い", "とても速い"], "音が少ない様子を表す言葉だよ。", "しんとしているは、とても静かな様子だよ。"),
+      q("文の主語はどれ？「小さなたねが、朝の光でひかりました。」", "小さなたねが", ["朝の光で", "ひかりました", "小さな"], "何がひかったのかを探そう。", "ひかったのは小さなたねだよ。"),
+      q("「手をかす」の意味に近いものはどれ？", "手伝う", ["手を洗う", "手を上げる", "手紙を書く"], "本当に手をわたすわけではないよ。", "手をかすは、手伝うという意味だよ。"),
+      reading("ピコは広場で迷っていました。モコは道に花びらをならべました。ルミは葉っぱの光で出口をてらしました。みんなで進むと、広場の奥に新しいたねがありました。", "出口をてらしたのはだれ？", "ルミ", ["ピコ", "モコ", "新しいたね"], "光を使った人を探そう。", "ルミが葉っぱの光で出口をてらしたよ。"),
+    ],
+    en: [
+      q("Which sentence is in the best order?", "Lumi found a light in the forest.", ["A light found forest Lumi.", "Forest found Lumi a light.", "Found Lumi forest light."], "Look for who did the action.", "Lumi is the subject, and found is the action."),
+      q("What does \"silent forest\" mean?", "a very quiet forest", ["a very bright forest", "a heavy forest", "a fast forest"], "Silent is about sound.", "Silent means very quiet."),
+      q("What is the subject of this sentence? \"The tiny seed glowed in the morning light.\"", "The tiny seed", ["in the morning light", "glowed", "tiny"], "Ask: what glowed?", "The tiny seed glowed."),
+      q("What does \"lend a hand\" mean?", "help someone", ["wash a hand", "raise a hand", "draw a hand"], "It is an expression, not a real hand.", "Lend a hand means help someone."),
+      reading("Pico was unsure in the clearing. Moko placed petals on the path. Lumi used leaf light to show the exit. Together they found a new seed.", "Who showed the exit?", "Lumi", ["Pico", "Moko", "the new seed"], "Find who used light.", "Lumi showed the exit with leaf light."),
+    ],
+    ko: [
+      q("가장 자연스러운 문장은?", "루미는 숲에서 빛을 찾았어요.", ["빛은 루미에서 숲을 찾았어요.", "숲을 찾은 빛은 루미예요.", "찾았어요 숲은 루미 빛."], "누가 무엇을 했는지 생각해요.", "루미가 빛을 찾은 문장이 자연스러워요."),
+      q("\"조용한 숲\"과 가까운 뜻은?", "소리가 거의 없는 숲", ["아주 밝은 숲", "무거운 숲", "빠른 숲"], "조용하다는 소리와 관련 있어요.", "조용한 숲은 소리가 거의 없는 숲이에요."),
+      q("문장의 주어는? \"작은 씨앗이 아침 빛에 반짝였어요.\"", "작은 씨앗이", ["아침 빛에", "반짝였어요", "작은"], "무엇이 반짝였는지 찾아요.", "반짝인 것은 작은 씨앗이에요."),
+      q("\"손을 빌려주다\"와 가까운 뜻은?", "도와주다", ["손을 씻다", "손을 들다", "편지를 쓰다"], "진짜 손을 주는 뜻은 아니에요.", "손을 빌려주다는 도와주다는 뜻이에요."),
+      reading("피코는 넓은 곳에서 길을 헷갈렸어요. 모코는 길에 꽃잎을 놓았어요. 루미는 잎의 빛으로 출구를 비추었어요.", "출구를 비춘 것은 누구인가요?", "루미", ["피코", "모코", "꽃잎"], "빛을 쓴 친구를 찾아요.", "루미가 출구를 비추었어요."),
+    ],
+    zh: [
+      q("哪个句子最自然？", "露米在森林里发现了光。", ["光在露米里发现森林。", "森林发现了露米的光。", "发现森林露米光。"], "想一想谁做了什么。", "露米发现了光，这个句子最自然。"),
+      q("“安静的森林”意思接近哪一个？", "声音很少的森林", ["很亮的森林", "很重的森林", "很快的森林"], "安静和声音有关。", "安静的森林就是声音很少的森林。"),
+      q("句子的主语是？“小种子在早晨的光里闪闪发亮。”", "小种子", ["早晨的光里", "闪闪发亮", "小"], "找一找什么在发亮。", "发亮的是小种子。"),
+      q("“帮一把”意思接近哪一个？", "帮助别人", ["洗手", "举手", "写信"], "这是一个表达，不是真的给一只手。", "帮一把就是帮助别人。"),
+      reading("皮可在广场里有点迷路。莫可把花瓣放在路上。露米用叶子的光照亮出口。大家一起找到了新的种子。", "谁照亮了出口？", "露米", ["皮可", "莫可", "新的种子"], "找一找谁用了光。", "露米用叶子的光照亮了出口。"),
+    ],
+    fr: [
+      q("Quelle phrase est la plus naturelle ?", "Lumi trouve une lumière dans la forêt.", ["Une lumière trouve forêt Lumi.", "Forêt trouve Lumi une lumière.", "Trouve Lumi forêt lumière."], "Cherche qui fait l'action.", "Lumi est le sujet, et trouve est l'action."),
+      q("Que veut dire « forêt silencieuse » ?", "une forêt très calme", ["une forêt très claire", "une forêt lourde", "une forêt rapide"], "Silencieuse parle du son.", "Silencieuse veut dire très calme."),
+      q("Quel est le sujet ? « La petite graine brille dans la lumière du matin. »", "La petite graine", ["dans la lumière du matin", "brille", "petite"], "Demande-toi : qu'est-ce qui brille ?", "La petite graine brille."),
+      q("Que veut dire « donner un coup de main » ?", "aider quelqu'un", ["laver une main", "lever la main", "dessiner une main"], "C'est une expression.", "Donner un coup de main veut dire aider."),
+      reading("Pico hésite dans la clairière. Moko pose des pétales sur le chemin. Lumi montre la sortie avec la lumière des feuilles.", "Qui montre la sortie ?", "Lumi", ["Pico", "Moko", "les pétales"], "Cherche qui utilise la lumière.", "Lumi montre la sortie."),
+    ],
+    de: [
+      q("Welcher Satz ist am natürlichsten?", "Lumi findet ein Licht im Wald.", ["Ein Licht findet Wald Lumi.", "Wald findet Lumi ein Licht.", "Findet Lumi Wald Licht."], "Suche, wer etwas tut.", "Lumi ist die Person, die etwas findet."),
+      q("Was bedeutet „stiller Wald“?", "ein sehr ruhiger Wald", ["ein sehr heller Wald", "ein schwerer Wald", "ein schneller Wald"], "Still hat mit Geräuschen zu tun.", "Still bedeutet sehr ruhig."),
+      q("Was ist das Subjekt? „Der kleine Samen leuchtet im Morgenlicht.」", "Der kleine Samen", ["im Morgenlicht", "leuchtet", "kleine"], "Frage: Was leuchtet?", "Der kleine Samen leuchtet."),
+      q("Was bedeutet „eine Hand reichen“?", "helfen", ["eine Hand waschen", "die Hand heben", "eine Hand malen"], "Das ist eine Redewendung.", "Eine Hand reichen bedeutet helfen."),
+      reading("Pico ist auf der Lichtung unsicher. Moko legt Blütenblätter auf den Weg. Lumi zeigt den Ausgang mit Blattlicht.", "Wer zeigt den Ausgang?", "Lumi", ["Pico", "Moko", "die Blütenblätter"], "Suche, wer Licht benutzt.", "Lumi zeigt den Ausgang."),
+    ],
+    es: [
+      q("¿Qué oración está mejor ordenada?", "Lumi encontró una luz en el bosque.", ["Una luz encontró bosque Lumi.", "Bosque encontró Lumi una luz.", "Encontró Lumi bosque luz."], "Busca quién hizo la acción.", "Lumi es quien encontró la luz."),
+      q("¿Qué significa «bosque silencioso»?", "un bosque muy tranquilo", ["un bosque muy brillante", "un bosque pesado", "un bosque rápido"], "Silencioso habla del sonido.", "Silencioso significa muy tranquilo."),
+      q("¿Cuál es el sujeto? «La semilla pequeña brilló con la luz de la mañana.»", "La semilla pequeña", ["con la luz de la mañana", "brilló", "pequeña"], "Pregunta: ¿qué brilló?", "La semilla pequeña brilló."),
+      q("¿Qué significa «echar una mano»?", "ayudar a alguien", ["lavar una mano", "levantar la mano", "dibujar una mano"], "Es una expresión.", "Echar una mano significa ayudar."),
+      reading("Pico dudaba en el claro. Moko puso pétalos en el camino. Lumi mostró la salida con la luz de las hojas.", "¿Quién mostró la salida?", "Lumi", ["Pico", "Moko", "los pétalos"], "Busca quién usó la luz.", "Lumi mostró la salida."),
+    ],
+  };
+
+  Object.entries(advancedLanguageQuestions).forEach(([languageId, questions]) => {
+    if (languageBanks[languageId]?.flower) {
+      languageBanks[languageId].flower.push(...questions);
+    }
+  });
+
   function q(story, answer, traps, hint, explanation) {
     return { story, text: story, answer, choiceTraps: traps, hint, explanation, hintText: hint, type: "language", operation: "language", subject: "japanese" };
   }
@@ -391,7 +449,7 @@
       reward: translated[5],
       subjectLabels: { math: translated[2], japanese: translated[3] },
       operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : ["twoStep", "word", "compare", "blank", "straight"],
+      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit"],
     };
   }
 
@@ -477,10 +535,165 @@
     return qn;
   }
 
+  function padMinute(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  function timeAnswer(hour, minute, languageId) {
+    if (languageId === "ja") return `${hour}時${minute}分`;
+    if (languageId === "ko") return `${hour}시 ${minute}분`;
+    if (languageId === "zh") return `${hour}点${minute}分`;
+    return `${hour}:${padMinute(minute)}`;
+  }
+
+  function localSet(languageId, values) {
+    return values[languageId] || values.en;
+  }
+
+  function makeSpecialMathQuestion(type, languageId, randomFn) {
+    const lang = getLanguage(languageId).id;
+    if (type === "parentheses") {
+      const left = 3 + Math.floor(randomFn() * 12);
+      const right = 2 + Math.floor(randomFn() * 9);
+      const multiplier = 2 + Math.floor(randomFn() * 5);
+      const answer = (left + right) * multiplier;
+      const story = localSet(lang, {
+        ja: `光るたねを (${left} + ${right}) こずつまとめて、${multiplier}つのかごに入れるよ。ぜんぶでなんこ？`,
+        en: `Put (${left} + ${right}) glowing seeds into each of ${multiplier} baskets. How many seeds in all?`,
+        ko: `빛나는 씨앗을 (${left} + ${right})개씩 ${multiplier}개의 바구니에 넣어요. 모두 몇 개일까요?`,
+        zh: `每个篮子放 (${left} + ${right}) 颗发光种子，一共有 ${multiplier} 个篮子。共有几颗？`,
+        fr: `On met (${left} + ${right}) graines lumineuses dans chacun des ${multiplier} paniers. Combien en tout ?`,
+        de: `In jeden von ${multiplier} Körben kommen (${left} + ${right}) leuchtende Samen. Wie viele sind es?`,
+        es: `Ponemos (${left} + ${right}) semillas brillantes en cada una de ${multiplier} cestas. ¿Cuántas hay en total?`,
+      });
+      const hint = localSet(lang, {
+        ja: "かっこの中を先に計算しよう。",
+        en: "Work out the parentheses first.",
+        ko: "괄호 안을 먼저 계산해요.",
+        zh: "先算括号里的数。",
+        fr: "Calcule d'abord ce qui est entre parenthèses.",
+        de: "Rechne zuerst die Klammer aus.",
+        es: "Calcula primero lo que está entre paréntesis.",
+      });
+      return { left, right: multiplier, answer, text: `(${left} + ${right}) × ${multiplier}`, operation: "parentheses", type, story, hint, explanation: `${left} + ${right} = ${left + right}, ${left + right} × ${multiplier} = ${answer}.`, hintText: `(${left} + ${right}) × ${multiplier}` };
+    }
+
+    if (type === "remainder") {
+      const divisor = 3 + Math.floor(randomFn() * 5);
+      const quotient = 3 + Math.floor(randomFn() * 8);
+      const remainder = 1 + Math.floor(randomFn() * (divisor - 1));
+      const total = divisor * quotient + remainder;
+      const answer = `${quotient} R ${remainder}`;
+      const story = localSet(lang, {
+        ja: `たね ${total}こを ${divisor}こずつ分けるよ。何組できて、あまりはいくつ？`,
+        en: `Share ${total} seeds in groups of ${divisor}. How many groups and how many left over?`,
+        ko: `씨앗 ${total}개를 ${divisor}개씩 나눠요. 몇 묶음이고 몇 개가 남을까요?`,
+        zh: `把 ${total} 颗种子每 ${divisor} 颗分一组。能分几组，还剩几颗？`,
+        fr: `Range ${total} graines par groupes de ${divisor}. Combien de groupes et combien restent ?`,
+        de: `Teile ${total} Samen in Gruppen zu ${divisor}. Wie viele Gruppen und wie viele bleiben übrig?`,
+        es: `Reparte ${total} semillas en grupos de ${divisor}. ¿Cuántos grupos y cuántas sobran?`,
+      });
+      const hint = localSet(lang, {
+        ja: "同じ数ずつ分けて、残った数も見よう。",
+        en: "Make equal groups, then check what is left.",
+        ko: "같은 묶음을 만들고 남은 수를 봐요.",
+        zh: "先分成相同的组，再看剩下多少。",
+        fr: "Fais des groupes égaux puis regarde ce qui reste.",
+        de: "Bilde gleiche Gruppen und schau, was übrig bleibt.",
+        es: "Haz grupos iguales y mira lo que sobra.",
+      });
+      return { left: total, right: divisor, answer, text: `${total} ÷ ${divisor}`, operation: "remainder", type, story, hint, explanation: `${divisor} × ${quotient} = ${divisor * quotient}, ${remainder} left over.`, hintText: `${total} ÷ ${divisor}`, choiceTraps: [`${quotient + 1} R ${remainder}`, `${quotient} R ${Math.max(0, remainder - 1)}`, `${quotient - 1} R ${remainder + divisor}`] };
+    }
+
+    if (type === "time") {
+      const startHour = 1 + Math.floor(randomFn() * 9);
+      const startMinute = [0, 10, 20, 30, 40][Math.floor(randomFn() * 5)];
+      const addMinutes = [20, 30, 40, 50, 60, 70][Math.floor(randomFn() * 6)];
+      const totalMinutes = startHour * 60 + startMinute + addMinutes;
+      const answerHour = Math.floor(totalMinutes / 60);
+      const answerMinute = totalMinutes % 60;
+      const answer = timeAnswer(answerHour, answerMinute, lang);
+      const story = localSet(lang, {
+        ja: `${startHour}時${startMinute}分から ${addMinutes}分あと、森のチャレンジが始まるよ。何時何分かな？`,
+        en: `The forest challenge starts ${addMinutes} minutes after ${startHour}:${padMinute(startMinute)}. What time is that?`,
+        ko: `${startHour}시 ${startMinute}분에서 ${addMinutes}분 뒤에 숲 챌린지가 시작돼요. 몇 시 몇 분일까요?`,
+        zh: `森林挑战在 ${startHour}点${startMinute}分 的 ${addMinutes} 分钟后开始。那是几点几分？`,
+        fr: `Le défi commence ${addMinutes} minutes après ${startHour}:${padMinute(startMinute)}. Quelle heure est-il ?`,
+        de: `Die Aufgabe beginnt ${addMinutes} Minuten nach ${startHour}:${padMinute(startMinute)}. Wie spät ist es dann?`,
+        es: `El reto empieza ${addMinutes} minutos después de las ${startHour}:${padMinute(startMinute)}. ¿Qué hora es?`,
+      });
+      const hint = localSet(lang, {
+        ja: "60分で1時間になるよ。",
+        en: "60 minutes make 1 hour.",
+        ko: "60분은 1시간이에요.",
+        zh: "60分钟是1小时。",
+        fr: "60 minutes font 1 heure.",
+        de: "60 Minuten sind 1 Stunde.",
+        es: "60 minutos hacen 1 hora.",
+      });
+      return { left: startHour, right: addMinutes, answer, text: `${startHour}:${padMinute(startMinute)} + ${addMinutes} min`, operation: "time", type, story, hint, explanation: `${startHour}:${padMinute(startMinute)} + ${addMinutes} min = ${answer}.`, hintText: `${startHour}:${padMinute(startMinute)} + ${addMinutes} min`, choiceTraps: [timeAnswer(answerHour, (answerMinute + 10) % 60, lang), timeAnswer(Math.max(1, answerHour - 1), answerMinute, lang), timeAnswer(answerHour + 1, answerMinute, lang)] };
+    }
+
+    if (type === "money") {
+      const first = (2 + Math.floor(randomFn() * 8)) * 30;
+      const second = (2 + Math.floor(randomFn() * 7)) * 20;
+      const answer = first + second;
+      const story = localSet(lang, {
+        ja: `${first}円の木の実と ${second}円の葉っぱシールをえらんだよ。あわせて何円？`,
+        en: `A forest nut costs ${first} yen and a leaf sticker costs ${second} yen. How much together?`,
+        ko: `숲 열매는 ${first}엔, 잎 스티커는 ${second}엔이에요. 모두 얼마일까요?`,
+        zh: `森林果实 ${first} 日元，叶子贴纸 ${second} 日元。一共多少日元？`,
+        fr: `Une noix de forêt coûte ${first} yens et un autocollant feuille coûte ${second} yens. Combien en tout ?`,
+        de: `Eine Waldnuss kostet ${first} Yen und ein Blatt-Aufkleber ${second} Yen. Wie viel zusammen?`,
+        es: `Una nuez del bosque cuesta ${first} yenes y una pegatina de hoja cuesta ${second} yenes. ¿Cuánto es en total?`,
+      });
+      const hint = localSet(lang, {
+        ja: "2つのねだんをたそう。",
+        en: "Add the two prices.",
+        ko: "두 가격을 더해요.",
+        zh: "把两个价钱加起来。",
+        fr: "Additionne les deux prix.",
+        de: "Addiere beide Preise.",
+        es: "Suma los dos precios.",
+      });
+      return { left: first, right: second, answer, text: `${first} + ${second}`, operation: "money", type, story, hint, explanation: `${first} + ${second} = ${answer}.`, hintText: `${first} + ${second}` };
+    }
+
+    const meters = 2 + Math.floor(randomFn() * 8);
+    const answer = meters;
+    const centimeters = meters * 100;
+    const story = localSet(lang, {
+      ja: `${centimeters}cm のつるは、何mかな？`,
+      en: `A vine is ${centimeters} cm long. How many meters is that?`,
+      ko: `${centimeters}cm 덩굴은 몇 m일까요?`,
+      zh: `${centimeters}cm 的藤蔓是多少米？`,
+      fr: `Une liane mesure ${centimeters} cm. Combien de mètres ?`,
+      de: `Eine Ranke ist ${centimeters} cm lang. Wie viele Meter sind das?`,
+      es: `Una enredadera mide ${centimeters} cm. ¿Cuántos metros son?`,
+    });
+    const hint = localSet(lang, {
+      ja: "100cmで1mだよ。",
+      en: "100 cm is 1 meter.",
+      ko: "100cm는 1m예요.",
+      zh: "100cm 是 1米。",
+      fr: "100 cm font 1 mètre.",
+      de: "100 cm sind 1 Meter.",
+      es: "100 cm es 1 metro.",
+    });
+    return { left: centimeters, right: 100, answer, text: `${centimeters} cm = ? m`, operation: "unit", type: "unit", story, hint, explanation: `${centimeters} ÷ 100 = ${answer}.`, hintText: `${centimeters} cm = ? m` };
+  }
+
   function localizeMath(question, languageId) {
+    if (question.story && question.hint && question.explanation) {
+      return question;
+    }
     const locale = mathText[languageId] || mathText.en;
     const key = question.type === "blank" ? "blank" : question.type === "compare" ? "compare" : question.type === "twoStep" ? "twoStep" : question.operation;
-    const [story, hint, explanation] = locale[key](question);
+    const formatter = locale[key];
+    if (!formatter) {
+      return question;
+    }
+    const [story, hint, explanation] = formatter(question);
     return {
       ...question,
       story,
@@ -527,6 +740,8 @@
       question = makeCompareQuestion(fullDifficulty, safeLanguageId, safeRandom);
     } else if (type === "twoStep") {
       question = makeTwoStepQuestion(fullDifficulty, safeRandom);
+    } else if (["parentheses", "remainder", "time", "money", "unit"].includes(type)) {
+      question = makeSpecialMathQuestion(type, safeLanguageId, safeRandom);
     } else {
       question = makeBaseOperation(choose(fullDifficulty.operations, safeRandom), safeRandom);
       question.type = type === "word" ? "word" : "straight";
