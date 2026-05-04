@@ -181,6 +181,7 @@
     streak: initialProfile?.streak || createEmptyStreak(),
     lastStreakBonus: null,
     exportMessage: "",
+    cloudStatus: window.MaruppuCloudStore?.isConfigured() ? "loading" : "local",
     round: null,
   };
 
@@ -297,6 +298,13 @@
 
   function saveProfileStore() {
     localStorage.setItem(PROFILE_STORE_KEY, JSON.stringify(state.profileStore));
+    if (window.MaruppuCloudStore?.isConfigured()) {
+      state.cloudStatus = "saving";
+      window.MaruppuCloudStore.saveProfileStore(state.profileStore).then((saved) => {
+        state.cloudStatus = saved ? "synced" : "error";
+        render();
+      });
+    }
   }
 
   function updateCurrentProfile(updates) {
@@ -321,6 +329,31 @@
     state.buddyColor = profile.buddyColor;
     state.rewardShown = profile.rewardShown;
     state.streak = profile.streak;
+  }
+
+  async function initCloudSync() {
+    if (!window.MaruppuCloudStore?.isConfigured()) {
+      state.cloudStatus = "local";
+      render();
+      return;
+    }
+
+    state.cloudStatus = "loading";
+    render();
+    const cloudStore = await window.MaruppuCloudStore.loadProfileStore();
+    if (cloudStore?.profiles && typeof cloudStore.profiles === "object") {
+      state.profileStore = cloudStore;
+      syncStateFromProfile();
+      state.screen = getActiveProfile() ? "home" : "profile";
+      localStorage.setItem(PROFILE_STORE_KEY, JSON.stringify(state.profileStore));
+      state.cloudStatus = "synced";
+      render();
+      return;
+    }
+
+    await window.MaruppuCloudStore.saveProfileStore(state.profileStore);
+    state.cloudStatus = window.MaruppuCloudStore.status();
+    render();
   }
 
   function createOrSelectProfile(playerName, companionName) {
@@ -413,8 +446,21 @@
     return `<label class="language-picker"><span>${t("language")}</span><select data-action="language">${options}</select></label>`;
   }
 
+  function cloudStatusBadge() {
+    const labels = {
+      local: "localStorage",
+      loading: "DB loading",
+      saving: "DB saving",
+      synced: "DB synced",
+      empty: "DB ready",
+      error: "local fallback",
+    };
+    const status = state.cloudStatus || "local";
+    return `<span class="cloud-status ${status}">${labels[status] || labels.local}</span>`;
+  }
+
   function screenShell(content, className = "") {
-    return `<main class="app-shell ${className}">${languagePicker()}${content}</main>`;
+    return `<main class="app-shell ${className}"><div class="utility-row">${languagePicker()}${cloudStatusBadge()}</div>${content}</main>`;
   }
 
   function creatureMarkup(size = "hero", mood = "ready") {
@@ -740,4 +786,5 @@
 
   setLanguage(activeLanguageId);
   render();
+  initCloudSync();
 })();

@@ -104,8 +104,15 @@ button {
   min-height: 44px;
 }
 
+.utility-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .language-picker {
-  align-self: flex-end;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -130,6 +137,30 @@ button {
   font-size: 13px;
   font-weight: 900;
   padding: 4px 26px 4px 8px;
+}
+
+.cloud-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 9px;
+  border: 2px solid rgba(32, 48, 58, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.cloud-status.synced,
+.cloud-status.empty {
+  background: rgba(230, 248, 222, 0.88);
+  color: var(--leaf-dark);
+}
+
+.cloud-status.error {
+  background: rgba(255, 241, 207, 0.88);
+  color: #8a5a00;
 }
 
 .pill,
