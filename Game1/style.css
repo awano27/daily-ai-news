@@ -247,6 +247,96 @@ h1.story-question {
   font-size: 14px;
 }
 
+.streak-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px auto 0;
+  padding: 12px;
+  border: 2px solid rgba(255, 209, 102, 0.5);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 88% 16%, rgba(255, 209, 102, 0.22), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 248, 220, 0.86));
+  box-shadow: 0 8px 18px rgba(121, 81, 0, 0.1);
+}
+
+.streak-panel::before {
+  content: "★";
+  position: absolute;
+  top: -12px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--sun);
+  color: #795100;
+  font-size: 16px;
+  font-weight: 900;
+  box-shadow: 0 5px 0 rgba(121, 81, 0, 0.15);
+}
+
+.streak-panel.warm::before,
+.streak-panel.hot::before {
+  content: "🔥";
+  background: #ffb86b;
+}
+
+.streak-panel.hot {
+  border-color: rgba(255, 142, 92, 0.68);
+  background:
+    radial-gradient(circle at 88% 16%, rgba(255, 142, 92, 0.32), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 236, 213, 0.9));
+}
+
+.streak-panel.hot::before {
+  animation: tinyPulse 900ms ease-in-out infinite alternate;
+}
+
+.streak-panel div {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.streak-panel span {
+  color: var(--soil);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.streak-panel strong {
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.streak-panel p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--leaf-dark);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.export-message {
+  align-self: center;
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--leaf-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .primary-button,
 .answer-button,
 .stage-card,
@@ -1392,6 +1482,39 @@ h1.story-question {
   font-weight: 900;
 }
 
+.streak-result {
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 2px solid rgba(32, 48, 58, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.streak-result.earned {
+  border-color: rgba(255, 209, 102, 0.72);
+  background:
+    radial-gradient(circle at 88% 20%, rgba(255, 209, 102, 0.35), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 220, 0.9));
+  color: var(--leaf-dark);
+  box-shadow: 0 8px 18px rgba(121, 81, 0, 0.12);
+}
+
+.streak-result strong {
+  color: var(--ink);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.streak-result small {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .closing-line {
   margin: 12px 0 0;
   color: var(--leaf-dark);
@@ -1728,6 +1851,16 @@ h1.story-question {
 
   100% {
     transform: scale(1.03) rotate(2deg);
+  }
+}
+
+@keyframes tinyPulse {
+  from {
+    transform: scale(1) rotate(-4deg);
+  }
+
+  to {
+    transform: scale(1.12) rotate(5deg);
   }
 }
 

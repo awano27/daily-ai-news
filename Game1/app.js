@@ -25,6 +25,9 @@
     buddyName: initialProfile?.companionName || DEFAULT_BUDDY_NAME,
     buddyColor: initialProfile?.buddyColor || DEFAULT_BUDDY_COLOR,
     rewardShown: Boolean(initialProfile?.rewardShown),
+    streak: initialProfile?.streak || createEmptyStreak(),
+    lastStreakBonus: null,
+    exportMessage: "",
     round: null,
   };
 
@@ -43,6 +46,100 @@
     const storedValue = window.localStorage.getItem(LEGACY_STORAGE_KEY);
     const points = Number(storedValue);
     return Number.isFinite(points) && points >= 0 ? points : 0;
+  }
+
+  function todayKey(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function daysBetween(dateKey, nextDateKey) {
+    if (!dateKey || !nextDateKey) {
+      return null;
+    }
+
+    const current = new Date(`${dateKey}T00:00:00`);
+    const next = new Date(`${nextDateKey}T00:00:00`);
+    const diff = Math.round((next - current) / 86400000);
+    return Number.isFinite(diff) ? diff : null;
+  }
+
+  function createEmptyStreak() {
+    return {
+      current: 0,
+      best: 0,
+      lastPlayedDate: "",
+      lastBonusDate: "",
+    };
+  }
+
+  function normalizeStreak(value) {
+    const streak = value && typeof value === "object" ? value : {};
+    const current = Number(streak.current);
+    const best = Number(streak.best);
+    return {
+      current: Number.isFinite(current) && current >= 0 ? Math.floor(current) : 0,
+      best: Number.isFinite(best) && best >= 0 ? Math.floor(best) : 0,
+      lastPlayedDate: typeof streak.lastPlayedDate === "string" ? streak.lastPlayedDate : "",
+      lastBonusDate: typeof streak.lastBonusDate === "string" ? streak.lastBonusDate : "",
+    };
+  }
+
+  function visibleStreak(streak = state.streak, dateKey = todayKey()) {
+    const safeStreak = normalizeStreak(streak);
+    const gap = daysBetween(safeStreak.lastPlayedDate, dateKey);
+    if (gap === null) {
+      return { ...safeStreak, current: 0 };
+    }
+    if (gap > 1) {
+      return { ...safeStreak, current: 0 };
+    }
+    return safeStreak;
+  }
+
+  function streakBonusFor(days) {
+    if (days >= 5) {
+      return 50;
+    }
+    if (days >= 3) {
+      return 20;
+    }
+    if (days >= 2) {
+      return 10;
+    }
+    return 0;
+  }
+
+  function updateStreakForPlay(streak, dateKey = todayKey()) {
+    const safeStreak = normalizeStreak(streak);
+    const gap = daysBetween(safeStreak.lastPlayedDate, dateKey);
+    let current = 1;
+    let message = "今日から 連続チャレンジ スタート！";
+
+    if (gap === 0) {
+      current = Math.max(1, safeStreak.current);
+      message = "今日はもう 記録できているよ。";
+    } else if (gap === 1) {
+      current = safeStreak.current + 1;
+      message = `${current}日れんぞく！ 今日も来てくれてうれしいよ。`;
+    } else if (safeStreak.lastPlayedDate) {
+      current = 1;
+      message = "また今日から いっしょに がんばろうね。";
+    }
+
+    const best = Math.max(safeStreak.best, current);
+    const bonusPoints = safeStreak.lastBonusDate === dateKey ? 0 : streakBonusFor(current);
+    return {
+      current,
+      best,
+      lastPlayedDate: dateKey,
+      lastBonusDate: bonusPoints > 0 ? dateKey : safeStreak.lastBonusDate,
+      bonusPoints,
+      message,
+      isNewDay: gap !== 0,
+    };
   }
 
   function sanitizeProfileName(value) {
@@ -85,6 +182,7 @@
         companionName: sanitizeBuddyName(profile.companionName),
         buddyColor,
         rewardShown: Boolean(profile.rewardShown),
+        streak: normalizeStreak(profile.streak),
       };
     });
 
@@ -111,6 +209,7 @@
             companionName: sanitizeBuddyName(legacyBuddyName),
             buddyColor: BUDDY_COLORS.includes(legacyBuddyColor) ? legacyBuddyColor : DEFAULT_BUDDY_COLOR,
             rewardShown: legacyRewardShown,
+            streak: createEmptyStreak(),
           },
         },
       };
@@ -134,6 +233,7 @@
     state.buddyName = profile?.companionName || DEFAULT_BUDDY_NAME;
     state.buddyColor = profile?.buddyColor || DEFAULT_BUDDY_COLOR;
     state.rewardShown = Boolean(profile?.rewardShown);
+    state.streak = normalizeStreak(profile?.streak);
   }
 
   function updateCurrentProfile(updates) {
@@ -159,6 +259,7 @@
       companionName: sanitizeBuddyName(companionNameValue),
       buddyColor: state.buddyColor || DEFAULT_BUDDY_COLOR,
       rewardShown: false,
+      streak: createEmptyStreak(),
     };
     if (existingProfile && companionNameValue) {
       state.profileStore.profiles[profileName].companionName = sanitizeBuddyName(companionNameValue);
@@ -189,6 +290,47 @@
 
   function selectedSubject() {
     return GameLogic.getSubject(state.selectedSubjectId);
+  }
+
+  function streakMessage(streak = visibleStreak()) {
+    if (streak.current >= 5) {
+      return "すごい連続だね！ 今日もキラキラだよ。";
+    }
+    if (streak.current >= 2) {
+      return "今日もがんばろう！ 連続ボーナスが近いよ。";
+    }
+    if (state.streak.lastPlayedDate && streak.current === 0) {
+      return "また今日から いっしょに はじめようね。";
+    }
+    return "今日もがんばろう！";
+  }
+
+  function exportProfileProgress() {
+    const profile = getActiveProfile();
+    if (!profile) {
+      return;
+    }
+
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      currentProfile: state.profileName,
+      profile: {
+        ...profile,
+        streak: normalizeStreak(profile.streak),
+      },
+      note: "手動でGitHubなどに保存するための進捗データです。",
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `maruppu-progress-${state.profileName || "profile"}-${todayKey()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    state.exportMessage = "進捗JSONを作ったよ。おうちの人と保存してね。";
+    render();
   }
 
   function setScreen(screen) {
@@ -323,6 +465,8 @@
   function renderHome() {
     const seedCount = Math.floor(state.totalPoints / GameLogic.POINTS_PER_CORRECT);
     const name = buddyName();
+    const streak = visibleStreak();
+    const streakClass = streak.current >= 5 ? "hot" : streak.current >= 2 ? "warm" : "";
     return screenShell(`
       <div class="top-bar">
         <span class="pill">${profileName()}</span>
@@ -338,8 +482,21 @@
           <strong>${seedCount}</strong>
           <span>こ あつめたよ</span>
         </div>
+        <section class="streak-panel ${streakClass}" aria-label="連続プレイ">
+          <div>
+            <span>連続チャレンジ</span>
+            <strong>${streak.current}日</strong>
+          </div>
+          <div>
+            <span>最高きろく</span>
+            <strong>${streak.best}日</strong>
+          </div>
+          <p>${streakMessage(streak)}</p>
+        </section>
       </section>
       <button class="primary-button" data-action="starter">はじめる</button>
+      <button class="text-button center" data-action="export">進捗JSONを出す</button>
+      ${state.exportMessage ? `<p class="export-message">${state.exportMessage}</p>` : ""}
       <button class="text-button center" data-action="profile">プロフィール</button>
     `, "home-screen");
   }
@@ -495,6 +652,7 @@
   function renderResult() {
     const round = state.round;
     const name = buddyName();
+    const streakBonus = state.lastStreakBonus;
     const message = round.correctCount === GameLogic.QUESTION_COUNT
       ? "5つのたねを みつけたよ！"
       : "さいごまで よくがんばったね！";
@@ -512,6 +670,15 @@
           <strong>${round.earnedPoints} pt</strong>
           <span>${round.correctCount}つ クリア・${round.difficulty.reward}</span>
         </div>
+        ${
+          streakBonus
+            ? `<div class="streak-result ${streakBonus.bonusPoints > 0 ? "earned" : ""}">
+                <span>今日の連続ボーナス！</span>
+                <strong>+${streakBonus.bonusPoints} pt</strong>
+                <small>${streakBonus.message}</small>
+              </div>`
+            : ""
+        }
         <div class="total-box">ぜんぶで ${state.totalPoints} pt</div>
         <p class="closing-line">また あそぼうね。</p>
       </section>
@@ -523,6 +690,7 @@
 
   function renderSpecialReward() {
     const name = buddyName();
+    const streakBonus = state.lastStreakBonus;
     return screenShell(`
       <section class="special-reward-panel">
         <div class="celebration-sparkles" aria-hidden="true">
@@ -532,6 +700,15 @@
         <p class="tiny-label">とくべつな おいわい</p>
         <h1>1000ポイント<br />たまったよ！</h1>
         <div class="reward-total">1000 pt</div>
+        ${
+          streakBonus?.bonusPoints > 0
+            ? `<div class="streak-result earned">
+                <span>今日の連続ボーナス！</span>
+                <strong>+${streakBonus.bonusPoints} pt</strong>
+                <small>${streakBonus.message}</small>
+              </div>`
+            : ""
+        }
         <p class="lead">${name}と一緒にがんばったね。おうちの人と相談して、ごほうびをもらおう！</p>
       </section>
       ${backButton()}
@@ -559,6 +736,7 @@
       return;
     }
     state.selectedDifficultyId = difficultyId;
+    state.lastStreakBonus = null;
     state.round = GameLogic.createRound(difficultyId, state.selectedSubjectId);
     setScreen("battle");
   }
@@ -575,9 +753,19 @@
     const wasLastQuestion = state.round.currentIndex + 1 >= GameLogic.QUESTION_COUNT;
     if (wasLastQuestion) {
       const beforeTotal = state.totalPoints;
-      const afterTotal = beforeTotal + state.round.earnedPoints;
+      const streakResult = updateStreakForPlay(state.streak);
+      const afterTotal = beforeTotal + state.round.earnedPoints + streakResult.bonusPoints;
       const shouldShowReward = beforeTotal < 1000 && afterTotal >= 1000 && !state.rewardShown;
-      updateCurrentProfile({ totalPoints: afterTotal });
+      state.lastStreakBonus = streakResult;
+      updateCurrentProfile({
+        totalPoints: afterTotal,
+        streak: {
+          current: streakResult.current,
+          best: streakResult.best,
+          lastPlayedDate: streakResult.lastPlayedDate,
+          lastBonusDate: streakResult.lastBonusDate,
+        },
+      });
 
       if (shouldShowReward) {
         saveRewardShown();
@@ -602,6 +790,7 @@
     if (action === "back") setScreen(backScreen());
     if (action === "home") setScreen("home");
     if (action === "profile") setScreen("profile");
+    if (action === "export") exportProfileProgress();
     if (action === "profile-select") {
       state.profileStore.currentProfile = target.dataset.profile;
       saveProfileStore();
