@@ -37,28 +37,53 @@ const flowerQuestion = GameLogic.generateQuestion(flower, () => 0);
 assert.strictEqual(flowerQuestion.type, "twoStep");
 assert.strictEqual(typeof flowerQuestion.answer, "number");
 
-const parenthesesQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.55);
+const parenthesesQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.32);
 assert.strictEqual(parenthesesQuestion.type, "parentheses");
 assert.strictEqual(typeof parenthesesQuestion.answer, "number");
 assert.ok(parenthesesQuestion.text.includes("("));
 
-const remainderQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.65);
+const remainderQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.39);
 assert.strictEqual(remainderQuestion.type, "remainder");
 assert.strictEqual(typeof remainderQuestion.answer, "string");
 assert.ok(remainderQuestion.answer.includes("R"));
 
-const timeQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.75);
+const timeQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.45);
 assert.strictEqual(timeQuestion.type, "time");
 assert.strictEqual(typeof timeQuestion.answer, "string");
 assert.ok(timeQuestion.answer.includes(":"));
 
-const moneyQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.85);
+const moneyQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.51);
 assert.strictEqual(moneyQuestion.type, "money");
 assert.strictEqual(typeof moneyQuestion.answer, "number");
 
-const unitQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.95);
+const unitQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.57);
 assert.strictEqual(unitQuestion.type, "unit");
 assert.strictEqual(typeof unitQuestion.answer, "number");
+
+const fractionQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.64);
+assert.strictEqual(fractionQuestion.type, "fraction");
+assert.strictEqual(typeof fractionQuestion.answer, "number");
+assert.ok(fractionQuestion.text.includes("1/"));
+
+const areaQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.7);
+assert.strictEqual(areaQuestion.type, "area");
+assert.strictEqual(typeof areaQuestion.answer, "number");
+
+const perimeterQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.76);
+assert.strictEqual(perimeterQuestion.type, "perimeter");
+assert.strictEqual(typeof perimeterQuestion.answer, "number");
+
+const sequenceQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.82);
+assert.strictEqual(sequenceQuestion.type, "sequence");
+assert.strictEqual(typeof sequenceQuestion.answer, "number");
+
+const roundingQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.89);
+assert.strictEqual(roundingQuestion.type, "rounding");
+assert.strictEqual(typeof roundingQuestion.answer, "number");
+
+const multiStepWordQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.95);
+assert.strictEqual(multiStepWordQuestion.type, "multiStepWord");
+assert.strictEqual(typeof multiStepWordQuestion.answer, "number");
 
 const blankQuestion = GameLogic.generateQuestion(seed, () => 0.6);
 assert.strictEqual(blankQuestion.type, "blank");

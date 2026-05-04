@@ -121,7 +121,7 @@
       reward: "ひかる 木の葉",
       subjectLabels: { math: "大きめ計算", japanese: "読解・意味" },
       operations: ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit"],
+      questionTypes: ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"],
     },
   ];
 
@@ -395,6 +395,43 @@
     }
   });
 
+  const extraLanguageQuestions = {
+    ja: {
+      seed: [
+        q("同じなかまのことばはどれ？「りんご・みかん・ぶどう」", "くだもの", ["のりもの", "どうぶつ", "天気"], "食べもののなかまを考えよう。", "りんご・みかん・ぶどうは、くだもののなかまだよ。"),
+      ],
+      grass: [
+        q("文に入るしるしはどれ？「ルミは言いました___ いっしょに行こう」", "「", ["。", "、", "？"], "話した言葉の始まりにつけるしるしだよ。", "会話の始まりには「を使うよ。"),
+        q("「走る・歩く・泳ぐ」に共通することは？", "体を動かすこと", ["色をぬること", "音を聞くこと", "数を数えること"], "どれも体の動きだよ。", "走る・歩く・泳ぐは、体を動かすことだよ。"),
+      ],
+      flower: [
+        reading("朝、森の道はぬれていました。夜のあいだに雨がふったからです。マルップはすべらないように、ゆっくり歩きました。", "森の道がぬれていた理由は？", "夜に雨がふったから", ["朝日が出たから", "花がさいたから", "風がやんだから"], "理由を表す文を探そう。", "夜のあいだに雨がふったので、道がぬれていたよ。"),
+        q("「それ」が指すものはどれ？「ルミは光る葉を見つけました。それを道しるべにしました。」", "光る葉", ["ルミ", "森", "道"], "直前に出てきたものを見よう。", "ここでの「それ」は光る葉のことだよ。"),
+      ],
+    },
+    en: {
+      seed: [
+        q("Which group do apple, orange, and grape belong to?", "fruit", ["vehicles", "animals", "weather"], "Think about things you can eat.", "Apple, orange, and grape are fruit."),
+      ],
+      grass: [
+        q("Which mark starts spoken words? Lumi said ___ let's go together.", "\"", [".", ",", "?"], "It begins what someone says.", "Quotation marks show spoken words."),
+        q("What do run, walk, and swim have in common?", "moving your body", ["painting colors", "hearing sounds", "counting numbers"], "They are all actions.", "Run, walk, and swim are body actions."),
+      ],
+      flower: [
+        reading("In the morning, the forest path was wet. Rain had fallen during the night. Maruppu walked slowly so he would not slip.", "Why was the path wet?", "Rain had fallen at night.", ["The sun came up.", "Flowers bloomed.", "The wind stopped."], "Look for the reason sentence.", "The path was wet because rain had fallen at night."),
+        q("What does \"it\" mean? Lumi found a glowing leaf. She used it as a guide.", "the glowing leaf", ["Lumi", "the forest", "the path"], "Look at the noun just before it.", "It means the glowing leaf."),
+      ],
+    },
+  };
+
+  Object.entries(extraLanguageQuestions).forEach(([languageId, groups]) => {
+    Object.entries(groups).forEach(([difficultyId, questions]) => {
+      if (languageBanks[languageId]?.[difficultyId]) {
+        languageBanks[languageId][difficultyId].push(...questions);
+      }
+    });
+  });
+
   function q(story, answer, traps, hint, explanation) {
     return { story, text: story, answer, choiceTraps: traps, hint, explanation, hintText: hint, type: "language", operation: "language", subject: "japanese" };
   }
@@ -449,7 +486,7 @@
       reward: translated[5],
       subjectLabels: { math: translated[2], japanese: translated[3] },
       operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit"],
+      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"],
     };
   }
 
@@ -659,6 +696,147 @@
       return { left: first, right: second, answer, text: `${first} + ${second}`, operation: "money", type, story, hint, explanation: `${first} + ${second} = ${answer}.`, hintText: `${first} + ${second}` };
     }
 
+    if (type === "fraction") {
+      const denominator = [2, 3, 4][Math.floor(randomFn() * 3)];
+      const answer = 2 + Math.floor(randomFn() * 8);
+      const total = denominator * answer;
+      const story = localSet(lang, {
+        ja: `たね ${total}こ の ${denominator}分の1 を、ルミが光らせたよ。光ったたねは何こ？`,
+        en: `Lumi lights up 1/${denominator} of ${total} seeds. How many seeds glow?`,
+        ko: `루미가 씨앗 ${total}개 중 1/${denominator}을 빛나게 했어요. 몇 개가 빛날까요?`,
+        zh: `露米点亮了 ${total} 颗种子的 1/${denominator}。有几颗发光？`,
+        fr: `Lumi illumine 1/${denominator} de ${total} graines. Combien brillent ?`,
+        de: `Lumi lässt 1/${denominator} von ${total} Samen leuchten. Wie viele leuchten?`,
+        es: `Lumi ilumina 1/${denominator} de ${total} semillas. ¿Cuántas brillan?`,
+      });
+      const hint = localSet(lang, {
+        ja: `${denominator}つに同じ数ずつ分けよう。`,
+        en: `Split ${total} into ${denominator} equal groups.`,
+        ko: `${denominator}묶음으로 똑같이 나눠요.`,
+        zh: `平均分成 ${denominator} 份。`,
+        fr: `Partage ${total} en ${denominator} groupes égaux.`,
+        de: `Teile ${total} in ${denominator} gleiche Gruppen.`,
+        es: `Divide ${total} en ${denominator} grupos iguales.`,
+      });
+      return { left: total, right: denominator, answer, text: `1/${denominator} of ${total}`, operation: "fraction", type, story, hint, explanation: `${total} ÷ ${denominator} = ${answer}.`, hintText: `1/${denominator} × ${total}` };
+    }
+
+    if (type === "area" || type === "perimeter") {
+      const width = 3 + Math.floor(randomFn() * 9);
+      const height = 2 + Math.floor(randomFn() * 7);
+      const isArea = type === "area";
+      const answer = isArea ? width * height : (width + height) * 2;
+      const story = localSet(lang, {
+        ja: isArea
+          ? `横 ${width}マス、たて ${height}マス の花だんがあるよ。広さは何マス？`
+          : `横 ${width}マス、たて ${height}マス の花だんのまわりを歩くよ。まわりは何マス？`,
+        en: isArea
+          ? `A flower bed is ${width} squares wide and ${height} squares tall. What is its area?`
+          : `A flower bed is ${width} squares wide and ${height} squares tall. What is the distance around it?`,
+        ko: isArea
+          ? `가로 ${width}칸, 세로 ${height}칸 꽃밭이 있어요. 넓이는 몇 칸일까요?`
+          : `가로 ${width}칸, 세로 ${height}칸 꽃밭의 둘레는 몇 칸일까요?`,
+        zh: isArea
+          ? `花坛横 ${width} 格，竖 ${height} 格。面积是多少格？`
+          : `花坛横 ${width} 格，竖 ${height} 格。周长是多少格？`,
+        fr: isArea
+          ? `Un parterre mesure ${width} cases par ${height} cases. Quelle est son aire ?`
+          : `Un parterre mesure ${width} cases par ${height} cases. Quel est son tour ?`,
+        de: isArea
+          ? `Ein Beet ist ${width} Felder breit und ${height} Felder hoch. Wie groß ist die Fläche?`
+          : `Ein Beet ist ${width} Felder breit und ${height} Felder hoch. Wie lang ist der Rand?`,
+        es: isArea
+          ? `Un jardín mide ${width} cuadros de ancho y ${height} de alto. ¿Cuál es el área?`
+          : `Un jardín mide ${width} cuadros de ancho y ${height} de alto. ¿Cuánto mide el borde?`,
+      });
+      const hint = localSet(lang, {
+        ja: isArea ? "広さは、横とたてをかけよう。" : "まわりは、横とたてを2つずつ足そう。",
+        en: isArea ? "Area uses width times height." : "Perimeter adds both widths and both heights.",
+        ko: isArea ? "넓이는 가로와 세로를 곱해요." : "둘레는 가로 2번, 세로 2번을 더해요.",
+        zh: isArea ? "面积用横乘竖。" : "周长把两条横边和两条竖边加起来。",
+        fr: isArea ? "L'aire utilise largeur fois hauteur." : "Le tour ajoute deux largeurs et deux hauteurs.",
+        de: isArea ? "Fläche ist Breite mal Höhe." : "Der Rand addiert beide Breiten und beide Höhen.",
+        es: isArea ? "Área es ancho por alto." : "El borde suma dos anchos y dos altos.",
+      });
+      return { left: width, right: height, answer, text: isArea ? `${width} × ${height}` : `(${width} + ${height}) × 2`, operation: type, type, story, hint, explanation: isArea ? `${width} × ${height} = ${answer}.` : `(${width} + ${height}) × 2 = ${answer}.`, hintText: isArea ? `${width} × ${height}` : `(${width} + ${height}) × 2` };
+    }
+
+    if (type === "sequence") {
+      const start = 2 + Math.floor(randomFn() * 10);
+      const step = 2 + Math.floor(randomFn() * 8);
+      const answer = start + step * 4;
+      const story = localSet(lang, {
+        ja: `光る葉っぱが ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □ の順にならんでいるよ。次は？`,
+        en: `The glowing leaves are in this pattern: ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □. What comes next?`,
+        ko: `빛나는 잎이 ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □ 순서로 있어요. 다음은?`,
+        zh: `发光叶子按 ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □ 排列。下一个是？`,
+        fr: `Les feuilles brillantes suivent : ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □. Quel est le suivant ?`,
+        de: `Die leuchtenden Blätter folgen: ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □. Was kommt als Nächstes?`,
+        es: `Las hojas brillantes siguen: ${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □. ¿Qué sigue?`,
+      });
+      const hint = localSet(lang, {
+        ja: "どれだけずつ増えているか見よう。",
+        en: "Look at how much the numbers grow each time.",
+        ko: "얼마씩 늘어나는지 봐요.",
+        zh: "看看每次增加多少。",
+        fr: "Regarde de combien ça augmente.",
+        de: "Schau, um wie viel es jedes Mal wächst.",
+        es: "Mira cuánto aumenta cada vez.",
+      });
+      return { left: start, right: step, answer, text: `${start}, ${start + step}, ${start + step * 2}, ${start + step * 3}, □`, operation: "sequence", type, story, hint, explanation: `+${step}, +${step}, +${step}, so ${start + step * 3} + ${step} = ${answer}.`, hintText: `+${step}` };
+    }
+
+    if (type === "rounding") {
+      const number = 100 + Math.floor(randomFn() * 780);
+      const answer = Math.round(number / 10) * 10;
+      const story = localSet(lang, {
+        ja: `${number} を、いちばん近い10のまとまりにするといくつ？`,
+        en: `Round ${number} to the nearest ten.`,
+        ko: `${number}을 가장 가까운 10의 자리로 어림하면?`,
+        zh: `把 ${number} 四舍五入到最接近的十位是多少？`,
+        fr: `Arrondis ${number} à la dizaine la plus proche.`,
+        de: `Runde ${number} auf den nächsten Zehner.`,
+        es: `Redondea ${number} a la decena más cercana.`,
+      });
+      const hint = localSet(lang, {
+        ja: "一の位が5以上なら上に、4以下なら下にしよう。",
+        en: "If the ones digit is 5 or more, round up.",
+        ko: "일의 자리가 5 이상이면 올려요.",
+        zh: "个位是5以上就进一。",
+        fr: "Si l'unité est 5 ou plus, on monte.",
+        de: "Ist die Einerstelle 5 oder mehr, runde auf.",
+        es: "Si la unidad es 5 o más, sube.",
+      });
+      return { left: number, right: 10, answer, text: `${number} ≈ ?`, operation: "rounding", type, story, hint, explanation: `${number} rounds to ${answer}.`, hintText: `${number} ≈ ?` };
+    }
+
+    if (type === "multiStepWord") {
+      const groups = 2 + Math.floor(randomFn() * 5);
+      const each = 3 + Math.floor(randomFn() * 7);
+      const extra = 4 + Math.floor(randomFn() * 12);
+      const give = 2 + Math.floor(randomFn() * 6);
+      const answer = groups * each + extra - give;
+      const story = localSet(lang, {
+        ja: `${groups}つの草むらに、たねが ${each}こずつあるよ。あとで ${extra}こ見つけて、${give}こをピコにわけたら、のこりは何こ？`,
+        en: `There are ${groups} bushes with ${each} seeds each. You find ${extra} more, then share ${give} with Pico. How many are left?`,
+        ko: `풀숲 ${groups}곳에 씨앗이 ${each}개씩 있어요. ${extra}개를 더 찾고, ${give}개를 피코에게 나누면 몇 개 남을까요?`,
+        zh: `有 ${groups} 片草丛，每片有 ${each} 颗种子。又找到 ${extra} 颗，分给皮可 ${give} 颗，还剩几颗？`,
+        fr: `Il y a ${groups} buissons avec ${each} graines chacun. Tu en trouves ${extra} de plus, puis tu en donnes ${give} à Pico. Combien restent ?`,
+        de: `Es gibt ${groups} Büsche mit je ${each} Samen. Du findest ${extra} dazu und gibst ${give} an Pico. Wie viele bleiben?`,
+        es: `Hay ${groups} arbustos con ${each} semillas cada uno. Encuentras ${extra} más y das ${give} a Pico. ¿Cuántas quedan?`,
+      });
+      const hint = localSet(lang, {
+        ja: "かけ算、たし算、ひき算の順で考えよう。",
+        en: "Use multiply, then add, then subtract.",
+        ko: "곱셈, 덧셈, 뺄셈 순서로 생각해요.",
+        zh: "按乘法、加法、减法的顺序想。",
+        fr: "Multiplie, puis ajoute, puis enlève.",
+        de: "Erst malnehmen, dann addieren, dann abziehen.",
+        es: "Multiplica, suma y luego resta.",
+      });
+      return { left: groups, right: each, answer, text: `${groups} × ${each} + ${extra} - ${give}`, operation: "multiStepWord", type, story, hint, explanation: `${groups} × ${each} = ${groups * each}, +${extra}, -${give} = ${answer}.`, hintText: `${groups} × ${each} + ${extra} - ${give}` };
+    }
+
     const meters = 2 + Math.floor(randomFn() * 8);
     const answer = meters;
     const centimeters = meters * 100;
@@ -740,7 +918,7 @@
       question = makeCompareQuestion(fullDifficulty, safeLanguageId, safeRandom);
     } else if (type === "twoStep") {
       question = makeTwoStepQuestion(fullDifficulty, safeRandom);
-    } else if (["parentheses", "remainder", "time", "money", "unit"].includes(type)) {
+    } else if (["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"].includes(type)) {
       question = makeSpecialMathQuestion(type, safeLanguageId, safeRandom);
     } else {
       question = makeBaseOperation(choose(fullDifficulty.operations, safeRandom), safeRandom);
