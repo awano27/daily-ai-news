@@ -3,22 +3,90 @@
 
   const POINTS_PER_CORRECT = 10;
   const QUESTION_COUNT = 5;
+  const DEFAULT_LANGUAGE = "ja";
+
+  const languages = [
+    { id: "ja", label: "日本語", htmlLang: "ja" },
+    { id: "en", label: "English", htmlLang: "en" },
+    { id: "ko", label: "한국어", htmlLang: "ko" },
+    { id: "zh", label: "中文", htmlLang: "zh" },
+    { id: "fr", label: "Français", htmlLang: "fr" },
+    { id: "de", label: "Deutsch", htmlLang: "de" },
+    { id: "es", label: "Español", htmlLang: "es" },
+  ];
+
+  const subjectText = {
+    ja: {
+      math: ["算数", "算数でチャレンジ", "算数のチャレンジ", "さんすうの たねあつめ"],
+      japanese: ["国語", "国語でチャレンジ", "国語のチャレンジ", "ことばの たねあつめ"],
+    },
+    en: {
+      math: ["Math", "Math Challenge", "Math Challenge", "Math seed quest"],
+      japanese: ["Language", "Word Challenge", "Language Challenge", "Word seed quest"],
+    },
+    ko: {
+      math: ["수학", "수학 챌린지", "수학 챌린지", "수학 씨앗 모으기"],
+      japanese: ["국어", "말 챌린지", "국어 챌린지", "말 씨앗 모으기"],
+    },
+    zh: {
+      math: ["数学", "数学挑战", "数学挑战", "数学种子收集"],
+      japanese: ["语文", "词语挑战", "语文挑战", "词语种子收集"],
+    },
+    fr: {
+      math: ["Maths", "Défi de maths", "Défi de maths", "quête des graines de maths"],
+      japanese: ["Français", "Défi de mots", "Défi de français", "quête des graines de mots"],
+    },
+    de: {
+      math: ["Mathe", "Mathe-Aufgabe", "Mathe-Aufgabe", "Mathe-Samen sammeln"],
+      japanese: ["Sprache", "Wort-Aufgabe", "Sprach-Aufgabe", "Wort-Samen sammeln"],
+    },
+    es: {
+      math: ["Matemáticas", "Reto de matemáticas", "Reto de matemáticas", "búsqueda de semillas de mates"],
+      japanese: ["Lengua", "Reto de palabras", "Reto de lengua", "búsqueda de semillas de palabras"],
+    },
+  };
+
+  const spiritText = {
+    ja: {
+      seed: ["ピコ", "小1〜2", "たし算・ひき算", "漢字の読み・ことば", "小さなたねのせいれい", "きらきらの たね"],
+      grass: ["モコ", "小3", "かけ算中心", "反対語・文づくり", "ふわふわの花のせいれい", "ふわふわ 花びら"],
+      flower: ["ルミ", "小4", "大きめ計算", "読解・意味", "光る木の葉のせいれい", "ひかる 木の葉"],
+    },
+    en: {
+      seed: ["Pico", "Grade 1-2", "Add/Subtract", "Reading words", "tiny seed spirit", "sparkly seed"],
+      grass: ["Moko", "Grade 3", "Multiplication", "Opposites/Sentences", "fluffy flower spirit", "fluffy petal"],
+      flower: ["Lumi", "Grade 4", "Bigger numbers", "Reading/Meaning", "glowing leaf spirit", "glowing leaf"],
+    },
+    ko: {
+      seed: ["피코", "1-2학년", "덧셈・뺄셈", "읽기・낱말", "작은 씨앗 정령", "반짝 씨앗"],
+      grass: ["모코", "3학년", "곱셈 중심", "반대말・문장", "폭신한 꽃 정령", "폭신 꽃잎"],
+      flower: ["루미", "4학년", "조금 큰 계산", "읽기・뜻", "빛나는 잎 정령", "빛나는 잎"],
+    },
+    zh: {
+      seed: ["皮可", "1-2年级", "加法・减法", "认读・词语", "小小种子精灵", "闪亮种子"],
+      grass: ["莫可", "3年级", "乘法为主", "反义词・句子", "软软花精灵", "软软花瓣"],
+      flower: ["露米", "4年级", "稍大的数", "阅读・意思", "发光叶子精灵", "发光叶子"],
+    },
+    fr: {
+      seed: ["Pico", "CE1-CE2", "Addition/Soustraction", "Lecture/Mots", "petit esprit graine", "graine brillante"],
+      grass: ["Moko", "CE2-CM1", "Multiplication", "Contraires/Phrases", "esprit fleur tout doux", "pétale doux"],
+      flower: ["Lumi", "CM1-CM2", "Grands nombres", "Lecture/Sens", "esprit feuille lumineuse", "feuille lumineuse"],
+    },
+    de: {
+      seed: ["Pico", "Kl. 1-2", "Plus/Minus", "Lesen/Wörter", "kleiner Samen-Geist", "glitzernder Samen"],
+      grass: ["Moko", "Kl. 3", "Malnehmen", "Gegenteile/Sätze", "flauschiger Blumen-Geist", "flauschiges Blütenblatt"],
+      flower: ["Lumi", "Kl. 4", "Größere Zahlen", "Lesen/Bedeutung", "leuchtender Blatt-Geist", "leuchtendes Blatt"],
+    },
+    es: {
+      seed: ["Pico", "1.º-2.º", "Sumar/Restar", "Lectura/Palabras", "pequeño espíritu semilla", "semilla brillante"],
+      grass: ["Moko", "3.º", "Multiplicación", "Contrarios/Frases", "espíritu flor suave", "pétalo suave"],
+      flower: ["Lumi", "4.º", "Números grandes", "Lectura/Significado", "espíritu hoja brillante", "hoja brillante"],
+    },
+  };
 
   const subjects = [
-    {
-      id: "math",
-      name: "算数",
-      actionLabel: "算数で戦う",
-      challengeLabel: "算数のチャレンジ",
-      homeLabel: "さんすうの たねあつめ",
-    },
-    {
-      id: "japanese",
-      name: "国語",
-      actionLabel: "国語で戦う",
-      challengeLabel: "国語のチャレンジ",
-      homeLabel: "ことばの たねあつめ",
-    },
+    { id: "math", name: "算数", actionLabel: "算数でチャレンジ", challengeLabel: "算数のチャレンジ", homeLabel: "さんすうの たねあつめ" },
+    { id: "japanese", name: "国語", actionLabel: "国語でチャレンジ", challengeLabel: "国語のチャレンジ", homeLabel: "ことばの たねあつめ" },
   ];
 
   const difficulties = [
@@ -29,12 +97,9 @@
       label: "たし算・ひき算",
       description: "小さなたねのせいれい",
       reward: "きらきらの たね",
+      subjectLabels: { math: "たし算・ひき算", japanese: "漢字の読み・ことば" },
       operations: ["add", "subtract"],
       questionTypes: ["straight", "straight", "blank", "word"],
-      subjectLabels: {
-        math: "たし算・ひき算",
-        japanese: "漢字の読み・ことば",
-      },
     },
     {
       id: "grass",
@@ -42,13 +107,10 @@
       gradeLabel: "小3",
       label: "かけ算中心",
       description: "ふわふわの花のせいれい",
-      reward: "ふわふわの 花びら",
+      reward: "ふわふわ 花びら",
+      subjectLabels: { math: "かけ算中心", japanese: "反対語・文づくり" },
       operations: ["multiply", "multiply", "divide"],
-      questionTypes: ["word", "word", "compare", "blank", "twoStep", "straight"],
-      subjectLabels: {
-        math: "かけ算中心",
-        japanese: "反対語・文づくり",
-      },
+      questionTypes: ["word", "compare", "blank", "twoStep", "straight"],
     },
     {
       id: "flower",
@@ -57,509 +119,425 @@
       label: "大きめ計算",
       description: "光る木の葉のせいれい",
       reward: "ひかる 木の葉",
+      subjectLabels: { math: "大きめ計算", japanese: "読解・意味" },
       operations: ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: ["twoStep", "twoStep", "word", "compare", "blank", "straight"],
-      subjectLabels: {
-        math: "大きめ計算",
-        japanese: "読解・使い分け",
-      },
+      questionTypes: ["twoStep", "word", "compare", "blank", "straight"],
     },
   ];
 
-  const japaneseQuestions = {
-    seed: {
-      types: ["kanjiReading", "kanjiReading", "sentence", "meaning"],
-      kanjiReading: [
-        ["山", "やま", ["かわ", "もり", "そら"], "形が山に見える漢字だよ。", "「山」は「やま」と読むよ。"],
-        ["川", "かわ", ["やま", "うみ", "いけ"], "水が流れるところを表す漢字だよ。", "「川」は「かわ」と読むよ。"],
-        ["木", "き", ["ひ", "め", "て"], "森にたくさんあるものだよ。", "「木」は「き」と読むよ。"],
-        ["雨", "あめ", ["ゆき", "くも", "かぜ"], "空から水がふってくるよ。", "「雨」は「あめ」と読むよ。"],
-        ["花", "はな", ["くさ", "たね", "み"], "きれいに さくものだよ。", "「花」は「はな」と読むよ。"],
+  const compareWords = {
+    ja: ["左", "右", "おなじ"],
+    en: ["Left", "Right", "Same"],
+    ko: ["왼쪽", "오른쪽", "같아요"],
+    zh: ["左边", "右边", "一样"],
+    fr: ["Gauche", "Droite", "Pareil"],
+    de: ["Links", "Rechts", "Gleich"],
+    es: ["Izquierda", "Derecha", "Igual"],
+  };
+
+  const mathText = {
+    ja: {
+      add: (q) => [`このせいれいが たねを ${q.left}こ もっていたよ。${q.right}こ 見つけたら、ぜんぶで なんこ？`, "2つの数を あわせてみよう。", `${q.left} + ${q.right} = ${q.answer} だよ。`],
+      subtract: (q) => [`たねが ${q.left}こ あるよ。${q.right}こ かごに入れたら、のこりは なんこ？`, "へった数を ひいてみよう。", `${q.left} - ${q.right} = ${q.answer} だよ。`],
+      multiply: (q) => [`草むらが ${q.left}つ あるよ。ひとつに ${q.right}こ たねがあると、ぜんぶで なんこ？`, "同じ数のまとまりは かけ算で考えよう。", `${q.right}こが ${q.left}つで ${q.answer}こ だよ。`],
+      divide: (q) => [`たね ${q.left}こを ${q.right}つの草むらに 同じ数ずつ分けるよ。ひとつに なんこ？`, "同じ数ずつ分けるときは わり算だよ。", `${q.left} ÷ ${q.right} = ${q.answer} だよ。`],
+      blank: (q) => [`□に入る数を えらぼう。${q.hintText}`, "式がぴったり合う数を探そう。", `□は ${q.answer} だよ。`],
+      compare: (q) => [`どちらが大きいかな？ ${q.text}`, "左右を計算してから比べよう。", `答えは ${q.answer} だよ。`],
+      twoStep: (q) => [`2ステップのチャレンジだよ。${q.text}`, "左から順番に計算しよう。", `答えは ${q.answer} だよ。`],
+      wordHint: "お話を読んで 数をえらぼう",
+      compareHint: "左・右・おなじ からえらぼう",
+    },
+    en: {
+      add: (q) => [`The spirit has ${q.left} shining seeds. Your buddy finds ${q.right} more. How many are there in all?`, "Add the two numbers together.", `${q.left} + ${q.right} = ${q.answer}.`],
+      subtract: (q) => [`The spirit lines up ${q.left} seeds. ${q.right} go into a basket. How many are left?`, "Take away the number that moved.", `${q.left} - ${q.right} = ${q.answer}.`],
+      multiply: (q) => [`There are ${q.left} bushes with ${q.right} seeds each. How many seeds are there?`, "Same-size groups use multiplication.", `${q.right} in each group, ${q.left} groups: ${q.answer}.`],
+      divide: (q) => [`Share ${q.left} seeds equally into ${q.right} bushes. How many in each bush?`, "Sharing equally uses division.", `${q.left} ÷ ${q.right} = ${q.answer}.`],
+      blank: (q) => [`Choose the number for the blank. ${q.hintText}`, "Find the number that makes the sentence true.", `The blank is ${q.answer}.`],
+      compare: (q) => [`Which is bigger: ${q.text}?`, "Work out both sides, then compare.", `The answer is ${q.answer}.`],
+      twoStep: (q) => [`Solve this two-step challenge: ${q.text}`, "Go from left to right.", `The answer is ${q.answer}.`],
+      wordHint: "Read the story and choose the number.",
+      compareHint: "Choose Left, Right, or Same.",
+    },
+    ko: {
+      add: (q) => [`정령이 씨앗 ${q.left}개를 가지고 있어요. 친구가 ${q.right}개를 더 찾으면 모두 몇 개일까요?`, "두 수를 더해 보세요.", `${q.left} + ${q.right} = ${q.answer}예요.`],
+      subtract: (q) => [`씨앗 ${q.left}개 중 ${q.right}개를 바구니에 넣었어요. 남은 씨앗은 몇 개일까요?`, "줄어든 수를 빼 보세요.", `${q.left} - ${q.right} = ${q.answer}예요.`],
+      multiply: (q) => [`풀숲 ${q.left}곳에 씨앗이 ${q.right}개씩 있어요. 모두 몇 개일까요?`, "같은 묶음은 곱셈으로 생각해요.", `${q.right}개씩 ${q.left}묶음은 ${q.answer}개예요.`],
+      divide: (q) => [`씨앗 ${q.left}개를 풀숲 ${q.right}곳에 똑같이 나눠요. 한 곳에 몇 개일까요?`, "똑같이 나누면 나눗셈이에요.", `${q.left} ÷ ${q.right} = ${q.answer}예요.`],
+      blank: (q) => [`빈칸에 들어갈 수를 골라요. ${q.hintText}`, "식이 맞게 되는 수를 찾아요.", `빈칸은 ${q.answer}예요.`],
+      compare: (q) => [`어느 쪽이 더 클까요? ${q.text}`, "양쪽을 계산하고 비교해요.", `답은 ${q.answer}예요.`],
+      twoStep: (q) => [`두 단계 챌린지예요. ${q.text}`, "왼쪽부터 차례로 계산해요.", `답은 ${q.answer}예요.`],
+      wordHint: "이야기를 읽고 수를 골라요.",
+      compareHint: "왼쪽, 오른쪽, 같아요 중에서 골라요.",
+    },
+    zh: {
+      add: (q) => [`精灵有 ${q.left} 颗闪亮种子。伙伴又找到 ${q.right} 颗，一共有几颗？`, "把两个数加起来。", `${q.left} + ${q.right} = ${q.answer}。`],
+      subtract: (q) => [`有 ${q.left} 颗种子，${q.right} 颗放进篮子里，还剩几颗？`, "用总数减去拿走的数。", `${q.left} - ${q.right} = ${q.answer}。`],
+      multiply: (q) => [`有 ${q.left} 片草丛，每片有 ${q.right} 颗种子，一共有几颗？`, "相同的一组一组可以用乘法。", `${q.right} 颗一组，${q.left} 组是 ${q.answer} 颗。`],
+      divide: (q) => [`把 ${q.left} 颗种子平均分到 ${q.right} 片草丛，每片几颗？`, "平均分可以用除法。", `${q.left} ÷ ${q.right} = ${q.answer}。`],
+      blank: (q) => [`选择空格里的数。${q.hintText}`, "找出让算式成立的数。", `空格里是 ${q.answer}。`],
+      compare: (q) => [`哪边更大？${q.text}`, "先算左右两边，再比较。", `答案是 ${q.answer}。`],
+      twoStep: (q) => [`两步挑战：${q.text}`, "从左到右一步一步算。", `答案是 ${q.answer}。`],
+      wordHint: "读一读故事，选择数字。",
+      compareHint: "选择左边、右边或一样。",
+    },
+    fr: {
+      add: (q) => [`L'esprit a ${q.left} graines brillantes. Ton compagnon en trouve ${q.right} de plus. Combien y en a-t-il ?`, "Additionne les deux nombres.", `${q.left} + ${q.right} = ${q.answer}.`],
+      subtract: (q) => [`Il y a ${q.left} graines. ${q.right} vont dans le panier. Combien reste-t-il ?`, "Enlève le nombre qui part.", `${q.left} - ${q.right} = ${q.answer}.`],
+      multiply: (q) => [`Il y a ${q.left} buissons avec ${q.right} graines chacun. Combien de graines ?`, "Des groupes égaux utilisent la multiplication.", `${q.right} par groupe, ${q.left} groupes : ${q.answer}.`],
+      divide: (q) => [`Partage ${q.left} graines dans ${q.right} buissons. Combien dans chaque buisson ?`, "Partager également utilise la division.", `${q.left} ÷ ${q.right} = ${q.answer}.`],
+      blank: (q) => [`Choisis le nombre manquant. ${q.hintText}`, "Trouve le nombre qui rend l'égalité vraie.", `Le nombre manquant est ${q.answer}.`],
+      compare: (q) => [`Lequel est le plus grand : ${q.text} ?`, "Calcule les deux côtés puis compare.", `La réponse est ${q.answer}.`],
+      twoStep: (q) => [`Résous ce défi en deux étapes : ${q.text}`, "Calcule de gauche à droite.", `La réponse est ${q.answer}.`],
+      wordHint: "Lis l'histoire et choisis le nombre.",
+      compareHint: "Choisis Gauche, Droite ou Pareil.",
+    },
+    de: {
+      add: (q) => [`Der Geist hat ${q.left} leuchtende Samen. Dein Partner findet ${q.right} dazu. Wie viele sind es?`, "Addiere beide Zahlen.", `${q.left} + ${q.right} = ${q.answer}.`],
+      subtract: (q) => [`Es gibt ${q.left} Samen. ${q.right} kommen in den Korb. Wie viele bleiben?`, "Ziehe die weggelegten Samen ab.", `${q.left} - ${q.right} = ${q.answer}.`],
+      multiply: (q) => [`Es gibt ${q.left} Büsche mit je ${q.right} Samen. Wie viele Samen sind es?`, "Gleiche Gruppen rechnet man mit Malnehmen.", `${q.right} pro Gruppe, ${q.left} Gruppen: ${q.answer}.`],
+      divide: (q) => [`Teile ${q.left} Samen gleich auf ${q.right} Büsche auf. Wie viele pro Busch?`, "Gleiches Teilen ist Division.", `${q.left} ÷ ${q.right} = ${q.answer}.`],
+      blank: (q) => [`Wähle die Zahl für die Lücke. ${q.hintText}`, "Finde die Zahl, damit die Aufgabe stimmt.", `Die Lücke ist ${q.answer}.`],
+      compare: (q) => [`Was ist größer: ${q.text}?`, "Rechne beide Seiten aus und vergleiche.", `Die Antwort ist ${q.answer}.`],
+      twoStep: (q) => [`Löse diese Zwei-Schritt-Aufgabe: ${q.text}`, "Rechne von links nach rechts.", `Die Antwort ist ${q.answer}.`],
+      wordHint: "Lies die Geschichte und wähle die Zahl.",
+      compareHint: "Wähle Links, Rechts oder Gleich.",
+    },
+    es: {
+      add: (q) => [`El espíritu tiene ${q.left} semillas brillantes. Tu compañero encuentra ${q.right} más. ¿Cuántas hay en total?`, "Suma los dos números.", `${q.left} + ${q.right} = ${q.answer}.`],
+      subtract: (q) => [`Hay ${q.left} semillas. ${q.right} van a la cesta. ¿Cuántas quedan?`, "Quita las que se fueron.", `${q.left} - ${q.right} = ${q.answer}.`],
+      multiply: (q) => [`Hay ${q.left} arbustos con ${q.right} semillas cada uno. ¿Cuántas semillas hay?`, "Los grupos iguales usan multiplicación.", `${q.right} en cada grupo, ${q.left} grupos: ${q.answer}.`],
+      divide: (q) => [`Reparte ${q.left} semillas entre ${q.right} arbustos. ¿Cuántas en cada uno?`, "Repartir por igual usa división.", `${q.left} ÷ ${q.right} = ${q.answer}.`],
+      blank: (q) => [`Elige el número que falta. ${q.hintText}`, "Busca el número que hace correcta la operación.", `El número que falta es ${q.answer}.`],
+      compare: (q) => [`¿Cuál es mayor: ${q.text}?`, "Calcula ambos lados y compara.", `La respuesta es ${q.answer}.`],
+      twoStep: (q) => [`Resuelve este reto de dos pasos: ${q.text}`, "Calcula de izquierda a derecha.", `La respuesta es ${q.answer}.`],
+      wordHint: "Lee la historia y elige el número.",
+      compareHint: "Elige Izquierda, Derecha o Igual.",
+    },
+  };
+
+  const languageBanks = {
+    ja: {
+      seed: [
+        q("山", "やま", ["かわ", "もり", "そら"], "山の読みをえらぼう。", "山は「やま」と読むよ。"),
+        q("「大きい」の反対はどれ？", "小さい", ["広い", "長い", "明るい"], "反対の意味を探そう。", "大きいの反対は小さいだよ。"),
+        q("今日は雨が ___ います。", "ふって", ["さいて", "はしって", "ねて"], "雨に合うことばをえらぼう。", "雨は「ふって」います。"),
       ],
-      meaning: [
-        ["はし", "川をわたるところ", ["ごはんを食べる道具", "走ること", "明るい空"], "文の中で何を表しているか考えよう。", "ここでは「はし」は橋、川をわたるところだよ。"],
-        ["あさ", "一日のはじめのころ", ["夜のあとすぐ", "食べものの名前", "大きな音"], "時間を表すことばだよ。", "「あさ」は一日のはじめのころだよ。"],
+      grass: [
+        q("「うれしい」と近いことばはどれ？", "楽しい", ["かなしい", "からい", "重い"], "近い気持ちのことばを探そう。", "うれしいと楽しいは近い意味だよ。"),
+        q("本を ___ 読みました。", "しずかに", ["赤く", "丸く", "高く"], "読み方に合うことばをえらぼう。", "本はしずかに読むと自然だよ。"),
+        reading("マルップは森で小さなたねを見つけました。たねはきらきら光っていました。", "マルップが見つけたものは？", "小さなたね", ["大きな石", "赤い本", "青いかさ"], "最初の文を見よう。", "マルップは小さなたねを見つけたよ。"),
       ],
-      sentence: [
-        ["今日は雨が ___ います。", "ふって", ["さいて", "はしって", "ねて"], "雨に合う動きを選ぼう。", "雨は「ふって」います、が自然だよ。"],
-        ["花が きれいに ___ 。", "さいた", ["のんだ", "とんだ", "よんだ"], "花がどうなるか思い出そう。", "花は「さいた」と言うよ。"],
+      flower: [
+        reading("ルミは夕方の森を歩きました。葉っぱの光が道をてらしました。みんなはその光をたよりに広場へ進みました。", "道をてらしたものは？", "葉っぱの光", ["雨の音", "赤い橋", "紙の地図"], "何が光ったか探そう。", "葉っぱの光が道をてらしたよ。"),
+        q("「安全」の反対に近いことばはどれ？", "きけん", ["安心", "しずか", "便利"], "安心できない様子を表すことばだよ。", "安全の反対に近いのは危険だよ。"),
+        q("森の道を歩くと、鳥の声が ___ 聞こえました。", "やさしく", ["からい", "四角く", "古い"], "聞こえ方に合うことばをえらぼう。", "鳥の声はやさしく聞こえました。"),
       ],
     },
-    grass: {
-      types: ["synonymAntonym", "synonymAntonym", "sentence", "kanjiReading", "reading"],
-      kanjiReading: [
-        ["学校", "がっこう", ["がくせい", "こうえん", "せんせい"], "べんきょうする場所だよ。", "「学校」は「がっこう」と読むよ。"],
-        ["先生", "せんせい", ["せいと", "せんろ", "さき"], "教えてくれる人だよ。", "「先生」は「せんせい」と読むよ。"],
+    en: {
+      seed: [
+        q("What does \"cat\" mean?", "a small pet animal", ["a kind of weather", "a school bag", "a big tree"], "Think about an animal that says meow.", "Cat means a small pet animal."),
+        q("What is the opposite of \"big\"?", "small", ["happy", "fast", "green"], "Choose the opposite size.", "The opposite of big is small."),
+        q("The bird can ___ in the sky.", "fly", ["sleep", "drink", "paint"], "Choose what a bird does in the sky.", "A bird can fly in the sky."),
       ],
-      synonymAntonym: [
-        ["「大きい」の反対語はどれ？", "小さい", ["広い", "長い", "明るい"], "反対の意味になる言葉を選ぼう。", "「大きい」の反対は「小さい」だよ。"],
-        ["「早い」の反対語はどれ？", "おそい", ["近い", "強い", "楽しい"], "スピードが反対になる言葉だよ。", "「早い」の反対は「おそい」だよ。"],
-        ["「うれしい」と似ている言葉はどれ？", "楽しい", ["かなしい", "くらい", "重い"], "近い気もちの言葉を選ぼう。", "「うれしい」と「楽しい」は近い気もちだよ。"],
+      grass: [
+        q("Which word is like \"happy\"?", "glad", ["cold", "slow", "empty"], "Look for a word with a close feeling.", "Happy and glad are close in meaning."),
+        q("She reads the book ___.", "quietly", ["round", "blue", "yesterday"], "Choose a word that tells how she reads.", "She reads quietly sounds natural."),
+        reading("Maro found a tiny seed under a leaf. The seed glowed softly. Maro put it in a safe basket.", "What did Maro find?", "a tiny seed", ["a red hat", "a loud drum", "a blue fish"], "Look at the first sentence.", "Maro found a tiny seed."),
       ],
-      sentence: [
-        ["本を ___ 読みました。", "しずかに", ["赤く", "丸く", "高く"], "読む様子に合う言葉を選ぼう。", "本は「しずかに」読む、が自然だよ。"],
-        ["友だちに ___ あいさつをしました。", "元気に", ["冷たく", "細く", "古く"], "あいさつの様子に合う言葉だよ。", "「元気に あいさつ」が自然だよ。"],
-      ],
-      reading: [
-        ["マルップは朝、森で小さなたねを見つけました。たねは光っていて、近くの花もにこにこしていました。マルップはそっと手にのせました。", "マルップが見つけたものはどれ？", "小さなたね", ["大きな石", "赤い本", "青いかさ"], "文章のはじめを見てみよう。", "マルップは森で小さなたねを見つけたよ。"],
+      flower: [
+        reading("Lumi walked through the forest at dusk. The leaves began to glow and showed the way. Pico and Moko followed the light to the clearing.", "What showed the way?", "the glowing leaves", ["a loud bell", "a red bridge", "a paper map"], "Find what glowed.", "The glowing leaves showed the way."),
+        q("What is close to \"beautiful\"?", "pretty", ["dangerous", "empty", "tiny"], "Pick a word that praises how something looks.", "Beautiful and pretty are close in meaning."),
+        q("The forest path was ___ after the rain.", "quiet", ["square", "salty", "late"], "Choose a word that can describe a path.", "Quiet fits the sentence best."),
       ],
     },
-    flower: {
-      types: ["reading", "reading", "meaning", "synonymAntonym", "sentence"],
-      meaning: [
-        ["「あつい」の意味として、天気の話に合うのはどれ？", "気温が高い", ["本が分厚い", "味がからい", "音が小さい"], "同じ音でも意味が変わることがあるよ。", "天気の「あつい」は気温が高いことだよ。"],
-        ["「かえる」を動物の意味で使う文はどれ？", "池でかえるが鳴く。", ["家にかえる。", "色をかえる。", "ページをかえる。"], "生きものが出てくる文を選ぼう。", "池で鳴く「かえる」は動物のことだよ。"],
+    ko: {
+      seed: [
+        q("\"고양이\"는 무엇일까요?", "작은 반려동물", ["날씨", "가방", "큰 나무"], "야옹 하고 우는 동물을 생각해요.", "고양이는 작은 반려동물이에요."),
+        q("\"크다\"의 반대말은?", "작다", ["기쁘다", "빠르다", "초록색"], "크기가 반대인 말을 골라요.", "크다의 반대말은 작다예요."),
+        q("새는 하늘을 ___ 수 있어요.", "날", ["잘", "마실", "그릴"], "새가 하늘에서 하는 일을 골라요.", "새는 하늘을 날 수 있어요."),
       ],
-      synonymAntonym: [
-        ["「安全」の反対に近い言葉はどれ？", "きけん", ["安心", "しずか", "便利"], "安心できない様子を表す言葉だよ。", "「安全」の反対に近い言葉は「きけん」だよ。"],
-        ["「美しい」と似ている言葉はどれ？", "きれい", ["むずかしい", "すばやい", "あたたかい"], "見た目をほめる言葉を選ぼう。", "「美しい」と「きれい」は近い意味だよ。"],
+      grass: [
+        q("\"기쁘다\"와 비슷한 말은?", "즐겁다", ["차갑다", "느리다", "비었다"], "비슷한 느낌의 말을 찾아요.", "기쁘다와 즐겁다는 비슷해요."),
+        q("책을 ___ 읽었어요.", "조용히", ["둥글게", "파랗게", "어제"], "읽는 모습에 맞는 말을 골라요.", "책은 조용히 읽는다고 하면 자연스러워요."),
+        reading("마로는 잎 아래에서 작은 씨앗을 찾았어요. 씨앗은 은은하게 빛났어요.", "마로가 찾은 것은?", "작은 씨앗", ["빨간 모자", "큰 북", "파란 물고기"], "첫 문장을 보세요.", "마로는 작은 씨앗을 찾았어요."),
       ],
-      sentence: [
-        ["森の道を歩くと、鳥の声が ___ 聞こえました。", "やさしく", ["からく", "四角く", "古く"], "聞こえ方に合う言葉を選ぼう。", "鳥の声は「やさしく」聞こえました、が自然だよ。"],
+      flower: [
+        reading("루미는 저녁 숲길을 걸었어요. 잎의 빛이 길을 밝혔어요. 모두 그 빛을 따라 넓은 곳으로 갔어요.", "길을 밝힌 것은?", "잎의 빛", ["큰 종", "빨간 다리", "종이 지도"], "무엇이 빛났는지 찾아요.", "잎의 빛이 길을 밝혔어요."),
+        q("\"아름답다\"와 비슷한 말은?", "예쁘다", ["위험하다", "비었다", "작다"], "보기 좋은 모습을 칭찬하는 말이에요.", "아름답다와 예쁘다는 비슷해요."),
+        q("비가 온 뒤 숲길은 ___ 했어요.", "조용", ["네모", "짠맛", "늦게"], "길의 모습을 나타내는 말을 골라요.", "숲길은 조용했다고 하면 자연스러워요."),
       ],
-      reading: [
-        ["ルミは夕方の森を歩いていました。空が少し暗くなると、葉っぱの光が道をてらしました。ピコとモコは、その光をたよりに広場へ進みました。みんなで着くと、花がふわりと開きました。", "みんなが広場へ進むとき、何をたよりにしましたか？", "葉っぱの光", ["雨の音", "赤い橋", "大きな石"], "道をてらしたものを探そう。", "葉っぱの光が道をてらしたので、それをたよりにしたよ。"],
-        ["朝の広場に、三つのたねがならんでいました。一つ目は丸く、二つ目は細長く、三つ目は星のような形でした。マルップは星の形のたねを見て、にっこりしました。", "マルップがにっこりしたのは、どんな形のたねを見たとき？", "星のような形", ["丸い形", "細長い形", "四角い形"], "最後の文を読んでみよう。", "マルップは星のような形のたねを見て、にっこりしたよ。"],
+    },
+    zh: {
+      seed: [
+        q("“猫”是什么意思？", "小小的宠物", ["一种天气", "书包", "大树"], "想一想会喵喵叫的动物。", "猫是小小的宠物。"),
+        q("“大”的反义词是？", "小", ["开心", "快", "绿色"], "选择大小相反的词。", "大的反义词是小。"),
+        q("小鸟可以在天空中 ___。", "飞", ["睡觉", "喝水", "画画"], "选择小鸟在天空中做的事。", "小鸟可以在天空中飞。"),
+      ],
+      grass: [
+        q("哪个词和“开心”意思接近？", "快乐", ["寒冷", "慢", "空"], "找意思接近的心情词。", "开心和快乐意思接近。"),
+        q("她 ___ 地读书。", "安静", ["圆圆", "蓝色", "昨天"], "选择读书时的样子。", "安静地读书很自然。"),
+        reading("玛罗在叶子下面发现了一颗小种子。种子轻轻发光。", "玛罗发现了什么？", "小种子", ["红帽子", "大鼓", "蓝鱼"], "看第一句话。", "玛罗发现了小种子。"),
+      ],
+      flower: [
+        reading("露米傍晚走在森林里。叶子的光照亮了道路。大家跟着光来到广场。", "什么照亮了道路？", "叶子的光", ["响亮的铃声", "红桥", "纸地图"], "找一找什么发光了。", "叶子的光照亮了道路。"),
+        q("哪个词和“美丽”意思接近？", "漂亮", ["危险", "空", "很小"], "选择夸奖样子的词。", "美丽和漂亮意思接近。"),
+        q("雨后，森林小路变得很 ___。", "安静", ["方形", "咸", "迟"], "选择能形容小路的词。", "安静适合这个句子。"),
+      ],
+    },
+    fr: {
+      seed: [
+        q("Que veut dire « chat » ?", "un petit animal de compagnie", ["un temps météo", "un cartable", "un grand arbre"], "Pense à l'animal qui fait miaou.", "Un chat est un petit animal de compagnie."),
+        q("Quel est le contraire de « grand » ?", "petit", ["joyeux", "rapide", "vert"], "Choisis la taille opposée.", "Le contraire de grand est petit."),
+        q("L'oiseau peut ___ dans le ciel.", "voler", ["dormir", "boire", "peindre"], "Choisis ce que fait un oiseau dans le ciel.", "L'oiseau peut voler dans le ciel."),
+      ],
+      grass: [
+        q("Quel mot ressemble à « content » ?", "joyeux", ["froid", "lent", "vide"], "Cherche un mot proche.", "Content et joyeux sont proches."),
+        q("Elle lit le livre ___.", "doucement", ["rond", "bleu", "hier"], "Choisis comment elle lit.", "Elle lit doucement est naturel."),
+        reading("Maro trouve une petite graine sous une feuille. La graine brille doucement.", "Que trouve Maro ?", "une petite graine", ["un chapeau rouge", "un tambour", "un poisson bleu"], "Regarde la première phrase.", "Maro trouve une petite graine."),
+      ],
+      flower: [
+        reading("Lumi marche dans la forêt le soir. Les feuilles brillent et montrent le chemin. Pico et Moko suivent la lumière.", "Qu'est-ce qui montre le chemin ?", "les feuilles brillantes", ["une cloche", "un pont rouge", "une carte"], "Cherche ce qui brille.", "Les feuilles brillantes montrent le chemin."),
+        q("Quel mot ressemble à « beau » ?", "joli", ["dangereux", "vide", "minuscule"], "Choisis un mot qui décrit quelque chose de beau.", "Beau et joli sont proches."),
+        q("Le chemin de forêt était ___ après la pluie.", "calme", ["carré", "salé", "tard"], "Choisis un mot qui décrit le chemin.", "Calme va bien dans la phrase."),
+      ],
+    },
+    de: {
+      seed: [
+        q("Was bedeutet „Katze“?", "ein kleines Haustier", ["eine Wetterart", "eine Schultasche", "ein großer Baum"], "Denk an ein Tier, das miaut.", "Katze bedeutet ein kleines Haustier."),
+        q("Was ist das Gegenteil von „groß“?", "klein", ["fröhlich", "schnell", "grün"], "Wähle die andere Größe.", "Das Gegenteil von groß ist klein."),
+        q("Der Vogel kann am Himmel ___.", "fliegen", ["schlafen", "trinken", "malen"], "Wähle, was ein Vogel am Himmel tut.", "Ein Vogel kann am Himmel fliegen."),
+      ],
+      grass: [
+        q("Welches Wort passt zu „fröhlich“?", "glücklich", ["kalt", "langsam", "leer"], "Suche ein Wort mit ähnlichem Gefühl.", "Fröhlich und glücklich sind ähnlich."),
+        q("Sie liest das Buch ___.", "leise", ["rund", "blau", "gestern"], "Wähle, wie sie liest.", "Sie liest leise klingt natürlich."),
+        reading("Maro findet einen kleinen Samen unter einem Blatt. Der Samen leuchtet sanft.", "Was findet Maro?", "einen kleinen Samen", ["einen roten Hut", "eine laute Trommel", "einen blauen Fisch"], "Schau auf den ersten Satz.", "Maro findet einen kleinen Samen."),
+      ],
+      flower: [
+        reading("Lumi geht abends durch den Wald. Die Blätter beginnen zu leuchten und zeigen den Weg. Pico und Moko folgen dem Licht.", "Was zeigt den Weg?", "die leuchtenden Blätter", ["eine laute Glocke", "eine rote Brücke", "eine Karte"], "Finde, was leuchtet.", "Die leuchtenden Blätter zeigen den Weg."),
+        q("Welches Wort passt zu „schön“?", "hübsch", ["gefährlich", "leer", "winzig"], "Wähle ein lobendes Wort.", "Schön und hübsch sind ähnlich."),
+        q("Der Waldweg war nach dem Regen ___.", "ruhig", ["eckig", "salzig", "spät"], "Wähle ein Wort für den Weg.", "Ruhig passt gut in den Satz."),
+      ],
+    },
+    es: {
+      seed: [
+        q("¿Qué significa «gato»?", "un pequeño animal de compañía", ["un tipo de clima", "una mochila", "un árbol grande"], "Piensa en el animal que dice miau.", "Gato significa un pequeño animal de compañía."),
+        q("¿Cuál es el contrario de «grande»?", "pequeño", ["feliz", "rápido", "verde"], "Elige el tamaño contrario.", "El contrario de grande es pequeño."),
+        q("El pájaro puede ___ en el cielo.", "volar", ["dormir", "beber", "pintar"], "Elige lo que hace un pájaro en el cielo.", "El pájaro puede volar en el cielo."),
+      ],
+      grass: [
+        q("¿Qué palabra se parece a «feliz»?", "contento", ["frío", "lento", "vacío"], "Busca una palabra con un sentimiento parecido.", "Feliz y contento se parecen."),
+        q("Ella lee el libro ___.", "en silencio", ["redondo", "azul", "ayer"], "Elige cómo lee.", "Ella lee en silencio suena natural."),
+        reading("Maro encuentra una semilla pequeña bajo una hoja. La semilla brilla suavemente.", "¿Qué encuentra Maro?", "una semilla pequeña", ["un sombrero rojo", "un tambor", "un pez azul"], "Mira la primera frase.", "Maro encuentra una semilla pequeña."),
+      ],
+      flower: [
+        reading("Lumi camina por el bosque al atardecer. Las hojas empiezan a brillar y muestran el camino. Pico y Moko siguen la luz.", "¿Qué muestra el camino?", "las hojas brillantes", ["una campana", "un puente rojo", "un mapa"], "Busca qué brilla.", "Las hojas brillantes muestran el camino."),
+        q("¿Qué palabra se parece a «bonito»?", "lindo", ["peligroso", "vacío", "diminuto"], "Elige una palabra de elogio.", "Bonito y lindo se parecen."),
+        q("El camino del bosque estaba ___ después de la lluvia.", "tranquilo", ["cuadrado", "salado", "tarde"], "Elige una palabra para el camino.", "Tranquilo queda bien en la frase."),
       ],
     },
   };
 
-  function randomInt(min, max, randomFn) {
-    return Math.floor(randomFn() * (max - min + 1)) + min;
+  function q(story, answer, traps, hint, explanation) {
+    return { story, text: story, answer, choiceTraps: traps, hint, explanation, hintText: hint, type: "language", operation: "language", subject: "japanese" };
   }
 
-  function choose(values, randomFn) {
-    return values[Math.floor(randomFn() * values.length)];
+  function reading(passage, prompt, answer, traps, hint, explanation) {
+    return { story: `${passage}\n\n${prompt}`, text: prompt, answer, choiceTraps: traps, hint, explanation, hintText: prompt, type: "reading", operation: "reading", subject: "japanese" };
   }
 
-  function shuffle(values, randomFn) {
-    const result = values.slice();
-    for (let index = result.length - 1; index > 0; index -= 1) {
-      const swapIndex = Math.floor(randomFn() * (index + 1));
-      const current = result[index];
-      result[index] = result[swapIndex];
-      result[swapIndex] = current;
-    }
-    return result;
+  function choose(list, randomFn) {
+    return list[Math.min(list.length - 1, Math.floor(randomFn() * list.length))];
+  }
+
+  function shuffle(list, randomFn) {
+    return list
+      .map((value) => ({ value, sort: randomFn() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map((item) => item.value);
   }
 
   function buildChoices(answer, randomFn, traps = []) {
-    if (typeof answer !== "number") {
-      const values = traps.length ? [answer].concat(traps) : ["左", "右", "おなじ"];
-      return shuffle(Array.from(new Set(values)).slice(0, 4), randomFn);
-    }
-
-    const choices = new Set([answer]);
-    traps.forEach((trap) => {
-      if (Number.isFinite(trap) && trap >= 0) {
-        choices.add(trap);
+    const values = [answer, ...traps].filter((value, index, list) => list.findIndex((item) => String(item) === String(value)) === index);
+    if (typeof answer === "number") {
+      let offset = 1;
+      while (values.length < 4) {
+        values.push(answer + offset);
+        offset += 1;
       }
-    });
-    let offset = 1;
-
-    while (choices.size < 4) {
-      choices.add(Math.max(0, answer + offset));
-      if (choices.size < 4) {
-        choices.add(Math.max(0, answer - offset));
-      }
-      offset += randomInt(1, Math.max(2, Math.ceil(answer / 12)), randomFn);
     }
-
-    return shuffle(Array.from(choices).slice(0, 4), randomFn);
+    return shuffle(values.slice(0, 4), randomFn);
   }
 
-  function withDetails(question, type, hint, explanation, hintText) {
+  function getLanguage(languageId) {
+    return languages.find((language) => language.id === languageId) || languages[0];
+  }
+
+  function getSubject(subjectId, languageId = DEFAULT_LANGUAGE) {
+    const base = subjects.find((subject) => subject.id === subjectId) || subjects[0];
+    const translated = subjectText[languageId]?.[base.id] || subjectText.en[base.id] || subjectText.ja[base.id];
+    return { ...base, name: translated[0], actionLabel: translated[1], challengeLabel: translated[2], homeLabel: translated[3] };
+  }
+
+  function getDifficulty(difficultyId, languageId = DEFAULT_LANGUAGE) {
+    const base = difficulties.find((item) => item.id === difficultyId) || { id: difficultyId };
+    const translated = spiritText[languageId]?.[difficultyId] || spiritText.en[difficultyId] || spiritText.ja[difficultyId];
     return {
-      ...question,
-      type,
-      hint,
-      explanation,
-      hintText: hintText || `${question.text} = ?`,
+      ...base,
+      id: difficultyId,
+      spiritName: translated[0],
+      gradeLabel: translated[1],
+      label: translated[2],
+      description: translated[4],
+      reward: translated[5],
+      subjectLabels: { math: translated[2], japanese: translated[3] },
+      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : ["largeMultiply", "largeDivide", "mixed"],
+      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : ["twoStep", "word", "compare", "blank", "straight"],
     };
   }
 
-  function makeAddQuestion(randomFn) {
-    const left = randomInt(8, 60, randomFn);
-    const right = randomInt(2, Math.max(2, 100 - left), randomFn);
-    return withDetails({
-      left,
-      right,
-      answer: left + right,
-      text: `${left} + ${right}`,
-      story: `このせいれいが 光のたねを ${left}こ もっているよ。マルップが ${right}こ 見つけたら、ぜんぶで なんこ？`,
-      operation: "add",
-    }, "straight", "たすときは、2つの数を あわせるよ。", `${left}こと ${right}こを あわせると ${left + right}こだよ。`);
-  }
-
-  function makeSubtractQuestion(randomFn) {
-    const left = randomInt(20, 100, randomFn);
-    const right = randomInt(1, left - 1, randomFn);
-    return withDetails({
-      left,
-      right,
-      answer: left - right,
-      text: `${left} - ${right}`,
-      story: `このせいれいが たねを ${left}こ ならべたよ。${right}こ を かごに入れたら、のこりは なんこ？`,
-      operation: "subtract",
-    }, "straight", "ひくときは、へった数を たしかめよう。", `${left}こから ${right}こを ひくと ${left - right}こだよ。`);
-  }
-
-  function makeMultiplyQuestion(randomFn) {
-    const left = randomInt(2, 9, randomFn);
-    const right = randomInt(2, 9, randomFn);
-    return withDetails({
-      left,
-      right,
-      answer: left * right,
-      text: `${left} × ${right}`,
-      story: `${left}こ の草むらに、たねが ${right}こずつ あるよ。ぜんぶで なんこ？`,
-      operation: "multiply",
-    }, "straight", "同じ数が 何グループあるか 見てみよう。", `${right}こずつが ${left}グループで ${left * right}こだよ。`);
-  }
-
-  function makeDivideQuestion(randomFn) {
-    const right = randomInt(2, 9, randomFn);
-    const answer = randomInt(2, 9, randomFn);
-    const left = right * answer;
-    return withDetails({
-      left,
-      right,
-      answer,
-      text: `${left} ÷ ${right}`,
-      story: `${left}この たねを ${right}つの草むらに 同じ数ずつ わけるよ。1つに なんこ？`,
-      operation: "divide",
-    }, "straight", "同じ数ずつ わけるときは、1つ分を 考えよう。", `${left}こを ${right}つに わけると、1つは ${answer}こだよ。`);
-  }
-
-  function makeLargeMultiplyQuestion(randomFn) {
-    const left = randomInt(10, 20, randomFn);
-    const right = randomInt(2, 9, randomFn);
-    return withDetails({
-      left,
-      right,
-      answer: left * right,
-      text: `${left} × ${right}`,
-      story: `はなの光が ${left}こずつ、${right}列に ならんだよ。ぜんぶで なんこ？`,
-      operation: "largeMultiply",
-    }, "straight", "大きい数も、かけ算の形で 見ると考えやすいよ。", `${left}こずつが ${right}列で ${left * right}こだよ。`);
-  }
-
-  function makeLargeDivideQuestion(randomFn) {
-    const right = randomInt(3, 9, randomFn);
-    const answer = randomInt(6, 15, randomFn);
-    const left = right * answer;
-    return withDetails({
-      left,
-      right,
-      answer,
-      text: `${left} ÷ ${right}`,
-      story: `${left}この 光を ${right}つの花に 同じ数ずつ わけるよ。1つに なんこ？`,
-      operation: "largeDivide",
-    }, "straight", "何をかけたら 元の数になるか 考えてみよう。", `${right} × ${answer} = ${left} だから、答えは ${answer}だよ。`);
-  }
-
-  function makeMixedQuestion(randomFn) {
-    const first = randomInt(2, 9, randomFn);
-    const second = randomInt(2, 9, randomFn);
-    const third = randomInt(2, 5, randomFn);
-    return withDetails({
-      left: first,
-      right: second,
-      extra: third,
-      answer: (first + second) * third,
-      text: `(${first} + ${second}) × ${third}`,
-      story: `${first}こと ${second}この 光を まとめて、${third}つの花に とどけるよ。ぜんぶで なんこ分？`,
-      operation: "mixed",
-    }, "straight", "かっこの中を 先に計算しよう。", `${first} + ${second} = ${first + second}、それを ${third}倍して ${(first + second) * third}だよ。`);
+  function makeBaseOperation(operation, randomFn) {
+    if (operation === "add") {
+      const left = 2 + Math.floor(randomFn() * 18);
+      const right = 1 + Math.floor(randomFn() * 12);
+      return { left, right, answer: left + right, text: `${left} + ${right}`, operation: "add", type: "straight" };
+    }
+    if (operation === "subtract") {
+      const answer = 1 + Math.floor(randomFn() * 18);
+      const right = 1 + Math.floor(randomFn() * 12);
+      const left = answer + right;
+      return { left, right, answer, text: `${left} - ${right}`, operation: "subtract", type: "straight" };
+    }
+    if (operation === "multiply") {
+      const left = 2 + Math.floor(randomFn() * 8);
+      const right = 2 + Math.floor(randomFn() * 8);
+      return { left, right, answer: left * right, text: `${left} × ${right}`, operation: "multiply", type: "straight" };
+    }
+    if (operation === "divide") {
+      const right = 2 + Math.floor(randomFn() * 8);
+      const answer = 2 + Math.floor(randomFn() * 8);
+      const left = right * answer;
+      return { left, right, answer, text: `${left} ÷ ${right}`, operation: "divide", type: "straight" };
+    }
+    if (operation === "largeMultiply") {
+      const left = 11 + Math.floor(randomFn() * 20);
+      const right = 2 + Math.floor(randomFn() * 8);
+      return { left, right, answer: left * right, text: `${left} × ${right}`, operation: "multiply", type: "straight" };
+    }
+    if (operation === "largeDivide") {
+      const right = 3 + Math.floor(randomFn() * 9);
+      const answer = 6 + Math.floor(randomFn() * 18);
+      const left = right * answer;
+      return { left, right, answer, text: `${left} ÷ ${right}`, operation: "divide", type: "straight" };
+    }
+    const a = 8 + Math.floor(randomFn() * 20);
+    const b = 2 + Math.floor(randomFn() * 9);
+    const c = 1 + Math.floor(randomFn() * 9);
+    return { left: a, right: b, answer: a - b + c, text: `${a} - ${b} + ${c}`, operation: "mixed", type: "twoStep" };
   }
 
   function makeBlankQuestion(difficulty, randomFn) {
-    const operation = choose(difficulty.id === "seed" ? ["add", "subtract"] : difficulty.operations, randomFn);
-
-    if (operation === "subtract") {
-      const result = randomInt(4, 30, randomFn);
-      const right = randomInt(2, 20, randomFn);
-      const left = result + right;
-      return withDetails({
-        left,
-        right,
-        answer: left,
-        text: `□ - ${right}`,
-        story: `□に入る数を えらぼう。□ - ${right} = ${result} になるよ。`,
-        operation,
-      }, "blank", "ひく前の数を さがすときは、答えに ひいた数を たしてみよう。", `${result} + ${right} = ${left} だから、□は ${left}だよ。`, `□ - ${right} = ${result}`);
+    const operation = choose(difficulty.operations, randomFn);
+    const qn = makeBaseOperation(operation, randomFn);
+    if (qn.operation === "add" || qn.operation === "multiply") {
+      qn.answer = qn.right;
+      qn.hintText = `${qn.left} ${qn.operation === "add" ? "+" : "×"} □ = ${qn.left + (qn.operation === "add" ? qn.right : 0) || qn.left * qn.right}`;
+      if (qn.operation === "multiply") qn.hintText = `${qn.left} × □ = ${qn.left * qn.answer}`;
+    } else if (qn.operation === "subtract") {
+      qn.answer = qn.right;
+      qn.hintText = `${qn.left} - □ = ${qn.left - qn.right}`;
+    } else {
+      qn.answer = qn.right;
+      qn.hintText = `${qn.left} ÷ □ = ${qn.left / qn.right}`;
     }
-
-    if (operation === "multiply" || operation === "largeMultiply") {
-      const left = operation === "largeMultiply" ? randomInt(10, 14, randomFn) : randomInt(2, 9, randomFn);
-      const answer = randomInt(2, 9, randomFn);
-      const total = left * answer;
-      return withDetails({
-        left,
-        right: answer,
-        answer,
-        text: `${left} × □`,
-        story: `□に入る数を えらぼう。${left} × □ = ${total} になるよ。`,
-        operation,
-      }, "blank", `${left}のだんで ${total}になるところを さがそう。`, `${left} × ${answer} = ${total} だから、□は ${answer}だよ。`, `${left} × □ = ${total}`);
-    }
-
-    const left = randomInt(3, difficulty.id === "seed" ? 12 : 30, randomFn);
-    const answer = randomInt(2, difficulty.id === "seed" ? 12 : 40, randomFn);
-    const total = left + answer;
-    return withDetails({
-      left,
-      right: answer,
-      answer,
-      text: `${left} + □`,
-      story: `□に入る数を えらぼう。${left} + □ = ${total} になるよ。`,
-      operation: "add",
-    }, "blank", "足りない数は、ぜんぶの数から わかっている数を ひくと見つかるよ。", `${total} - ${left} = ${answer} だから、□は ${answer}だよ。`, `${left} + □ = ${total}`);
+    qn.type = "blank";
+    qn.text = qn.hintText;
+    return qn;
   }
 
-  function makeWordQuestion(difficulty, randomFn) {
-    const operation = choose(difficulty.id === "seed" ? ["add", "subtract"] : difficulty.operations, randomFn);
-
-    if (operation === "subtract") {
-      const left = randomInt(8, 30, randomFn);
-      const right = randomInt(2, left - 2, randomFn);
-      return withDetails({
-        left,
-        right,
-        answer: left - right,
-        text: `${left} - ${right}`,
-        story: `おにぎりが ${left}こ あります。${right}こ たべたら、のこりは いくつですか？`,
-        operation,
-      }, "word", "のこりを聞かれたら、ひき算で考えよう。", `${left} - ${right} = ${left - right}。のこりは ${left - right}こだよ。`);
-    }
-
-    if (operation === "multiply" || operation === "largeMultiply") {
-      const groups = operation === "largeMultiply" ? randomInt(6, 12, randomFn) : randomInt(2, 9, randomFn);
-      const each = randomInt(2, 9, randomFn);
-      return withDetails({
-        left: groups,
-        right: each,
-        answer: groups * each,
-        text: `${groups} × ${each}`,
-        story: `花だんが ${groups}つ あります。ひとつの花だんに 花が ${each}こずつ さいています。ぜんぶで いくつですか？`,
-        operation,
-      }, "word", "同じ数ずつあるときは、かけ算で考えよう。", `${each}こずつが ${groups}つで ${groups * each}こだよ。`);
-    }
-
-    if (operation === "divide" || operation === "largeDivide") {
-      const right = randomInt(2, 9, randomFn);
-      const answer = randomInt(operation === "largeDivide" ? 6 : 2, operation === "largeDivide" ? 14 : 9, randomFn);
-      const left = right * answer;
-      return withDetails({
-        left,
-        right,
-        answer,
-        text: `${left} ÷ ${right}`,
-        story: `クッキーが ${left}こ あります。${right}人で 同じ数ずつ わけると、ひとり いくつですか？`,
-        operation,
-      }, "word", "同じ数ずつ わけるときは、わり算で考えよう。", `${left} ÷ ${right} = ${answer}。ひとり ${answer}こだよ。`);
-    }
-
-    const red = randomInt(3, difficulty.id === "seed" ? 12 : 30, randomFn);
-    const white = randomInt(2, difficulty.id === "seed" ? 12 : 30, randomFn);
-    return withDetails({
-      left: red,
-      right: white,
-      answer: red + white,
-      text: `${red} + ${white}`,
-      story: `赤いボールが ${red}こ、白いボールが ${white}こ あります。ぜんぶで いくつですか？`,
-      operation: "add",
-    }, "word", "ぜんぶの数を聞かれたら、たし算で考えよう。", `${red} + ${white} = ${red + white}。ぜんぶで ${red + white}こだよ。`);
-  }
-
-  function makeCompareQuestion(difficulty, randomFn) {
-    const max = difficulty.id === "flower" ? 50 : 20;
-    const leftA = randomInt(2, max, randomFn);
-    const leftB = randomInt(2, max, randomFn);
-    const rightA = randomInt(2, max, randomFn);
-    const rightB = randomInt(2, max, randomFn);
-    const leftTotal = leftA + leftB;
-    const rightTotal = rightA + rightB;
-    const answer = leftTotal === rightTotal ? "おなじ" : leftTotal > rightTotal ? "左" : "右";
-    return withDetails({
-      left: leftTotal,
-      right: rightTotal,
+  function makeCompareQuestion(difficulty, languageId, randomFn) {
+    const q1 = makeBaseOperation(choose(difficulty.operations, randomFn), randomFn);
+    const q2 = makeBaseOperation(choose(difficulty.operations, randomFn), randomFn);
+    const words = compareWords[languageId] || compareWords.en;
+    const answer = q1.answer === q2.answer ? words[2] : q1.answer > q2.answer ? words[0] : words[1];
+    return {
+      left: q1.answer,
+      right: q2.answer,
       answer,
-      text: `${leftA} + ${leftB} と ${rightA} + ${rightB}`,
-      story: `「${leftA} + ${leftB}」と「${rightA} + ${rightB}」では、どちらが大きいですか？`,
+      text: `${q1.text} / ${q2.text}`,
       operation: "compare",
-    }, "compare", "左右をそれぞれ計算してから、くらべよう。", `左は ${leftTotal}、右は ${rightTotal}。だから答えは「${answer}」だよ。`, "左・右・おなじ からえらぼう");
+      type: "compare",
+      choiceTraps: words,
+      hintText: (mathText[languageId] || mathText.en).compareHint,
+    };
   }
 
   function makeTwoStepQuestion(difficulty, randomFn) {
-    if (difficulty.id === "grass") {
-      const first = randomInt(2, 9, randomFn);
-      const second = randomInt(2, 9, randomFn);
-      const third = randomInt(2, 9, randomFn);
-      return withDetails({
-        left: first,
-        right: second,
-        extra: third,
-        answer: first + second + third,
-        text: `${first} + ${second} + ${third}`,
-        story: `たねを ${first}こ、${second}こ、${third}こ 見つけました。ぜんぶで いくつですか？`,
-        operation: "twoStepAdd",
-      }, "twoStep", "左からじゅんに、2回たしてみよう。", `${first} + ${second} = ${first + second}、${first + second} + ${third} = ${first + second + third}だよ。`);
-    }
-
-    const first = randomInt(18, 50, randomFn);
-    const second = randomInt(4, 15, randomFn);
-    const third = randomInt(2, 12, randomFn);
-    return withDetails({
-      left: first,
-      right: second,
-      extra: third,
-      answer: first - second + third,
-      text: `${first} - ${second} + ${third}`,
-      story: `光の葉が ${first}まい あります。${second}まい とどけて、あとから ${third}まい 見つけました。今は なんまい？`,
-      operation: "twoStepMixed",
-    }, "twoStep", "左からじゅんに、ひいてから たそう。", `${first} - ${second} = ${first - second}、${first - second} + ${third} = ${first - second + third}だよ。`);
+    const qn = makeBaseOperation(difficulty.id === "seed" ? "add" : "mixed", randomFn);
+    qn.type = "twoStep";
+    return qn;
   }
 
-  function makeJapaneseKanjiReadingQuestion(difficulty, randomFn) {
-    const source = choose(japaneseQuestions[difficulty.id].kanjiReading, randomFn);
-    const [kanji, answer, traps, hint, explanation] = source;
-    return withDetails({
-      answer,
-      text: kanji,
-      story: `「${kanji}」という漢字の読みはどれ？`,
-      operation: "kanjiReading",
-      choiceTraps: traps,
-      subject: "japanese",
-    }, "kanjiReading", hint, explanation, "読みを えらぼう");
-  }
-
-  function makeJapaneseMeaningQuestion(difficulty, randomFn) {
-    const source = choose(japaneseQuestions[difficulty.id].meaning || japaneseQuestions.seed.meaning, randomFn);
-    const [prompt, answer, traps, hint, explanation] = source;
-    return withDetails({
-      answer,
-      text: prompt,
-      story: prompt,
-      operation: "meaning",
-      choiceTraps: traps,
-      subject: "japanese",
-    }, "meaning", hint, explanation, "意味に合うものを えらぼう");
-  }
-
-  function makeJapaneseSynonymAntonymQuestion(difficulty, randomFn) {
-    const source = choose(japaneseQuestions[difficulty.id].synonymAntonym || japaneseQuestions.grass.synonymAntonym, randomFn);
-    const [prompt, answer, traps, hint, explanation] = source;
-    return withDetails({
-      answer,
-      text: prompt,
-      story: prompt,
-      operation: "synonymAntonym",
-      choiceTraps: traps,
-      subject: "japanese",
-    }, "synonymAntonym", hint, explanation, "ことばを えらぼう");
-  }
-
-  function makeJapaneseSentenceQuestion(difficulty, randomFn) {
-    const source = choose(japaneseQuestions[difficulty.id].sentence, randomFn);
-    const [prompt, answer, traps, hint, explanation] = source;
-    return withDetails({
-      answer,
-      text: prompt,
-      story: `文に合うことばを えらぼう。${prompt}`,
-      operation: "sentence",
-      choiceTraps: traps,
-      subject: "japanese",
-    }, "sentence", hint, explanation, prompt);
-  }
-
-  function makeJapaneseReadingQuestion(difficulty, randomFn) {
-    const source = choose(japaneseQuestions[difficulty.id].reading || japaneseQuestions.grass.reading, randomFn);
-    const [passage, prompt, answer, traps, hint, explanation] = source;
-    return withDetails({
-      answer,
-      text: prompt,
-      story: `${passage}\n\n${prompt}`,
-      operation: "reading",
-      choiceTraps: traps,
-      subject: "japanese",
-    }, "reading", hint, explanation, "文を読んで こたえよう");
-  }
-
-  function buildQuestionByOperation(operation, randomFn) {
-    const builders = {
-      add: makeAddQuestion,
-      subtract: makeSubtractQuestion,
-      multiply: makeMultiplyQuestion,
-      divide: makeDivideQuestion,
-      largeMultiply: makeLargeMultiplyQuestion,
-      largeDivide: makeLargeDivideQuestion,
-      mixed: makeMixedQuestion,
+  function localizeMath(question, languageId) {
+    const locale = mathText[languageId] || mathText.en;
+    const key = question.type === "blank" ? "blank" : question.type === "compare" ? "compare" : question.type === "twoStep" ? "twoStep" : question.operation;
+    const [story, hint, explanation] = locale[key](question);
+    return {
+      ...question,
+      story,
+      hint,
+      explanation,
+      hintText: question.type === "compare" ? locale.compareHint : question.hintText || question.text,
+      choiceTraps: question.choiceTraps,
     };
-    return builders[operation](randomFn);
   }
 
-  function buildQuestionByType(type, difficulty, randomFn) {
-    const builders = {
-      straight: () => buildQuestionByOperation(choose(difficulty.operations, randomFn), randomFn),
-      blank: () => makeBlankQuestion(difficulty, randomFn),
-      word: () => makeWordQuestion(difficulty, randomFn),
-      compare: () => makeCompareQuestion(difficulty, randomFn),
-      twoStep: () => makeTwoStepQuestion(difficulty, randomFn),
-    };
-    return (builders[type] || builders.straight)();
-  }
-
-  function buildJapaneseQuestion(difficulty, randomFn) {
-    const questionType = choose(japaneseQuestions[difficulty.id].types, randomFn);
-    const builders = {
-      kanjiReading: () => makeJapaneseKanjiReadingQuestion(difficulty, randomFn),
-      meaning: () => makeJapaneseMeaningQuestion(difficulty, randomFn),
-      synonymAntonym: () => makeJapaneseSynonymAntonymQuestion(difficulty, randomFn),
-      sentence: () => makeJapaneseSentenceQuestion(difficulty, randomFn),
-      reading: () => makeJapaneseReadingQuestion(difficulty, randomFn),
-    };
-    return builders[questionType]();
-  }
-
-  function getSubject(subjectId) {
-    return subjects.find((subject) => subject.id === subjectId) || subjects[0];
-  }
-
-  function generateQuestion(difficulty, subjectId, randomFn) {
+  function generateQuestion(difficulty, subjectId, languageId, randomFn) {
     let safeSubjectId = subjectId;
+    let safeLanguageId = languageId;
     let safeRandom = randomFn;
-
     if (typeof subjectId === "function") {
       safeRandom = subjectId;
       safeSubjectId = "math";
+      safeLanguageId = DEFAULT_LANGUAGE;
+    } else if (typeof languageId === "function") {
+      safeRandom = languageId;
+      safeLanguageId = DEFAULT_LANGUAGE;
     }
-
     safeRandom = typeof safeRandom === "function" ? safeRandom : Math.random;
-    const subject = getSubject(safeSubjectId);
+    safeLanguageId = getLanguage(safeLanguageId).id;
+    const fullDifficulty = getDifficulty(difficulty.id || difficulty, safeLanguageId);
+    const subject = getSubject(safeSubjectId || "math", safeLanguageId);
+
     if (subject.id === "japanese") {
-      const question = buildJapaneseQuestion(difficulty, safeRandom);
+      const bank = languageBanks[safeLanguageId] || languageBanks.en;
+      const source = choose(bank[fullDifficulty.id] || bank.seed, safeRandom);
       return {
-        id: `${difficulty.id}-${subject.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
-        ...question,
+        id: `${fullDifficulty.id}-${subject.id}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
+        ...source,
         subject: subject.id,
-        choices: buildChoices(question.answer, safeRandom, question.choiceTraps || []),
+        choices: buildChoices(source.answer, safeRandom, source.choiceTraps),
       };
     }
 
-    const questionType = choose(difficulty.questionTypes || ["straight"], safeRandom);
-    const question = buildQuestionByType(questionType, difficulty, safeRandom);
+    const type = choose(fullDifficulty.questionTypes, safeRandom);
+    let question;
+    if (type === "blank") {
+      question = makeBlankQuestion(fullDifficulty, safeRandom);
+    } else if (type === "compare") {
+      question = makeCompareQuestion(fullDifficulty, safeLanguageId, safeRandom);
+    } else if (type === "twoStep") {
+      question = makeTwoStepQuestion(fullDifficulty, safeRandom);
+    } else {
+      question = makeBaseOperation(choose(fullDifficulty.operations, safeRandom), safeRandom);
+      question.type = type === "word" ? "word" : "straight";
+    }
+    question = localizeMath(question, safeLanguageId);
     const traps = typeof question.answer === "number"
-      ? [
-          question.left + question.right,
-          Math.abs(question.left - question.right),
-          question.answer + 10,
-          question.answer - 10,
-        ]
-      : question.choiceTraps || [];
+      ? [question.answer + 1, Math.max(0, question.answer - 1), question.answer + 10, Math.abs((question.left || 0) - (question.right || 0))]
+      : question.choiceTraps;
 
     return {
-      id: `${difficulty.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
+      id: `${fullDifficulty.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
       ...question,
       subject: subject.id,
       choices: buildChoices(question.answer, safeRandom, traps),
@@ -574,43 +552,45 @@
     return currentPoints + (isCorrect ? POINTS_PER_CORRECT : 0);
   }
 
-  function createRound(difficultyId, subjectId, randomFn) {
+  function createRound(difficultyId, subjectId, languageId, randomFn) {
     let safeSubjectId = subjectId;
+    let safeLanguageId = languageId;
     let safeRandom = randomFn;
     if (typeof subjectId === "function") {
       safeRandom = subjectId;
       safeSubjectId = "math";
+      safeLanguageId = DEFAULT_LANGUAGE;
+    } else if (typeof languageId === "function") {
+      safeRandom = languageId;
+      safeLanguageId = DEFAULT_LANGUAGE;
     }
-    const difficulty = difficulties.find((item) => item.id === difficultyId) || difficulties[0];
-    const subject = getSubject(safeSubjectId);
+    safeLanguageId = getLanguage(safeLanguageId).id;
+    const difficulty = getDifficulty(difficultyId, safeLanguageId);
+    const subject = getSubject(safeSubjectId || "math", safeLanguageId);
     return {
       difficulty,
       stage: difficulty,
       subject,
+      language: getLanguage(safeLanguageId),
       currentIndex: 0,
       earnedPoints: 0,
       correctCount: 0,
       currentStreak: 0,
       bestStreak: 0,
-      question: generateQuestion(difficulty, subject.id, safeRandom),
+      question: generateQuestion(difficulty, subject.id, safeLanguageId, safeRandom),
       answered: false,
       answers: [],
     };
   }
 
   function answerQuestion(round, selectedAnswer) {
-    if (round.answered) {
-      return round;
-    }
-
+    if (round.answered) return round;
     const correct = isCorrectAnswer(round.question, selectedAnswer);
-    const earnedPoints = calculatePoints(round.earnedPoints, correct);
     const currentStreak = correct ? round.currentStreak + 1 : 0;
-
     return {
       ...round,
       answered: true,
-      earnedPoints,
+      earnedPoints: calculatePoints(round.earnedPoints, correct),
       correctCount: round.correctCount + (correct ? 1 : 0),
       currentStreak,
       bestStreak: Math.max(round.bestStreak, currentStreak),
@@ -625,20 +605,13 @@
 
   function nextQuestion(round, randomFn) {
     const nextIndex = round.currentIndex + 1;
-
     if (nextIndex >= QUESTION_COUNT) {
-      return {
-        ...round,
-        currentIndex: nextIndex,
-        question: null,
-        answered: false,
-      };
+      return { ...round, currentIndex: nextIndex, question: null, answered: false };
     }
-
     return {
       ...round,
       currentIndex: nextIndex,
-      question: generateQuestion(round.difficulty, round.subject?.id || "math", randomFn),
+      question: generateQuestion(round.difficulty, round.subject?.id || "math", round.language?.id || DEFAULT_LANGUAGE, randomFn),
       answered: false,
     };
   }
@@ -646,10 +619,13 @@
   global.GameLogic = {
     POINTS_PER_CORRECT,
     QUESTION_COUNT,
+    languages,
     subjects,
     difficulties,
     stages: difficulties,
+    getLanguage,
     getSubject,
+    getDifficulty,
     generateQuestion,
     isCorrectAnswer,
     calculatePoints,
