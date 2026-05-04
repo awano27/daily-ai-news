@@ -27,7 +27,8 @@ assert.strictEqual(seedQuestion.operation, "add");
 assert.strictEqual(seedQuestion.answer, seedQuestion.left + seedQuestion.right);
 assert.ok(seedQuestion.signature.startsWith("math:"));
 assert.strictEqual(GameLogic.getQuestionSignature(seedQuestion), seedQuestion.signature);
-assert.ok(seedQuestion.story.includes("せいれい"));
+assert.ok(seedQuestion.story.includes("小川"));
+assert.ok(seedQuestion.explanation.includes("一歩進める"));
 assert.ok(seedQuestion.choices.includes(seedQuestion.answer));
 assert.ok(seedQuestion.hint);
 assert.ok(seedQuestion.explanation);
@@ -126,6 +127,7 @@ assert.deepStrictEqual(compareQuestion.choices.slice().sort(), ["Left", "Right",
 const japaneseQuestion = GameLogic.generateQuestion(seed, "japanese", "ja", () => 0);
 assert.strictEqual(japaneseQuestion.subject, "japanese");
 assert.ok(japaneseQuestion.signature.startsWith("japanese:"));
+assert.ok(japaneseQuestion.story.includes("ことばのたね"));
 assert.ok(japaneseQuestion.choices.includes(japaneseQuestion.answer));
 assert.ok(japaneseQuestion.hintText);
 

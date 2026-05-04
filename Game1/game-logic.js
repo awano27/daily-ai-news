@@ -1207,6 +1207,75 @@
     };
   }
 
+  function adventureFrameMath(question, difficulty, languageId) {
+    if (languageId !== "ja") return question;
+    const spiritName = getDifficulty(difficulty.id, languageId).spiritName;
+    const explain = question.explanation || `答えは ${question.answer} だよ。`;
+    const text = question.hintText || question.text;
+    const frames = {
+      add: () => [
+        `${spiritName}が小川をわたるために、平たい石を ${question.left}こ 見つけたよ。あと ${question.right}こ 集めると、石はぜんぶでなんこ？`,
+        "石を全部あわせると、川をわたる道ができるよ。",
+        `${question.left} + ${question.right} = ${question.answer}。${spiritName}が一歩進めるね。`,
+      ],
+      subtract: () => [
+        `${spiritName}が木の実を ${question.left}こ 集めたよ。森の小鳥に ${question.right}こ わけると、のこりはなんこ？`,
+        "わけた分をひくと、手もとに残る数がわかるよ。",
+        `${question.left} - ${question.right} = ${question.answer}。小鳥も${spiritName}もにこにこだよ。`,
+      ],
+      multiply: () => [
+        `${spiritName}が花のランタンをならべたいみたい。${question.left}列に ${question.right}こずつ 置くと、ランタンはぜんぶでなんこ？`,
+        "同じ数ずつならぶときは、かけ算で考えよう。",
+        `${question.left} × ${question.right} = ${question.answer}。森の道が明るくなるよ。`,
+      ],
+      divide: () => [
+        `${spiritName}が光るたね ${question.left}こを、${question.right}つの草むらに同じ数ずつまくよ。ひとつの草むらに何こずつ？`,
+        "同じ数ずつ分けるときは、わり算で考えよう。",
+        `${question.left} ÷ ${question.right} = ${question.answer}。草むらが元気になるよ。`,
+      ],
+      blank: () => [
+        `${spiritName}の前に森のとびらがあるよ。とびらには「${text}」と書いてあるね。□に入る数はどれ？`,
+        "式がぴったり合う数を選ぶと、とびらがそっと開くよ。",
+        `${explain} 森のとびらが明るく光ったよ。`,
+      ],
+      compare: () => [
+        `${spiritName}が分かれ道でまよっているよ。${question.text} では、光が強い道はどっち？`,
+        "左と右をそれぞれ計算して、明るいほうを選ぼう。",
+        `${explain} ${spiritName}が明るい道を見つけたよ。`,
+      ],
+      twoStep: () => [
+        `${spiritName}と森の木を元気にしよう。${question.text} を順番に考えると、光のしずくは何こになる？`,
+        "一つずつ順番に進めると、木に光が集まるよ。",
+        `${explain} 木の葉がきらっと育ったよ。`,
+      ],
+      word: () => [
+        `${spiritName}が森のお願いを見つけたよ。${question.story || text}`,
+        "お話の中の数を見つけて、せいれいを助けよう。",
+        `${explain} ${spiritName}とのなかよしが少しふえたよ。`,
+      ],
+      straight: () => [
+        `${spiritName}が森を進むための数チャレンジを出してくれたよ。${question.story || text}`,
+        "式の数をよく見て、次の一歩を選ぼう。",
+        `${explain} 森の道が少し先まで見えたよ。`,
+      ],
+    };
+    const key = question.type === "straight" ? question.operation : frames[question.type] ? question.type : question.operation;
+    const formatter = frames[key] || frames.straight;
+    const [story, hint, explanation] = formatter();
+    return { ...question, story, hint, explanation };
+  }
+
+  function adventureFrameLanguage(question, difficulty, languageId) {
+    if (languageId !== "ja") return question;
+    const spiritName = getDifficulty(difficulty.id, languageId).spiritName;
+    return {
+      ...question,
+      story: `${spiritName}が「ことばのたね」を見つけたよ。\n${question.story}\n答えると、森の道が少し明るくなるよ。`,
+      hint: `${question.hint} ${spiritName}といっしょに、ゆっくり読んでみよう。`,
+      explanation: `${question.explanation} ことばのたねがきらっと光ったよ。`,
+    };
+  }
+
   function generateQuestion(difficulty, subjectId, languageId, randomFn) {
     let safeSubjectId = subjectId;
     let safeLanguageId = languageId;
@@ -1227,12 +1296,12 @@
     if (subject.id === "japanese") {
       const bank = languageBanks[safeLanguageId] || languageBanks.en;
       const source = choose(bank[fullDifficulty.id] || bank.seed, safeRandom);
-      const question = {
+      const question = adventureFrameLanguage({
         id: `${fullDifficulty.id}-${subject.id}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
         ...source,
         subject: subject.id,
         choices: buildChoices(source.answer, safeRandom, source.choiceTraps),
-      };
+      }, fullDifficulty, safeLanguageId);
       return { ...question, signature: getQuestionSignature(question) };
     }
 
@@ -1250,7 +1319,7 @@
       question = makeBaseOperation(choose(fullDifficulty.operations, safeRandom), safeRandom);
       question.type = type === "word" ? "word" : "straight";
     }
-    question = localizeMath(question, safeLanguageId);
+    question = adventureFrameMath(localizeMath(question, safeLanguageId), fullDifficulty, safeLanguageId);
     const traps = typeof question.answer === "number"
       ? [question.answer + 1, Math.max(0, question.answer - 1), question.answer + 10, Math.abs((question.left || 0) - (question.right || 0))]
       : question.choiceTraps;
