@@ -472,7 +472,8 @@
   }
 
   async function initCloudSync() {
-    if (!window.MaruppuCloudStore?.isConfigured()) {
+    const cloudReady = await window.MaruppuCloudStore?.init?.();
+    if (!cloudReady || !window.MaruppuCloudStore?.isConfigured()) {
       state.cloudStatus = "local";
       render();
       return;

@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js",
+    "check": "node --check app.js && node --check game-logic.js && node --check supabase-store.js && node test-game-logic.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -14,6 +14,20 @@ const contentTypes = {
 http
   .createServer((request, response) => {
     const url = new URL(request.url, `http://${request.headers.host}`);
+    if (url.pathname === "/api/runtime-config") {
+      response.writeHead(200, {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store, max-age=0",
+      });
+      response.end(JSON.stringify({
+        supabase: {
+          enabled: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY),
+          url: process.env.SUPABASE_URL || "",
+          anonKey: process.env.SUPABASE_ANON_KEY || "",
+        },
+      }));
+      return;
+    }
     const requestedPath = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
     const filePath = path.join(root, requestedPath);
 

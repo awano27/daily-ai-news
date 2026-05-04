@@ -4,7 +4,9 @@
   const DEVICE_ID_KEY = "maruppu-device-id";
   const TABLE_NAME = "maruppu_profile_stores";
   let client = null;
+  let authUser = null;
   let lastStatus = "local";
+  let runtimeConfigPromise = null;
 
   function getDeviceId() {
     const stored = localStorage.getItem(DEVICE_ID_KEY);
@@ -16,11 +18,28 @@
 
   function getConfig() {
     const config = global.MARUPPU_SUPABASE_CONFIG || {};
+    const runtimeConfig = global.MARUPPU_RUNTIME_CONFIG?.supabase || {};
+    const url = String(runtimeConfig.url || config.url || "");
+    const anonKey = String(runtimeConfig.anonKey || config.anonKey || "");
     return {
-      enabled: Boolean(config.enabled),
-      url: String(config.url || ""),
-      anonKey: String(config.anonKey || ""),
+      enabled: Boolean(runtimeConfig.enabled || config.enabled || (url && anonKey)),
+      url,
+      anonKey,
     };
+  }
+
+  async function loadRuntimeConfig() {
+    if (runtimeConfigPromise) return runtimeConfigPromise;
+    runtimeConfigPromise = fetch("./api/runtime-config", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (data?.supabase) {
+          global.MARUPPU_RUNTIME_CONFIG = { supabase: data.supabase };
+        }
+        return getConfig();
+      })
+      .catch(() => getConfig());
+    return runtimeConfigPromise;
   }
 
   function isConfigured() {
@@ -36,19 +55,53 @@
     }
     const config = getConfig();
     client = global.supabase.createClient(config.url, config.anonKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        storageKey: "maruppu-supabase-auth",
+      },
     });
     return client;
   }
 
-  async function loadProfileStore() {
+  async function init() {
+    await loadRuntimeConfig();
+    if (!isConfigured()) {
+      lastStatus = "local";
+      return false;
+    }
+    return Boolean(getClient());
+  }
+
+  async function ensureAuth() {
     const supabaseClient = getClient();
     if (!supabaseClient) return null;
+    const sessionResult = await supabaseClient.auth.getSession();
+    if (sessionResult.data?.session?.user) {
+      authUser = sessionResult.data.session.user;
+      return authUser;
+    }
+    const { data, error } = await supabaseClient.auth.signInAnonymously();
+    if (error) {
+      console.warn("Supabase anonymous sign-in failed. Falling back to localStorage.", error);
+      lastStatus = "error";
+      return null;
+    }
+    authUser = data?.user || data?.session?.user || null;
+    return authUser;
+  }
+
+  async function loadProfileStore() {
+    await init();
+    const supabaseClient = getClient();
+    if (!supabaseClient) return null;
+    const user = await ensureAuth();
+    if (!user) return null;
     lastStatus = "loading";
     const { data, error } = await supabaseClient
       .from(TABLE_NAME)
       .select("store")
-      .eq("device_id", getDeviceId())
+      .eq("user_id", user.id)
       .maybeSingle();
     if (error) {
       console.warn("Supabase load failed. Falling back to localStorage.", error);
@@ -60,16 +113,20 @@
   }
 
   async function saveProfileStore(store) {
+    await init();
     const supabaseClient = getClient();
     if (!supabaseClient) return false;
+    const user = await ensureAuth();
+    if (!user) return false;
     lastStatus = "saving";
     const { error } = await supabaseClient
       .from(TABLE_NAME)
       .upsert({
+        user_id: user.id,
         device_id: getDeviceId(),
         store,
         updated_at: new Date().toISOString(),
-      }, { onConflict: "device_id" });
+      }, { onConflict: "user_id" });
     if (error) {
       console.warn("Supabase save failed. Data remains in localStorage.", error);
       lastStatus = "error";
@@ -81,9 +138,11 @@
 
   global.MaruppuCloudStore = {
     getDeviceId,
+    init,
     isConfigured,
     loadProfileStore,
     saveProfileStore,
+    userId: () => authUser?.id || "",
     status: () => lastStatus,
   };
 })(window);

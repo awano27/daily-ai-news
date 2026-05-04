@@ -1,33 +1,57 @@
-# Supabase setup
+# Vercel + Supabase setup
 
-This game can sync profile data to Supabase while keeping localStorage as an offline fallback.
+This game can run as a static PWA on Vercel and sync profile data to Supabase.
+If Supabase is not configured or is offline, the game keeps using localStorage.
 
-## 1. Create the table
+## 1. Supabase
 
-Open the Supabase SQL editor and run `supabase-schema.sql`.
+1. Create a Supabase project.
+2. Open Authentication > Sign In / Providers and enable Anonymous sign-ins.
+3. Open the SQL editor and run `supabase-schema.sql`.
 
-The app stores one JSON profile store per browser/device:
+The table stores one JSON profile store per authenticated Supabase user:
 
-- `device_id`: random ID generated in localStorage
-- `store`: all child profiles, points, companion settings, reward flag, and streak data
+- `user_id`: Supabase Auth user ID from anonymous sign-in
+- `device_id`: local device ID for debugging and migration support
+- `store`: child profiles, points, streaks, reward flag, map progress, and spirit growth
 - `updated_at`: last sync time
 
-## 2. Configure the app
+Only the signed-in user can read or update their own row through Row Level Security.
 
-Edit `supabase-config.js`:
+## 2. Vercel
 
-```js
-window.MARUPPU_SUPABASE_CONFIG = {
-  enabled: true,
-  url: "https://YOUR_PROJECT_ID.supabase.co",
-  anonKey: "YOUR_SUPABASE_ANON_KEY",
-};
+Deploy the `Game1` directory to Vercel.
+
+Add these Environment Variables in Vercel:
+
+```txt
+SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
-The anon key is designed to be public, but do not put service role keys in this file.
+`/api/runtime-config` exposes only the public Supabase URL and anon key to the browser.
+Never use a Supabase service role key in Vercel client-facing configuration.
 
-## 3. Safety note
+## 3. Local development
 
-This version does not add login. For a child-facing app, ask users to use nicknames instead of real names.
+Run without Supabase:
 
-The app continues to work offline. If Supabase is unavailable, it saves to localStorage and shows `local fallback`.
+```bash
+npm run dev
+```
+
+Run with Supabase:
+
+```bash
+SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY npm run dev
+```
+
+PowerShell:
+
+```powershell
+$env:SUPABASE_URL='https://YOUR_PROJECT_ID.supabase.co'
+$env:SUPABASE_ANON_KEY='YOUR_SUPABASE_ANON_KEY'
+npm run dev
+```
+
+The app first tries Supabase anonymous auth. If it cannot connect, it shows this-device saving and keeps the game playable.
