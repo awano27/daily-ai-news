@@ -169,6 +169,22 @@
     appTitle: "マルップとせいれいの 森のぼうけん",
     homeTitle: "{name}と<br />森のぼうけん",
     homeLead: "森を進んで、せいれいと出会い、少しずつ育てていこう。",
+    collection: "せいれい図鑑",
+    collectionTitle: "せいれい<br />図鑑",
+    collectionIntro: "出会ったせいれいと、育ちぐあいを見られるよ。",
+    collectionMet: "なかよし",
+    collectionNew: "まだ出会っていないよ",
+    collectionGrowth: "育ちぐあい {growth}/7",
+    collectionNext: "あと {count}こで もっとすてきに育つよ",
+    collectionMax: "すてきに育っているよ",
+    adventureGoal: "つぎの場所まで あと {count}こ",
+    adventureGoalDone: "森の奥まで進めたよ",
+    encounter: "はじめての出会い",
+    growNotice: "{spirit}が少し育ったよ",
+    levelUpNotice: "{spirit}がもっとすてきに育ったよ",
+    areaOpenNotice: "新しい場所に進めるようになったよ",
+    roundAdventureTitle: "今日のぼうけん",
+    roundAdventureLead: "{spirit}と なかよしが {count}こ ふえたよ",
     export: "進みぐあいを見る",
     exported: "進みぐあいを表示したよ。",
     progressTitle: "進みぐあい",
@@ -183,6 +199,22 @@
     noProgressDate: "まだ記録なし",
   });
   Object.assign(translations.en, {
+    collection: "Spirit book",
+    collectionTitle: "Spirit<br />Book",
+    collectionIntro: "See the spirits you met and how much they have grown.",
+    collectionMet: "Friend",
+    collectionNew: "Not met yet",
+    collectionGrowth: "Growth {growth}/7",
+    collectionNext: "{count} more clears to grow again",
+    collectionMax: "Growing beautifully",
+    adventureGoal: "{count} more clears to the next place",
+    adventureGoalDone: "You reached the deep forest",
+    encounter: "First meeting",
+    growNotice: "{spirit} grew a little",
+    levelUpNotice: "{spirit} grew brighter",
+    areaOpenNotice: "A new place opened",
+    roundAdventureTitle: "Today's adventure",
+    roundAdventureLead: "{spirit} gained {count} friendship sparkles",
     export: "View progress",
     exported: "Progress is shown on screen.",
     progressTitle: "Progress",
@@ -611,6 +643,9 @@
 
   function renderForestMap(adventure = state.adventure) {
     const safeAdventure = GameLogic.createEmptyAdventure(adventure);
+    const stepRemainder = safeAdventure.totalCorrect % GameLogic.QUESTION_COUNT;
+    const nextClearCount = stepRemainder === 0 ? GameLogic.QUESTION_COUNT : GameLogic.QUESTION_COUNT - stepRemainder;
+    const isComplete = safeAdventure.mapStep >= FOREST_AREAS.length - 1;
     const nodes = FOREST_AREAS.map((area, index) => {
       const unlocked = index <= safeAdventure.mapStep;
       const current = index === safeAdventure.mapStep;
@@ -628,7 +663,7 @@
           <strong>${FOREST_AREAS[safeAdventure.mapStep] || FOREST_AREAS[0]}</strong>
         </div>
         <div class="map-path">${nodes}</div>
-        <p>正解すると、マルップが森を少しずつ進むよ。</p>
+        <p>${isComplete ? t("adventureGoalDone") : t("adventureGoal", { count: nextClearCount })}</p>
       </section>`;
   }
 
@@ -663,6 +698,45 @@
         <div class="section-heading"><span>せいれいの育ちぐあい</span><strong>${safeAdventure.totalCorrect}こ 正解</strong></div>
         <div class="growth-grid">${cards}</div>
       </section>`;
+  }
+
+  function growthNextCount(growth) {
+    const safeGrowth = Math.max(0, Number(growth || 0));
+    if (safeGrowth < 3) return 3 - safeGrowth;
+    if (safeGrowth < 7) return 7 - safeGrowth;
+    return 0;
+  }
+
+  function renderCollection() {
+    const safeAdventure = GameLogic.createEmptyAdventure(state.adventure);
+    const cards = GameLogic.difficulties.map((base) => {
+      const difficulty = GameLogic.getDifficulty(base.id, state.languageId);
+      const spirit = safeAdventure.spirits[base.id] || { met: false, growth: 0, level: 1 };
+      const level = GameLogic.getSpiritGrowthLevel(spirit.growth);
+      const nextCount = growthNextCount(spirit.growth);
+      const growthText = spirit.met
+        ? (nextCount > 0 ? t("collectionNext", { count: nextCount }) : t("collectionMax"))
+        : t("collectionNew");
+      return `
+        <article class="collection-card ${spirit.met ? "met" : "new"} growth-level-${level}">
+          <div class="collection-spirit-wrap">${spiritMarkup(`ready growth-level-${level}`, base.id)}</div>
+          <div class="collection-info">
+            <span class="tiny-label">${difficulty.description}</span>
+            <h2>${difficulty.spiritName}</h2>
+            <strong>${spirit.met ? `${t("collectionMet")} Lv.${level}` : t("collectionNew")}</strong>
+            <p>${growthText}</p>
+            <em style="--growth:${Math.min(100, spirit.growth * 14)}%"><i></i></em>
+            <small>${t("collectionGrowth", { growth: spirit.growth })}</small>
+          </div>
+        </article>`;
+    }).join("");
+    return screenShell(`
+      ${backButton()}
+      <h1 class="page-title">${t("collectionTitle")}</h1>
+      <p class="stage-intro">${t("collectionIntro")}</p>
+      <div class="collection-grid">${cards}</div>
+      <button class="primary-button" data-action="starter">${t("start")}</button>
+    `, "collection-screen");
   }
 
   function renderProfile() {
@@ -711,6 +785,7 @@
         </section>
       </section>
       ${renderSpiritGrowthList()}
+      <button class="secondary-button" data-action="collection">${t("collection")}</button>
       <button class="primary-button" data-action="starter">${t("start")}</button>
       <button class="text-button center" data-action="export">${t("export")}</button>
       ${state.exportMessage ? `<p class="export-message">${state.exportMessage}</p>` : ""}
@@ -757,10 +832,13 @@
   function renderStages() {
     const stageButtons = GameLogic.difficulties.map((base, index) => {
       const difficulty = GameLogic.getDifficulty(base.id, state.languageId);
+      const spirit = GameLogic.createEmptyAdventure(state.adventure).spirits[difficulty.id] || { met: false, growth: 0 };
+      const level = GameLogic.getSpiritGrowthLevel(spirit.growth);
       return `
         <button class="stage-card difficulty-card ${difficulty.id}" data-action="start" data-difficulty-id="${difficulty.id}">
           <span class="stage-number">${index + 1}</span><strong>${difficulty.spiritName}</strong>
           <small>${difficulty.gradeLabel}・${difficulty.subjectLabels[state.selectedSubjectId]}</small><em>${difficulty.description}</em>
+          <i class="stage-spirit-status">${spirit.met ? `${t("collectionMet")} Lv.${level}` : t("encounter")}</i>
         </button>`;
     }).join("");
     return screenShell(`
@@ -769,6 +847,17 @@
       <p class="stage-intro">${t("stagesIntro", { subject: selectedSubject().name })}</p>
       <div class="stack">${stageButtons}</div>
     `);
+  }
+
+  function renderBattleGrowthNotice(round, lastAnswer, difficulty, spiritLevel) {
+    if (!round.answered || !lastAnswer?.correct) return "";
+    const beforeAdventure = GameLogic.createEmptyAdventure(round.startAdventure || state.adventure);
+    const beforeSpirit = beforeAdventure.spirits[difficulty.id] || { growth: 0, level: 1 };
+    const beforeLevel = GameLogic.getSpiritGrowthLevel(beforeSpirit.growth);
+    const text = spiritLevel > beforeLevel
+      ? t("levelUpNotice", { spirit: difficulty.spiritName })
+      : t("growNotice", { spirit: difficulty.spiritName });
+    return `<div class="growth-notice">${text}</div>`;
   }
 
   function renderBattle() {
@@ -789,6 +878,7 @@
     const difficulty = round.difficulty;
     const spiritGrowth = (round.adventureProgress || state.adventure).spirits?.[difficulty.id] || { growth: 0, level: 1 };
     const spiritLevel = GameLogic.getSpiritGrowthLevel(spiritGrowth.growth);
+    const isFirstMeeting = !GameLogic.createEmptyAdventure(round.startAdventure || state.adventure).spirits[difficulty.id]?.met;
     const supportText = round.answered ? round.question.explanation : round.question.hint;
     const choices = round.question.choices.map((choice) => {
       const selected = round.answered && String(choice) === String(lastAnswer?.selectedAnswer);
@@ -799,6 +889,7 @@
     return screenShell(`
       ${round.answered && lastAnswer?.correct ? `<div class="screen-glow ${isCombo ? "combo-glow" : ""}" aria-hidden="true"></div>` : ""}
       <div class="top-bar">${backButton()}<span class="pill">${t("clear")} ${round.correctCount} / ${GameLogic.QUESTION_COUNT}</span><span class="score-chip">${state.totalPoints + round.earnedPoints} pt</span></div>
+      ${isFirstMeeting ? `<div class="encounter-banner">${t("encounter")}：${difficulty.spiritName}</div>` : ""}
       <section class="challenge-track">${challengeTrack(round)}</section>
       ${renderAdventureRun(round)}
       <section class="versus-arena ${round.answered ? feedbackClass : ""}">
@@ -807,6 +898,7 @@
         <div class="side spirit-side"><div class="name-tag">${difficulty.spiritName} Lv.${spiritLevel}</div>${spiritMarkup(`${spiritMood} growth-level-${spiritLevel}`, difficulty.id)}<div class="spirit-talk">${round.answered && lastAnswer?.correct ? t("spiritGood") : t("spiritReady")}</div></div>
         ${sparkleMarkup(round.answered && lastAnswer?.correct)}
       </section>
+      ${renderBattleGrowthNotice(round, lastAnswer, difficulty, spiritLevel)}
       <section class="battle-scene">
         <div class="question-panel">
           <p>${t("challengeCount", { spirit: difficulty.spiritName, challenge: round.subject.challengeLabel, count: questionNumber })}</p>
@@ -825,6 +917,12 @@
     const round = state.round;
     const name = escapeHtml(buddyName());
     const streakBonus = state.lastStreakBonus;
+    const beforeAdventure = GameLogic.createEmptyAdventure(round.startAdventure || state.adventure);
+    const afterAdventure = GameLogic.createEmptyAdventure(round.adventureProgress || state.adventure);
+    const spirit = afterAdventure.spirits[round.difficulty.id] || { growth: 0, level: 1 };
+    const beforeSpirit = beforeAdventure.spirits[round.difficulty.id] || { growth: 0, level: 1 };
+    const spiritGrowthDelta = Math.max(0, spirit.growth - beforeSpirit.growth);
+    const areaOpened = afterAdventure.mapStep > beforeAdventure.mapStep;
     return screenShell(`
       <section class="result-panel">
         <p class="tiny-label">${t("resultLabel")}</p>
@@ -834,10 +932,16 @@
         <p class="lead">${round.correctCount === GameLogic.QUESTION_COUNT ? t("resultTalkPerfect", { name }) : t("resultTalkNice", { name })}</p>
         <div class="reward-box"><strong>${round.earnedPoints} pt</strong><span>${t("rewardLine", { count: round.correctCount, reward: round.difficulty.reward })}</span></div>
         ${streakBonus ? `<div class="streak-result ${streakBonus.bonusPoints > 0 ? "earned" : ""}"><span>${t("streakBonus")}</span><strong>+${streakBonus.bonusPoints} pt</strong><small>${streakBonus.message}</small></div>` : ""}
+        <section class="adventure-summary">
+          <span>${t("roundAdventureTitle")}</span>
+          <strong>${t("roundAdventureLead", { spirit: round.difficulty.spiritName, count: spiritGrowthDelta })}</strong>
+          <p>${areaOpened ? t("areaOpenNotice") : `${round.difficulty.spiritName} Lv.${GameLogic.getSpiritGrowthLevel(spirit.growth)}`}</p>
+        </section>
         <div class="total-box">${t("total", { points: state.totalPoints })}</div>
         <p class="closing-line">${t("closing")}</p>
       </section>
       <button class="primary-button" data-action="stages">${t("again")}</button>
+      <button class="secondary-button" data-action="collection">${t("collection")}</button>
       ${backButton()}
       <button class="text-button center" data-action="home">${t("home")}</button>
     `);
@@ -862,7 +966,7 @@
   }
 
   function render() {
-    const screens = { profile: renderProfile, home: renderHome, starter: renderStarter, subject: renderSubject, stages: renderStages, battle: renderBattle, result: renderResult, specialReward: renderSpecialReward };
+    const screens = { profile: renderProfile, home: renderHome, starter: renderStarter, subject: renderSubject, stages: renderStages, battle: renderBattle, result: renderResult, specialReward: renderSpecialReward, collection: renderCollection };
     document.documentElement.lang = GameLogic.getLanguage(state.languageId).htmlLang;
     document.title = t("appTitle");
     app.innerHTML = screens[state.screen]();
@@ -873,6 +977,7 @@
     if (state.screen === "stages") return "subject";
     if (state.screen === "subject") return "starter";
     if (state.screen === "starter") return "home";
+    if (state.screen === "collection") return "home";
     if (state.screen === "profile") return getActiveProfile() ? "home" : "profile";
     if (state.screen === "result" || state.screen === "specialReward") return "home";
     return "home";
@@ -892,6 +997,7 @@
     state.lastStreakBonus = null;
     state.round = GameLogic.createRound(difficultyId, state.selectedSubjectId, state.languageId, undefined, state.adventure.recentQuestionSignatures || []);
     state.round.adventureProgress = GameLogic.createEmptyAdventure(state.adventure);
+    state.round.startAdventure = GameLogic.createEmptyAdventure(state.adventure);
     setScreen("battle");
   }
 
@@ -938,6 +1044,7 @@
     if (action === "back") setScreen(backScreen());
     if (action === "home") setScreen("home");
     if (action === "profile") setScreen("profile");
+    if (action === "collection") setScreen("collection");
     if (action === "export") exportProfileProgress();
     if (action === "profile-select") {
       state.profileStore.currentProfile = target.dataset.profile;
