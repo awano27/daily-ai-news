@@ -506,6 +506,115 @@
     }
   });
 
+  const languageSupplements = {
+    ja: {
+      seed: [
+        q("「早い」の反対はどれ？", "おそい", ["大きい", "丸い", "青い"], "速さが反対になることばを選ぼう。", "早いの反対は、おそいだよ。"),
+        q("文に入ることばはどれ？「花が きれいに ___。」", "さきました", ["走りました", "読みました", "食べました"], "花に合う動きを考えよう。", "花はきれいにさきました。"),
+      ],
+      grass: [
+        q("「はじめに」の次に続きやすいことばは？", "つぎに", ["かなり", "からい", "青く"], "順番を表すことばを探そう。", "はじめに、つぎに、という順番で使えるよ。"),
+        q("「明るい声」に合う気持ちはどれ？", "うれしい", ["ねむい", "からい", "四角い"], "声の様子から気持ちを考えよう。", "明るい声は、うれしい気持ちに合うよ。"),
+      ],
+      sky: [
+        q("次の文で、理由を表す言葉はどれ？「雨がふったので、道がぬれていました。」", "ので", ["道", "雨", "ぬれて"], "なぜそうなったかをつなぐ言葉を探そう。", "「ので」は理由を表す言葉だよ。"),
+        reading("モコは花びらを三まい集めました。ピコは小さなたねを見つけました。ソラは二人の話を聞いて、広場に行く道を選びました。", "ソラが道を選ぶ前にしたことは？", "二人の話を聞いた", ["花びらを集めた", "たねを食べた", "雨をふらせた"], "ソラの行動を順番に見よう。", "ソラは二人の話を聞いてから、道を選んだよ。"),
+      ],
+    },
+    en: {
+      seed: [
+        q("What is the opposite of \"early\"?", "late", ["round", "blue", "large"], "Choose the opposite time word.", "The opposite of early is late."),
+        q("The flower ___ in the sun.", "blooms", ["runs", "reads", "eats"], "Choose what a flower can do.", "A flower blooms in the sun."),
+      ],
+      grass: [
+        q("Which word often comes after \"first\"?", "next", ["spicy", "square", "blue"], "Look for an order word.", "First and next show order."),
+        q("Which feeling fits a bright voice?", "happy", ["sleepy", "salty", "square"], "Think about the feeling in the voice.", "A bright voice can sound happy."),
+      ],
+      sky: [
+        q("Which word shows a reason? The path was wet because it rained.", "because", ["path", "wet", "rained"], "Find the word that tells why.", "Because shows a reason."),
+        reading("Moko gathered three petals. Pico found a tiny seed. Sora listened to them and chose the path to the clearing.", "What did Sora do before choosing the path?", "listened to them", ["gathered petals", "ate a seed", "made rain"], "Follow Sora's actions in order.", "Sora listened before choosing the path."),
+      ],
+    },
+    ko: {
+      seed: [
+        q("\"빠른\"의 반대말은?", "느린", ["큰", "동그란", "파란"], "속도가 반대인 말을 골라요.", "빠른의 반대말은 느린이에요."),
+        q("꽃이 햇빛을 받아 ___어요.", "피었", ["달렸", "읽었", "먹었"], "꽃에 어울리는 말을 골라요.", "꽃은 햇빛을 받아 피었어요."),
+      ],
+      grass: [
+        q("\"먼저\" 다음에 어울리는 말은?", "다음에", ["매운", "네모난", "파랗게"], "순서를 나타내는 말을 찾아요.", "먼저, 다음에로 순서를 말할 수 있어요."),
+        q("\"밝은 목소리\"에 어울리는 마음은?", "기쁜", ["졸린", "짠", "네모난"], "목소리 느낌을 생각해요.", "밝은 목소리는 기쁜 마음에 어울려요."),
+      ],
+      sky: [
+        q("이유를 나타내는 말은? 비가 왔기 때문에 길이 젖었어요.", "때문에", ["길", "비", "젖었어요"], "왜 그런지 이어 주는 말을 찾아요.", "때문에는 이유를 나타내요."),
+        reading("모코는 꽃잎 세 장을 모았어요. 피코는 작은 씨앗을 찾았어요. 소라는 두 친구의 이야기를 듣고 광장으로 가는 길을 골랐어요.", "소라는 길을 고르기 전에 무엇을 했나요?", "두 친구의 이야기를 들었어요", ["꽃잎을 모았어요", "씨앗을 먹었어요", "비를 내렸어요"], "소라의 행동 순서를 봐요.", "소라는 이야기를 듣고 나서 길을 골랐어요."),
+      ],
+    },
+    zh: {
+      seed: [
+        q("“快”的反义词是哪个？", "慢", ["大", "圆", "蓝"], "选择速度相反的词。", "快的反义词是慢。"),
+        q("花在阳光下 ___。", "开放", ["跑步", "读书", "吃饭"], "选择适合花的动作。", "花会在阳光下开放。"),
+      ],
+      grass: [
+        q("“首先”后面常接哪个词？", "然后", ["很辣", "方形", "蓝色"], "找表示顺序的词。", "首先、然后可以表示顺序。"),
+        q("“明亮的声音”适合哪种心情？", "开心", ["困", "咸", "方形"], "想一想声音里的心情。", "明亮的声音适合开心的心情。"),
+      ],
+      sky: [
+        q("哪个词表示原因？因为下雨了，所以路湿了。", "因为", ["路", "湿了", "下雨"], "找说明为什么的词。", "因为表示原因。"),
+        reading("莫可收集了三片花瓣。皮可发现了一颗小种子。索拉听了他们的话，选择了去广场的路。", "索拉选择路之前做了什么？", "听了他们的话", ["收集花瓣", "吃了种子", "让雨落下"], "按顺序看索拉的行动。", "索拉先听了他们的话，然后选择了路。"),
+      ],
+    },
+    fr: {
+      seed: [
+        q("Quel est le contraire de « tôt » ?", "tard", ["grand", "rond", "bleu"], "Choisis le mot de temps contraire.", "Le contraire de tôt est tard."),
+        q("La fleur ___ au soleil.", "fleurit", ["court", "lit", "mange"], "Choisis ce que fait une fleur.", "La fleur fleurit au soleil."),
+      ],
+      grass: [
+        q("Quel mot vient souvent après « d'abord » ?", "ensuite", ["épicé", "carré", "bleu"], "Cherche un mot d'ordre.", "D'abord puis ensuite montrent l'ordre."),
+        q("Quelle émotion va avec une voix claire ?", "joyeuse", ["fatiguée", "salée", "carrée"], "Pense au sentiment de la voix.", "Une voix claire peut être joyeuse."),
+      ],
+      sky: [
+        q("Quel mot montre la raison ? Le chemin est mouillé parce qu'il a plu.", "parce que", ["chemin", "mouillé", "plu"], "Trouve le mot qui dit pourquoi.", "Parce que montre une raison."),
+        reading("Moko ramasse trois pétales. Pico trouve une petite graine. Sora les écoute et choisit le chemin vers la clairière.", "Que fait Sora avant de choisir le chemin ?", "il les écoute", ["il ramasse des pétales", "il mange une graine", "il fait pleuvoir"], "Suis les actions de Sora.", "Sora écoute avant de choisir."),
+      ],
+    },
+    de: {
+      seed: [
+        q("Was ist das Gegenteil von „früh“?", "spät", ["groß", "rund", "blau"], "Wähle das Gegenteil in der Zeit.", "Das Gegenteil von früh ist spät."),
+        q("Die Blume ___ in der Sonne.", "blüht", ["rennt", "liest", "isst"], "Wähle, was eine Blume tut.", "Eine Blume blüht in der Sonne."),
+      ],
+      grass: [
+        q("Welches Wort passt oft nach „zuerst“?", "danach", ["scharf", "eckig", "blau"], "Suche ein Wort für Reihenfolge.", "Zuerst und danach zeigen eine Reihenfolge."),
+        q("Welches Gefühl passt zu einer hellen Stimme?", "fröhlich", ["müde", "salzig", "eckig"], "Denke an die Stimmung der Stimme.", "Eine helle Stimme kann fröhlich klingen."),
+      ],
+      sky: [
+        q("Welches Wort zeigt den Grund? Der Weg war nass, weil es geregnet hat.", "weil", ["Weg", "nass", "geregnet"], "Finde das Wort für warum.", "Weil zeigt einen Grund."),
+        reading("Moko sammelt drei Blütenblätter. Pico findet einen kleinen Samen. Sora hört ihnen zu und wählt den Weg zur Lichtung.", "Was macht Sora vor dem Wählen des Weges?", "hört ihnen zu", ["sammelt Blütenblätter", "isst einen Samen", "macht Regen"], "Folge Soras Handlungen.", "Sora hört zu, bevor er wählt."),
+      ],
+    },
+    es: {
+      seed: [
+        q("¿Cuál es el contrario de «temprano»?", "tarde", ["grande", "redondo", "azul"], "Elige la palabra de tiempo opuesta.", "El contrario de temprano es tarde."),
+        q("La flor ___ con el sol.", "florece", ["corre", "lee", "come"], "Elige lo que hace una flor.", "La flor florece con el sol."),
+      ],
+      grass: [
+        q("¿Qué palabra suele ir después de «primero»?", "después", ["picante", "cuadrado", "azul"], "Busca una palabra de orden.", "Primero y después muestran orden."),
+        q("¿Qué emoción va con una voz luminosa?", "alegre", ["cansada", "salada", "cuadrada"], "Piensa en cómo suena la voz.", "Una voz luminosa puede sonar alegre."),
+      ],
+      sky: [
+        q("¿Qué palabra muestra una razón? El camino estaba mojado porque llovió.", "porque", ["camino", "mojado", "llovió"], "Busca la palabra que dice por qué.", "Porque muestra una razón."),
+        reading("Moko recoge tres pétalos. Pico encuentra una semilla pequeña. Sora los escucha y elige el camino al claro.", "¿Qué hace Sora antes de elegir el camino?", "los escucha", ["recoge pétalos", "come una semilla", "hace llover"], "Sigue las acciones de Sora.", "Sora escucha antes de elegir."),
+      ],
+    },
+  };
+
+  Object.entries(languageSupplements).forEach(([languageId, groups]) => {
+    Object.entries(groups).forEach(([difficultyId, questions]) => {
+      if (languageBanks[languageId]?.[difficultyId]) {
+        languageBanks[languageId][difficultyId].push(...questions);
+      }
+    });
+  });
+
   function q(story, answer, traps, hint, explanation) {
     return { story, text: story, answer, choiceTraps: traps, hint, explanation, hintText: hint, type: "language", operation: "language", subject: "japanese" };
   }
@@ -523,6 +632,33 @@
       .map((value) => ({ value, sort: randomFn() }))
       .sort((a, b) => a.sort - b.sort)
       .map((item) => item.value);
+  }
+
+  function normalizeSignaturePart(value) {
+    return String(value ?? "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 96);
+  }
+
+  function getQuestionSignature(question) {
+    const subject = normalizeSignaturePart(question?.subject || "math");
+    const type = normalizeSignaturePart(question?.type || question?.operation || "question");
+    const operation = normalizeSignaturePart(question?.operation || type);
+    const text = normalizeSignaturePart(question?.text || question?.hintText || question?.story || "");
+    const answer = normalizeSignaturePart(question?.answer);
+    return `${subject}:${type}:${operation}:${text}:${answer}`;
+  }
+
+  function makeAttemptRandom(randomFn, attempt) {
+    if (attempt <= 0) return randomFn;
+    let callIndex = 0;
+    return () => {
+      const base = Number(randomFn());
+      const safeBase = Number.isFinite(base) ? base : Math.random();
+      callIndex += 1;
+      return (safeBase + attempt * 0.137 + callIndex * 0.073) % 1;
+    };
   }
 
   function buildChoices(answer, randomFn, traps = []) {
@@ -1091,12 +1227,13 @@
     if (subject.id === "japanese") {
       const bank = languageBanks[safeLanguageId] || languageBanks.en;
       const source = choose(bank[fullDifficulty.id] || bank.seed, safeRandom);
-      return {
+      const question = {
         id: `${fullDifficulty.id}-${subject.id}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
         ...source,
         subject: subject.id,
         choices: buildChoices(source.answer, safeRandom, source.choiceTraps),
       };
+      return { ...question, signature: getQuestionSignature(question) };
     }
 
     const type = choose(fullDifficulty.questionTypes, safeRandom);
@@ -1118,12 +1255,25 @@
       ? [question.answer + 1, Math.max(0, question.answer - 1), question.answer + 10, Math.abs((question.left || 0) - (question.right || 0))]
       : question.choiceTraps;
 
-    return {
+    const builtQuestion = {
       id: `${fullDifficulty.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
       ...question,
       subject: subject.id,
       choices: buildChoices(question.answer, safeRandom, traps),
     };
+    return { ...builtQuestion, signature: getQuestionSignature(builtQuestion) };
+  }
+
+  function generateQuestionAvoiding(difficulty, subjectId, languageId, randomFn, usedSignatures = []) {
+    const safeRandom = typeof randomFn === "function" ? randomFn : Math.random;
+    const used = new Set((usedSignatures || []).map(String));
+    let fallback = null;
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const question = generateQuestion(difficulty, subjectId, languageId, makeAttemptRandom(safeRandom, attempt));
+      fallback = question;
+      if (!used.has(question.signature)) return question;
+    }
+    return fallback || generateQuestion(difficulty, subjectId, languageId, safeRandom);
   }
 
   function isCorrectAnswer(question, selectedAnswer) {
@@ -1161,6 +1311,7 @@
       totalCorrect,
       mapStep: getUnlockedMapStep(totalCorrect),
       spirits,
+      recentQuestionSignatures: Array.isArray(source?.recentQuestionSignatures) ? source.recentQuestionSignatures.map(String).slice(-20) : [],
     };
   }
 
@@ -1180,10 +1331,11 @@
     return next;
   }
 
-  function createRound(difficultyId, subjectId, languageId, randomFn) {
+  function createRound(difficultyId, subjectId, languageId, randomFn, recentQuestionSignatures) {
     let safeSubjectId = subjectId;
     let safeLanguageId = languageId;
     let safeRandom = randomFn;
+    let safeRecentQuestionSignatures = Array.isArray(recentQuestionSignatures) ? recentQuestionSignatures : [];
     if (typeof subjectId === "function") {
       safeRandom = subjectId;
       safeSubjectId = "math";
@@ -1191,10 +1343,14 @@
     } else if (typeof languageId === "function") {
       safeRandom = languageId;
       safeLanguageId = DEFAULT_LANGUAGE;
+    } else if (Array.isArray(randomFn)) {
+      safeRecentQuestionSignatures = randomFn;
+      safeRandom = undefined;
     }
     safeLanguageId = getLanguage(safeLanguageId).id;
     const difficulty = getDifficulty(difficultyId, safeLanguageId);
     const subject = getSubject(safeSubjectId || "math", safeLanguageId);
+    const firstQuestion = generateQuestionAvoiding(difficulty, subject.id, safeLanguageId, safeRandom, safeRecentQuestionSignatures);
     return {
       difficulty,
       stage: difficulty,
@@ -1205,9 +1361,10 @@
       correctCount: 0,
       currentStreak: 0,
       bestStreak: 0,
-      question: generateQuestion(difficulty, subject.id, safeLanguageId, safeRandom),
+      question: firstQuestion,
       answered: false,
       answers: [],
+      usedQuestionSignatures: [...safeRecentQuestionSignatures.map(String), firstQuestion.signature],
     };
   }
 
@@ -1224,6 +1381,7 @@
       bestStreak: Math.max(round.bestStreak, currentStreak),
       answers: round.answers.concat({
         question: round.question.text,
+        signature: round.question.signature || getQuestionSignature(round.question),
         selectedAnswer,
         answer: round.question.answer,
         correct,
@@ -1236,11 +1394,14 @@
     if (nextIndex >= QUESTION_COUNT) {
       return { ...round, currentIndex: nextIndex, question: null, answered: false };
     }
+    const usedQuestionSignatures = round.usedQuestionSignatures || round.answers.map((answer) => answer.signature).filter(Boolean);
+    const question = generateQuestionAvoiding(round.difficulty, round.subject?.id || "math", round.language?.id || DEFAULT_LANGUAGE, randomFn, usedQuestionSignatures);
     return {
       ...round,
       currentIndex: nextIndex,
-      question: generateQuestion(round.difficulty, round.subject?.id || "math", round.language?.id || DEFAULT_LANGUAGE, randomFn),
+      question,
       answered: false,
+      usedQuestionSignatures: usedQuestionSignatures.concat(question.signature),
     };
   }
 
@@ -1255,6 +1416,8 @@
     getSubject,
     getDifficulty,
     generateQuestion,
+    generateQuestionAvoiding,
+    getQuestionSignature,
     isCorrectAnswer,
     calculatePoints,
     createEmptyAdventure,

@@ -25,6 +25,8 @@ assert.strictEqual(GameLogic.getDifficulty("sky", "en").spiritName, "Sora");
 const seedQuestion = GameLogic.generateQuestion(seed, () => 0);
 assert.strictEqual(seedQuestion.operation, "add");
 assert.strictEqual(seedQuestion.answer, seedQuestion.left + seedQuestion.right);
+assert.ok(seedQuestion.signature.startsWith("math:"));
+assert.strictEqual(GameLogic.getQuestionSignature(seedQuestion), seedQuestion.signature);
 assert.ok(seedQuestion.story.includes("せいれい"));
 assert.ok(seedQuestion.choices.includes(seedQuestion.answer));
 assert.ok(seedQuestion.hint);
@@ -123,6 +125,7 @@ assert.deepStrictEqual(compareQuestion.choices.slice().sort(), ["Left", "Right",
 
 const japaneseQuestion = GameLogic.generateQuestion(seed, "japanese", "ja", () => 0);
 assert.strictEqual(japaneseQuestion.subject, "japanese");
+assert.ok(japaneseQuestion.signature.startsWith("japanese:"));
 assert.ok(japaneseQuestion.choices.includes(japaneseQuestion.answer));
 assert.ok(japaneseQuestion.hintText);
 
@@ -150,8 +153,13 @@ assert.strictEqual(GameLogic.getUnlockedMapStep(99), 4);
 const emptyAdventure = GameLogic.createEmptyAdventure();
 assert.strictEqual(emptyAdventure.totalCorrect, 0);
 assert.strictEqual(emptyAdventure.mapStep, 0);
+assert.deepStrictEqual(emptyAdventure.recentQuestionSignatures, []);
 assert.strictEqual(emptyAdventure.spirits.seed.met, false);
 assert.strictEqual(emptyAdventure.spirits.sky.level, 1);
+
+const adventureWithRecent = GameLogic.createEmptyAdventure({ recentQuestionSignatures: Array.from({ length: 25 }, (_, index) => `q${index}`) });
+assert.strictEqual(adventureWithRecent.recentQuestionSignatures.length, 20);
+assert.strictEqual(adventureWithRecent.recentQuestionSignatures[0], "q5");
 
 const afterWrongAdventure = GameLogic.applyAdventureAnswer(emptyAdventure, "seed", false);
 assert.strictEqual(afterWrongAdventure.totalCorrect, 0);
@@ -168,6 +176,8 @@ assert.strictEqual(afterCorrectAdventure.spirits.seed.growth, 7);
 assert.strictEqual(afterCorrectAdventure.spirits.seed.level, 3);
 
 let round = GameLogic.createRound("seed", () => 0);
+assert.strictEqual(round.usedQuestionSignatures.length, 1);
+const firstRoundSignature = round.question.signature;
 round = GameLogic.answerQuestion(round, round.question.answer);
 const pointsAfterFirstAnswer = round.earnedPoints;
 const streakAfterFirstAnswer = round.currentStreak;
@@ -178,9 +188,21 @@ assert.strictEqual(round.earnedPoints, GameLogic.POINTS_PER_CORRECT);
 assert.strictEqual(streakAfterFirstAnswer, 1);
 assert.strictEqual(round.bestStreak, 1);
 
+const nextAvoidingRound = GameLogic.nextQuestion(round, () => 0);
+assert.notStrictEqual(nextAvoidingRound.question.signature, firstRoundSignature);
+assert.ok(nextAvoidingRound.usedQuestionSignatures.includes(firstRoundSignature));
+assert.ok(nextAvoidingRound.usedQuestionSignatures.includes(nextAvoidingRound.question.signature));
+
+const avoidedQuestion = GameLogic.generateQuestionAvoiding(seed, "math", "en", () => 0, [firstRoundSignature]);
+assert.notStrictEqual(avoidedQuestion.signature, firstRoundSignature);
+
+const exhaustedQuestion = GameLogic.generateQuestionAvoiding(seed, "math", "en", () => 0, Array.from({ length: 100 }, (_, index) => `used-${index}`));
+assert.ok(exhaustedQuestion.signature);
+
 const spanishRound = GameLogic.createRound("seed", "japanese", "es", () => 0);
 assert.strictEqual(spanishRound.language.id, "es");
 assert.strictEqual(spanishRound.subject.name, "Lengua");
 assert.strictEqual(spanishRound.question.subject, "japanese");
+assert.ok(spanishRound.question.signature);
 
 console.log("game logic tests passed");

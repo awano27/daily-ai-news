@@ -890,7 +890,7 @@
     }
     state.selectedDifficultyId = difficultyId;
     state.lastStreakBonus = null;
-    state.round = GameLogic.createRound(difficultyId, state.selectedSubjectId, state.languageId);
+    state.round = GameLogic.createRound(difficultyId, state.selectedSubjectId, state.languageId, undefined, state.adventure.recentQuestionSignatures || []);
     state.round.adventureProgress = GameLogic.createEmptyAdventure(state.adventure);
     setScreen("battle");
   }
@@ -914,7 +914,10 @@
       updateCurrentProfile({
         totalPoints: afterTotal,
         streak: { current: streakResult.current, best: streakResult.best, lastPlayedDate: streakResult.lastPlayedDate, lastBonusDate: streakResult.lastBonusDate },
-        adventure: state.round.adventureProgress || state.adventure,
+        adventure: {
+          ...(state.round.adventureProgress || state.adventure),
+          recentQuestionSignatures: (state.adventure.recentQuestionSignatures || []).concat(state.round.answers.map((answer) => answer.signature).filter(Boolean)).slice(-20),
+        },
       });
       if (shouldShowReward) {
         saveRewardShown();
