@@ -51,36 +51,43 @@
       seed: ["ピコ", "小1〜2", "たし算・ひき算", "漢字の読み・ことば", "小さなたねのせいれい", "きらきらの たね"],
       grass: ["モコ", "小3", "かけ算中心", "反対語・文づくり", "ふわふわの花のせいれい", "ふわふわ 花びら"],
       flower: ["ルミ", "小4", "大きめ計算", "読解・意味", "光る木の葉のせいれい", "ひかる 木の葉"],
+      sky: ["ソラ", "小5〜6", "小数・分数・割合", "読解・文のしくみ", "空色のしずくのせいれい", "空色の しずく"],
     },
     en: {
       seed: ["Pico", "Grade 1-2", "Add/Subtract", "Reading words", "tiny seed spirit", "sparkly seed"],
       grass: ["Moko", "Grade 3", "Multiplication", "Opposites/Sentences", "fluffy flower spirit", "fluffy petal"],
       flower: ["Lumi", "Grade 4", "Bigger numbers", "Reading/Meaning", "glowing leaf spirit", "glowing leaf"],
+      sky: ["Sora", "Grade 5-6", "Decimals/Fractions/Percent", "Reading/Grammar", "sky-blue drop spirit", "sky-blue drop"],
     },
     ko: {
       seed: ["피코", "1-2학년", "덧셈・뺄셈", "읽기・낱말", "작은 씨앗 정령", "반짝 씨앗"],
       grass: ["모코", "3학년", "곱셈 중심", "반대말・문장", "폭신한 꽃 정령", "폭신 꽃잎"],
       flower: ["루미", "4학년", "조금 큰 계산", "읽기・뜻", "빛나는 잎 정령", "빛나는 잎"],
+      sky: ["소라", "5-6학년", "소수・분수・비율", "읽기・문장 구조", "하늘빛 물방울 정령", "하늘빛 물방울"],
     },
     zh: {
       seed: ["皮可", "1-2年级", "加法・减法", "认读・词语", "小小种子精灵", "闪亮种子"],
       grass: ["莫可", "3年级", "乘法为主", "反义词・句子", "软软花精灵", "软软花瓣"],
       flower: ["露米", "4年级", "稍大的数", "阅读・意思", "发光叶子精灵", "发光叶子"],
+      sky: ["索拉", "5-6年级", "小数・分数・百分比", "阅读・句子结构", "天蓝水滴精灵", "天蓝水滴"],
     },
     fr: {
       seed: ["Pico", "CE1-CE2", "Addition/Soustraction", "Lecture/Mots", "petit esprit graine", "graine brillante"],
       grass: ["Moko", "CE2-CM1", "Multiplication", "Contraires/Phrases", "esprit fleur tout doux", "pétale doux"],
       flower: ["Lumi", "CM1-CM2", "Grands nombres", "Lecture/Sens", "esprit feuille lumineuse", "feuille lumineuse"],
+      sky: ["Sora", "CM2-6e", "Décimaux/Fractions/%", "Lecture/Grammaire", "esprit goutte bleu ciel", "goutte bleu ciel"],
     },
     de: {
       seed: ["Pico", "Kl. 1-2", "Plus/Minus", "Lesen/Wörter", "kleiner Samen-Geist", "glitzernder Samen"],
       grass: ["Moko", "Kl. 3", "Malnehmen", "Gegenteile/Sätze", "flauschiger Blumen-Geist", "flauschiges Blütenblatt"],
       flower: ["Lumi", "Kl. 4", "Größere Zahlen", "Lesen/Bedeutung", "leuchtender Blatt-Geist", "leuchtendes Blatt"],
+      sky: ["Sora", "Kl. 5-6", "Dezimal/Fraction/Prozent", "Lesen/Grammatik", "himmelblauer Tropfen-Geist", "himmelblauer Tropfen"],
     },
     es: {
       seed: ["Pico", "1.º-2.º", "Sumar/Restar", "Lectura/Palabras", "pequeño espíritu semilla", "semilla brillante"],
       grass: ["Moko", "3.º", "Multiplicación", "Contrarios/Frases", "espíritu flor suave", "pétalo suave"],
       flower: ["Lumi", "4.º", "Números grandes", "Lectura/Significado", "espíritu hoja brillante", "hoja brillante"],
+      sky: ["Sora", "5.º-6.º", "Decimales/Fracciones/%", "Lectura/Gramática", "espíritu gota azul cielo", "gota azul cielo"],
     },
   };
 
@@ -123,7 +130,23 @@
       operations: ["largeMultiply", "largeDivide", "mixed"],
       questionTypes: ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"],
     },
+    {
+      id: "sky",
+      spiritName: "ソラ",
+      gradeLabel: "小5〜6",
+      label: "小数・分数・割合",
+      description: "空色のしずくのせいれい",
+      reward: "空色の しずく",
+      subjectLabels: { math: "小数・分数・割合", japanese: "読解・文のしくみ" },
+      operations: ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio"],
+      questionTypes: ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"],
+    },
   ];
+
+  const upperMathOperations = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio"];
+  const upperMathTypes = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"];
+  const advancedMathTypes = ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"];
+  const specialMathTypes = ["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord", ...upperMathOperations];
 
   const compareWords = {
     ja: ["左", "右", "おなじ"],
@@ -432,6 +455,57 @@
     });
   });
 
+  const upperLanguageQuestions = {
+    ja: [
+      q("次の文で、つなぎ言葉としていちばん合うものは？「雨がやみました。___ みんなは森の広場へ出かけました。」", "そこで", ["しかし", "または", "けれど"], "前の出来事を受けて、次の行動に進む言葉を選ぼう。", "雨がやんだので広場へ出かける流れには「そこで」が合うよ。"),
+      q("文の主語はどれ？「空色のしずくが、朝の光を受けてきらりと光りました。」", "空色のしずくが", ["朝の光を", "受けて", "光りました"], "何が光ったのかを考えよう。", "光ったのは空色のしずくだよ。"),
+      q("「協力」に近い意味の言葉はどれ？", "力を合わせること", ["ひとりで休むこと", "音を小さくすること", "道をまちがえること"], "みんなで一緒にする様子を考えよう。", "協力は、力を合わせることだよ。"),
+      reading("ソラは高い木の上から森を見わたしました。広場には小さな光が三つ見えました。けれど、北の道にはまだ雲がかかっています。ソラはまず明るい広場へ行き、道しるべを集めることにしました。", "ソラがまず行くことにした場所は？", "明るい広場", ["北の道", "高い木の上", "雲の中"], "「まず」に続く行動を探そう。", "ソラはまず明るい広場へ行くことにしたよ。"),
+    ],
+    en: [
+      q("Which connector fits best? The rain stopped. ___ everyone went to the clearing.", "So", ["But", "Or", "Before"], "Choose the word that shows the next action happens because of the first sentence.", "So fits because the rain stopped and everyone went out."),
+      q("What is the subject? The sky-blue drop sparkled in the morning light.", "The sky-blue drop", ["in the morning light", "sparkled", "blue"], "Ask what sparkled.", "The sky-blue drop sparkled."),
+      q("What is close to \"cooperate\"?", "work together", ["rest alone", "make sounds quiet", "choose the wrong path"], "Think about doing something with others.", "Cooperate means work together."),
+      reading("Sora looked over the forest from a tall tree. Three small lights were shining in the clearing. The north path was still cloudy, so Sora chose to visit the bright clearing first.", "Where did Sora choose to go first?", "the bright clearing", ["the north path", "the tall tree", "inside a cloud"], "Look for the word first.", "Sora chose the bright clearing first."),
+    ],
+    ko: [
+      q("이어 주는 말로 알맞은 것은? 비가 그쳤어요. ___ 모두 숲의 광장으로 갔어요.", "그래서", ["하지만", "또는", "먼저"], "앞일 때문에 다음 일이 이어지는 말을 골라요.", "비가 그쳐서 광장으로 갔으니 그래서가 알맞아요."),
+      q("문장의 주어는? 하늘빛 물방울이 아침 햇살을 받아 반짝였어요.", "하늘빛 물방울이", ["아침 햇살을", "받아", "반짝였어요"], "무엇이 반짝였는지 생각해요.", "반짝인 것은 하늘빛 물방울이에요."),
+      q("\"협력\"과 가까운 뜻은?", "힘을 합하는 것", ["혼자 쉬는 것", "소리를 줄이는 것", "길을 잘못 드는 것"], "함께 하는 모습을 생각해요.", "협력은 힘을 합하는 것이에요."),
+      reading("소라는 높은 나무 위에서 숲을 바라보았어요. 광장에는 작은 빛 세 개가 보였어요. 북쪽 길에는 아직 구름이 있었기 때문에, 소라는 먼저 밝은 광장으로 가기로 했어요.", "소라가 먼저 가기로 한 곳은?", "밝은 광장", ["북쪽 길", "높은 나무 위", "구름 속"], "먼저 무엇을 했는지 찾아요.", "소라는 밝은 광장으로 먼저 가기로 했어요."),
+    ],
+    zh: [
+      q("哪个连接词最合适？雨停了。___ 大家去了森林广场。", "于是", ["但是", "或者", "以前"], "选择表示接着行动的词。", "雨停后大家出发，所以“于是”合适。"),
+      q("句子的主语是哪一部分？天蓝水滴在早晨的光里闪了一下。", "天蓝水滴", ["早晨的光里", "闪了一下", "天蓝"], "想一想是什么在闪光。", "闪光的是天蓝水滴。"),
+      q("“合作”的意思接近哪一个？", "一起出力", ["一个人休息", "把声音变小", "走错路"], "想一想大家一起做事的样子。", "合作就是一起出力。"),
+      reading("索拉站在高高的树上看森林。广场里有三点小光。北边的路还有云，所以索拉决定先去明亮的广场。", "索拉决定先去哪里？", "明亮的广场", ["北边的路", "高高的树上", "云里面"], "找一找“先”后面的地点。", "索拉决定先去明亮的广场。"),
+    ],
+    fr: [
+      q("Quel connecteur convient ? La pluie s'est arrêtée. ___ tout le monde est allé à la clairière.", "Donc", ["Mais", "Ou", "Avant"], "Choisis le mot qui montre la suite.", "Donc convient car la pluie s'arrête puis on sort."),
+      q("Quel est le sujet ? La goutte bleu ciel brille dans la lumière du matin.", "La goutte bleu ciel", ["dans la lumière du matin", "brille", "bleu"], "Demande-toi ce qui brille.", "La goutte bleu ciel brille."),
+      q("Quel mot est proche de « coopérer » ?", "travailler ensemble", ["se reposer seul", "baisser le son", "prendre le mauvais chemin"], "Pense à faire quelque chose avec les autres.", "Coopérer veut dire travailler ensemble."),
+      reading("Sora regarde la forêt depuis un grand arbre. Trois petites lumières brillent dans la clairière. Le chemin du nord est encore couvert de nuages, alors Sora choisit d'aller d'abord à la clairière claire.", "Où Sora va-t-il d'abord ?", "la clairière claire", ["le chemin du nord", "le grand arbre", "un nuage"], "Cherche le mot d'abord.", "Sora va d'abord à la clairière claire."),
+    ],
+    de: [
+      q("Welches Verbindungswort passt? Der Regen hörte auf. ___ gingen alle zur Lichtung.", "Deshalb", ["Aber", "Oder", "Vorher"], "Wähle ein Wort, das eine Folge zeigt.", "Deshalb passt, weil nach dem Regen alle losgehen."),
+      q("Was ist das Subjekt? Der himmelblaue Tropfen funkelte im Morgenlicht.", "Der himmelblaue Tropfen", ["im Morgenlicht", "funkelte", "blau"], "Frage: Was funkelte?", "Der himmelblaue Tropfen funkelte."),
+      q("Was passt zu „zusammenarbeiten“?", "gemeinsam etwas tun", ["allein ausruhen", "leiser machen", "den falschen Weg nehmen"], "Denke an Arbeit mit anderen.", "Zusammenarbeiten heißt gemeinsam etwas tun."),
+      reading("Sora blickt von einem hohen Baum über den Wald. Auf der Lichtung leuchten drei kleine Lichter. Der Nordweg ist noch wolkig, deshalb geht Sora zuerst zur hellen Lichtung.", "Wohin geht Sora zuerst?", "zur hellen Lichtung", ["zum Nordweg", "auf den hohen Baum", "in eine Wolke"], "Suche das Wort zuerst.", "Sora geht zuerst zur hellen Lichtung."),
+    ],
+    es: [
+      q("¿Qué conector queda mejor? La lluvia paró. ___ todos fueron al claro.", "Entonces", ["Pero", "O", "Antes"], "Elige la palabra que muestra la siguiente acción.", "Entonces queda bien porque la lluvia paró y todos salieron."),
+      q("¿Cuál es el sujeto? La gota azul cielo brilló con la luz de la mañana.", "La gota azul cielo", ["con la luz de la mañana", "brilló", "azul"], "Pregunta qué brilló.", "La gota azul cielo brilló."),
+      q("¿Qué se parece a «cooperar»?", "trabajar juntos", ["descansar solo", "bajar el sonido", "tomar el camino equivocado"], "Piensa en hacer algo con otros.", "Cooperar significa trabajar juntos."),
+      reading("Sora miró el bosque desde un árbol alto. En el claro brillaban tres luces pequeñas. El camino del norte seguía con nubes, así que Sora decidió ir primero al claro luminoso.", "¿A dónde decidió ir primero Sora?", "al claro luminoso", ["al camino del norte", "al árbol alto", "a una nube"], "Busca la palabra primero.", "Sora decidió ir primero al claro luminoso."),
+    ],
+  };
+
+  Object.entries(upperLanguageQuestions).forEach(([languageId, questions]) => {
+    if (languageBanks[languageId]) {
+      languageBanks[languageId].sky = questions;
+    }
+  });
+
   function q(story, answer, traps, hint, explanation) {
     return { story, text: story, answer, choiceTraps: traps, hint, explanation, hintText: hint, type: "language", operation: "language", subject: "japanese" };
   }
@@ -485,8 +559,8 @@
       description: translated[4],
       reward: translated[5],
       subjectLabels: { math: translated[2], japanese: translated[3] },
-      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"],
+      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : ["largeMultiply", "largeDivide", "mixed"],
+      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : difficultyId === "sky" ? upperMathTypes : advancedMathTypes,
     };
   }
 
@@ -837,6 +911,121 @@
       return { left: groups, right: each, answer, text: `${groups} × ${each} + ${extra} - ${give}`, operation: "multiStepWord", type, story, hint, explanation: `${groups} × ${each} = ${groups * each}, +${extra}, -${give} = ${answer}.`, hintText: `${groups} × ${each} + ${extra} - ${give}` };
     }
 
+    if (type === "decimal") {
+      const leftTenths = 12 + Math.floor(randomFn() * 78);
+      const rightTenths = 5 + Math.floor(randomFn() * 44);
+      const left = Number((leftTenths / 10).toFixed(1));
+      const right = Number((rightTenths / 10).toFixed(1));
+      const answer = Number((left + right).toFixed(1));
+      const story = localSet(lang, {
+        ja: `ソラのしずくが ${left}L、あとから ${right}L 集まったよ。あわせて何L？`,
+        en: `Sora gathered ${left} L of sky drops, then ${right} L more. How many liters in all?`,
+      });
+      const hint = localSet(lang, {
+        ja: "小数点の位置をそろえて、たし算しよう。",
+        en: "Line up the decimal points, then add.",
+      });
+      return { left, right, answer, text: `${left} + ${right}`, operation: "decimal", type, story, hint, explanation: `${left} + ${right} = ${answer}.`, hintText: `${left} + ${right}`, choiceTraps: [Number((answer + 0.1).toFixed(1)), Number((answer - 0.1).toFixed(1)), Number((leftTenths + rightTenths).toFixed(0))] };
+    }
+
+    if (type === "fractionAdd") {
+      const denominator = 4 + Math.floor(randomFn() * 8);
+      const first = 1 + Math.floor(randomFn() * Math.min(5, denominator - 1));
+      const second = 1 + Math.floor(randomFn() * Math.min(4, denominator - first));
+      const sum = first + second;
+      const answer = sum === denominator ? "1" : `${sum}/${denominator}`;
+      const story = localSet(lang, {
+        ja: `光るリボンを ${first}/${denominator} 本分、あとで ${second}/${denominator} 本分 つないだよ。あわせると？`,
+        en: `You connect ${first}/${denominator} of a glowing ribbon and then ${second}/${denominator} more. How much is that?`,
+      });
+      const hint = localSet(lang, {
+        ja: "分母が同じときは、上の数をたそう。",
+        en: "When denominators match, add the top numbers.",
+      });
+      const lowerTrap = `${Math.max(1, sum - 1)}/${denominator}`;
+      const higherTrap = sum >= denominator ? `${Math.max(1, denominator - 2)}/${denominator}` : `${sum + 1}/${denominator}`;
+      return { left: first, right: second, answer, text: `${first}/${denominator} + ${second}/${denominator}`, operation: "fractionAdd", type, story, hint, explanation: `${first}/${denominator} + ${second}/${denominator} = ${answer}.`, hintText: `${first}/${denominator} + ${second}/${denominator}`, choiceTraps: [lowerTrap, higherTrap, `${sum}/${denominator + 1}`, `${first}/${denominator}`] };
+    }
+
+    if (type === "percent") {
+      const base = [120, 160, 200, 240, 300, 400][Math.floor(randomFn() * 6)];
+      const rate = [10, 20, 25, 30, 50][Math.floor(randomFn() * 5)];
+      const answer = base * rate / 100;
+      const story = localSet(lang, {
+        ja: `${base}この光のつぶのうち、${rate}% が青く光ったよ。青く光ったのは何こ？`,
+        en: `${rate}% of ${base} light drops glow blue. How many glow blue?`,
+      });
+      const hint = localSet(lang, {
+        ja: `${rate}% は 100このうち ${rate}こ という意味だよ。`,
+        en: `${rate}% means ${rate} out of 100.`,
+      });
+      return { left: base, right: rate, answer, text: `${base} × ${rate}%`, operation: "percent", type, story, hint, explanation: `${base} × ${rate} ÷ 100 = ${answer}.`, hintText: `${base} × ${rate}%`, choiceTraps: [answer + 10, Math.max(0, answer - 10), base + rate] };
+    }
+
+    if (type === "average") {
+      const base = 12 + Math.floor(randomFn() * 20);
+      const step = 2 + Math.floor(randomFn() * 8);
+      const values = [base, base + step, base + step * 2];
+      const answer = base + step;
+      const story = localSet(lang, {
+        ja: `3日で集めたしずくは ${values[0]}こ、${values[1]}こ、${values[2]}こ だよ。1日あたりの平均は何こ？`,
+        en: `Sora gathered ${values[0]}, ${values[1]}, and ${values[2]} drops over 3 days. What is the average per day?`,
+      });
+      const hint = localSet(lang, {
+        ja: "全部をたして、日数の3でわろう。",
+        en: "Add them all, then divide by 3.",
+      });
+      return { left: values[0], right: values[2], answer, text: `(${values.join(" + ")}) ÷ 3`, operation: "average", type, story, hint, explanation: `${values.join(" + ")} = ${answer * 3}, ${answer * 3} ÷ 3 = ${answer}.`, hintText: `(${values.join(" + ")}) ÷ 3` };
+    }
+
+    if (type === "speed") {
+      const speed = [6, 8, 12, 15, 18][Math.floor(randomFn() * 5)];
+      const hours = 2 + Math.floor(randomFn() * 4);
+      const answer = speed * hours;
+      const story = localSet(lang, {
+        ja: `ソラは1時間に ${speed}km 進む雲の道を、${hours}時間 進んだよ。何km進んだ？`,
+        en: `Sora travels ${speed} km each hour on a cloud path for ${hours} hours. How far is that?`,
+      });
+      const hint = localSet(lang, {
+        ja: "1時間あたりの道のりに、時間をかけよう。",
+        en: "Multiply the distance per hour by the hours.",
+      });
+      return { left: speed, right: hours, answer, text: `${speed} × ${hours}`, operation: "speed", type, story, hint, explanation: `${speed} × ${hours} = ${answer}.`, hintText: `${speed} km/h × ${hours} h` };
+    }
+
+    if (type === "volume") {
+      const width = 3 + Math.floor(randomFn() * 6);
+      const height = 2 + Math.floor(randomFn() * 5);
+      const depth = 2 + Math.floor(randomFn() * 4);
+      const answer = width * height * depth;
+      const story = localSet(lang, {
+        ja: `横 ${width}cm、たて ${height}cm、高さ ${depth}cm のしずく箱があるよ。体積は何cm³？`,
+        en: `A drop box is ${width} cm wide, ${height} cm deep, and ${depth} cm tall. What is its volume?`,
+      });
+      const hint = localSet(lang, {
+        ja: "直方体の体積は、横×たて×高さで考えよう。",
+        en: "For a rectangular box, multiply width, depth, and height.",
+      });
+      return { left: width, right: height, answer, text: `${width} × ${height} × ${depth}`, operation: "volume", type, story, hint, explanation: `${width} × ${height} × ${depth} = ${answer}.`, hintText: `${width} × ${height} × ${depth}` };
+    }
+
+    if (type === "ratio") {
+      const blue = 2 + Math.floor(randomFn() * 5);
+      const yellow = 1 + Math.floor(randomFn() * 4);
+      const multiplier = 3 + Math.floor(randomFn() * 7);
+      const total = (blue + yellow) * multiplier;
+      const answer = blue * multiplier;
+      const story = localSet(lang, {
+        ja: `青い光と黄色い光を ${blue}:${yellow} の割合で、ぜんぶで ${total}こ 並べるよ。青い光は何こ？`,
+        en: `Blue and yellow lights are in a ${blue}:${yellow} ratio. There are ${total} lights in all. How many are blue?`,
+      });
+      const hint = localSet(lang, {
+        ja: `割合の合計は ${blue + yellow}。ぜんぶを同じまとまりに分けよう。`,
+        en: `The total ratio parts are ${blue + yellow}. Find one part first.`,
+      });
+      return { left: blue, right: yellow, answer, text: `${blue}:${yellow}, total ${total}`, operation: "ratio", type, story, hint, explanation: `${total} ÷ ${blue + yellow} = ${multiplier}, ${blue} × ${multiplier} = ${answer}.`, hintText: `${blue}:${yellow}, total ${total}` };
+    }
+
     const meters = 2 + Math.floor(randomFn() * 8);
     const answer = meters;
     const centimeters = meters * 100;
@@ -918,7 +1107,7 @@
       question = makeCompareQuestion(fullDifficulty, safeLanguageId, safeRandom);
     } else if (type === "twoStep") {
       question = makeTwoStepQuestion(fullDifficulty, safeRandom);
-    } else if (["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"].includes(type)) {
+    } else if (specialMathTypes.includes(type)) {
       question = makeSpecialMathQuestion(type, safeLanguageId, safeRandom);
     } else {
       question = makeBaseOperation(choose(fullDifficulty.operations, safeRandom), safeRandom);

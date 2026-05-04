@@ -1,7 +1,7 @@
 const assert = require("assert");
 const GameLogic = require("./game-logic");
 
-assert.strictEqual(GameLogic.difficulties.length, 3);
+assert.strictEqual(GameLogic.difficulties.length, 4);
 assert.strictEqual(GameLogic.subjects.length, 2);
 assert.strictEqual(GameLogic.languages.length, 7);
 assert.strictEqual(GameLogic.getSubject("math").name, "算数");
@@ -12,12 +12,15 @@ assert.strictEqual(GameLogic.getSubject("japanese", "es").name, "Lengua");
 const seed = GameLogic.getDifficulty("seed");
 const grass = GameLogic.getDifficulty("grass");
 const flower = GameLogic.getDifficulty("flower");
+const sky = GameLogic.getDifficulty("sky");
 
 assert.strictEqual(seed.spiritName, "ピコ");
 assert.strictEqual(grass.spiritName, "モコ");
 assert.strictEqual(flower.spiritName, "ルミ");
+assert.strictEqual(sky.spiritName, "ソラ");
 assert.strictEqual(GameLogic.getDifficulty("seed", "ko").spiritName, "피코");
 assert.strictEqual(GameLogic.getDifficulty("flower", "zh").spiritName, "露米");
+assert.strictEqual(GameLogic.getDifficulty("sky", "en").spiritName, "Sora");
 
 const seedQuestion = GameLogic.generateQuestion(seed, () => 0);
 assert.strictEqual(seedQuestion.operation, "add");
@@ -84,6 +87,30 @@ assert.strictEqual(typeof roundingQuestion.answer, "number");
 const multiStepWordQuestion = GameLogic.generateQuestion(flower, "math", "en", () => 0.95);
 assert.strictEqual(multiStepWordQuestion.type, "multiStepWord");
 assert.strictEqual(typeof multiStepWordQuestion.answer, "number");
+
+const upperMathSamples = [
+  [0, "decimal", "number"],
+  [0.12, "fractionAdd", "string"],
+  [0.23, "percent", "number"],
+  [0.34, "average", "number"],
+  [0.45, "speed", "number"],
+  [0.56, "volume", "number"],
+  [0.67, "ratio", "number"],
+];
+upperMathSamples.forEach(([randomValue, expectedType, answerType]) => {
+  const question = GameLogic.generateQuestion(sky, "math", "en", () => randomValue);
+  assert.strictEqual(question.type, expectedType);
+  assert.strictEqual(typeof question.answer, answerType);
+  assert.strictEqual(question.choices.length, 4);
+  assert.ok(question.choices.includes(question.answer));
+  assert.ok(question.hint);
+  assert.ok(question.explanation);
+});
+
+const skyLanguageQuestion = GameLogic.generateQuestion(sky, "japanese", "ja", () => 0);
+assert.strictEqual(skyLanguageQuestion.subject, "japanese");
+assert.ok(skyLanguageQuestion.story.includes("つなぎ言葉"));
+assert.ok(skyLanguageQuestion.choices.includes(skyLanguageQuestion.answer));
 
 const blankQuestion = GameLogic.generateQuestion(seed, () => 0.6);
 assert.strictEqual(blankQuestion.type, "blank");
