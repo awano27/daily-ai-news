@@ -52,6 +52,8 @@
       grass: ["モコ", "小3", "かけ算中心", "反対語・文づくり", "ふわふわの花のせいれい", "ふわふわ 花びら"],
       flower: ["ルミ", "小4", "大きめ計算", "読解・意味", "光る木の葉のせいれい", "ひかる 木の葉"],
       sky: ["ソラ", "小5〜6", "小数・分数・割合", "読解・文のしくみ", "空色のしずくのせいれい", "空色の しずく"],
+      moon: ["ノア", "中1", "正負の数・文字式", "文法・要点", "月あかりのせいれい", "月あかりの しずく"],
+      comet: ["ミラ", "中2", "連立・一次関数", "読解・表現", "ほうき星のせいれい", "ほうき星の 羽"],
       star: ["セナ", "中3", "式・関数・図形", "読解・文法・論理", "星あかりのせいれい", "星あかりの 結晶"],
     },
     en: {
@@ -59,6 +61,8 @@
       grass: ["Moko", "Grade 3", "Multiplication", "Opposites/Sentences", "fluffy flower spirit", "fluffy petal"],
       flower: ["Lumi", "Grade 4", "Bigger numbers", "Reading/Meaning", "glowing leaf spirit", "glowing leaf"],
       sky: ["Sora", "Grade 5-6", "Decimals/Fractions/Percent", "Reading/Grammar", "sky-blue drop spirit", "sky-blue drop"],
+      moon: ["Noa", "Grade 7", "Signed numbers/Expressions", "Grammar/Main ideas", "moonlight spirit", "moonlight drop"],
+      comet: ["Mira", "Grade 8", "Systems/Linear functions", "Reading/Expression", "comet spirit", "comet feather"],
       star: ["Sena", "Grade 9", "Equations/Functions/Geometry", "Reading/Logic", "starlight spirit", "starlight crystal"],
     },
     ko: {
@@ -66,6 +70,8 @@
       grass: ["모코", "3학년", "곱셈 중심", "반대말・문장", "폭신한 꽃 정령", "폭신 꽃잎"],
       flower: ["루미", "4학년", "조금 큰 계산", "읽기・뜻", "빛나는 잎 정령", "빛나는 잎"],
       sky: ["소라", "5-6학년", "소수・분수・비율", "읽기・문장 구조", "하늘빛 물방울 정령", "하늘빛 물방울"],
+      moon: ["노아", "중1", "양수・음수・식", "문법・요점", "달빛 정령", "달빛 물방울"],
+      comet: ["미라", "중2", "연립・일차함수", "읽기・표현", "혜성 정령", "혜성 깃털"],
       star: ["세나", "중3", "방정식・함수・도형", "읽기・논리", "별빛 정령", "별빛 결정"],
     },
     zh: {
@@ -73,6 +79,8 @@
       grass: ["莫可", "3年级", "乘法为主", "反义词・句子", "软软花精灵", "软软花瓣"],
       flower: ["露米", "4年级", "稍大的数", "阅读・意思", "发光叶子精灵", "发光叶子"],
       sky: ["索拉", "5-6年级", "小数・分数・百分比", "阅读・句子结构", "天蓝水滴精灵", "天蓝水滴"],
+      moon: ["诺亚", "初一", "正负数・代数式", "语法・要点", "月光精灵", "月光水滴"],
+      comet: ["米拉", "初二", "方程组・一次函数", "阅读・表达", "彗星精灵", "彗星羽毛"],
       star: ["赛娜", "初三", "方程・函数・图形", "阅读・逻辑", "星光精灵", "星光结晶"],
     },
     fr: {
@@ -80,6 +88,8 @@
       grass: ["Moko", "CE2-CM1", "Multiplication", "Contraires/Phrases", "esprit fleur tout doux", "pétale doux"],
       flower: ["Lumi", "CM1-CM2", "Grands nombres", "Lecture/Sens", "esprit feuille lumineuse", "feuille lumineuse"],
       sky: ["Sora", "CM2-6e", "Décimaux/Fractions/%", "Lecture/Grammaire", "esprit goutte bleu ciel", "goutte bleu ciel"],
+      moon: ["Noa", "5e", "Nombres relatifs/Expressions", "Grammaire/Idées", "esprit clair de lune", "goutte de lune"],
+      comet: ["Mira", "4e", "Systèmes/Fonctions", "Lecture/Expression", "esprit comète", "plume de comète"],
       star: ["Sena", "3e", "Équations/Fonctions/Géométrie", "Lecture/Logique", "esprit lumière d'étoile", "cristal d'étoile"],
     },
     de: {
@@ -87,6 +97,8 @@
       grass: ["Moko", "Kl. 3", "Malnehmen", "Gegenteile/Sätze", "flauschiger Blumen-Geist", "flauschiges Blütenblatt"],
       flower: ["Lumi", "Kl. 4", "Größere Zahlen", "Lesen/Bedeutung", "leuchtender Blatt-Geist", "leuchtendes Blatt"],
       sky: ["Sora", "Kl. 5-6", "Dezimal/Fraction/Prozent", "Lesen/Grammatik", "himmelblauer Tropfen-Geist", "himmelblauer Tropfen"],
+      moon: ["Noa", "Kl. 7", "Rationale Zahlen/Terme", "Grammatik/Kernaussagen", "Mondlicht-Geist", "Mondlicht-Tropfen"],
+      comet: ["Mira", "Kl. 8", "Gleichungssysteme/Funktionen", "Lesen/Ausdruck", "Kometen-Geist", "Kometen-Feder"],
       star: ["Sena", "Kl. 9", "Gleichungen/Funktionen/Geometrie", "Lesen/Logik", "Sternlicht-Geist", "Sternlicht-Kristall"],
     },
     es: {
@@ -94,6 +106,8 @@
       grass: ["Moko", "3.º", "Multiplicación", "Contrarios/Frases", "espíritu flor suave", "pétalo suave"],
       flower: ["Lumi", "4.º", "Números grandes", "Lectura/Significado", "espíritu hoja brillante", "hoja brillante"],
       sky: ["Sora", "5.º-6.º", "Decimales/Fracciones/%", "Lectura/Gramática", "espíritu gota azul cielo", "gota azul cielo"],
+      moon: ["Noa", "1.º ESO", "Números con signo/Expresiones", "Gramática/Ideas", "espíritu luz de luna", "gota de luna"],
+      comet: ["Mira", "2.º ESO", "Sistemas/Funciones lineales", "Lectura/Expresión", "espíritu cometa", "pluma de cometa"],
       star: ["Sena", "3.º ESO", "Ecuaciones/Funciones/Geometría", "Lectura/Lógica", "espíritu luz de estrella", "cristal estelar"],
     },
   };
@@ -149,6 +163,28 @@
       questionTypes: ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"],
     },
     {
+      id: "moon",
+      spiritName: "ノア",
+      gradeLabel: "中1",
+      label: "正負の数・文字式",
+      description: "月あかりのせいれい",
+      reward: "月あかりの しずく",
+      subjectLabels: { math: "正負の数・文字式", japanese: "文法・要点" },
+      operations: ["signedNumber", "simpleEquation", "algebraValue", "proportional"],
+      questionTypes: ["signedNumber", "simpleEquation", "algebraValue", "proportional"],
+    },
+    {
+      id: "comet",
+      spiritName: "ミラ",
+      gradeLabel: "中2",
+      label: "連立・一次関数",
+      description: "ほうき星のせいれい",
+      reward: "ほうき星の 羽",
+      subjectLabels: { math: "連立・一次関数", japanese: "読解・表現" },
+      operations: ["simultaneous", "linearFunction", "angle", "expressionExpand"],
+      questionTypes: ["simultaneous", "linearFunction", "angle", "expressionExpand", "probability", "similarity"],
+    },
+    {
       id: "star",
       spiritName: "セナ",
       gradeLabel: "中3",
@@ -163,9 +199,11 @@
 
   const upperMathOperations = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio"];
   const upperMathTypes = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"];
-  const juniorHighMathTypes = ["linearEquation", "factorization", "quadratic", "pythagorean", "functionValue", "similarity", "probability", "squareRoot"];
+  const juniorHighFirstMathTypes = ["signedNumber", "simpleEquation", "algebraValue", "proportional"];
+  const juniorHighSecondMathTypes = ["simultaneous", "linearFunction", "angle", "expressionExpand", "probability", "similarity"];
+  const juniorHighThirdMathTypes = ["linearEquation", "factorization", "quadratic", "pythagorean", "functionValue", "similarity", "probability", "squareRoot"];
   const advancedMathTypes = ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"];
-  const specialMathTypes = ["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord", ...upperMathOperations, ...juniorHighMathTypes];
+  const specialMathTypes = ["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord", ...upperMathOperations, ...juniorHighFirstMathTypes, ...juniorHighSecondMathTypes, ...juniorHighThirdMathTypes];
 
   const compareWords = {
     ja: ["左", "右", "おなじ"],
@@ -546,6 +584,41 @@
     }
   });
 
+  const middleSchoolLanguageQuestions = {
+    ja: {
+      moon: [
+        q("「月の道を、ノアがしずかに歩いた。」の述語はどれ？", "歩いた", ["月の道を", "ノアが", "しずかに"], "文の最後で、何をしたかを見よう。", "何をしたかを表す「歩いた」が述語だよ。"),
+        q("次の文の要点として合うものは？「森の入口には小さな光があり、その光は進む道をやさしく教えてくれた。」", "光が道を教えた", ["入口がなくなった", "道は暗くなった", "森には光がなかった"], "一番大切な動きを見つけよう。", "小さな光が進む道を教えてくれたことが要点だよ。"),
+        q("「明るい」の反対に近い言葉はどれ？", "暗い", ["広い", "近い", "丸い"], "光の多さが反対になる言葉を選ぼう。", "明るいの反対に近い言葉は暗いだよ。"),
+      ],
+      comet: [
+        q("「ミラは、みんなが安心できるように、ゆっくり道を照らした。」この文からわかるミラの気持ちは？", "みんなを思いやる気持ち", ["急いで進みたい気持ち", "一人で遊びたい気持ち", "道を隠したい気持ち"], "何のために道を照らしたか考えよう。", "みんなが安心できるようにしているので、思いやる気持ちがわかるよ。"),
+        q("「しかし」と同じように、前と後ろを逆の流れでつなぐ言葉はどれ？", "けれども", ["そして", "だから", "たとえば"], "前の内容とちがう流れになる言葉を探そう。", "けれどもは、前と後ろを逆の流れでつなぐ言葉だよ。"),
+        reading("ミラは森の広場で、二つの道を見つけました。一つは近いけれど石が多く、もう一つは遠いけれど花の光が続いていました。ミラは、みんなが歩きやすい花の道を選びました。", "ミラが花の道を選んだ理由は？", "みんなが歩きやすいから", ["いちばん近いから", "石が多いから", "広場に戻りたいから"], "道の特徴をくらべよう。", "遠くても花の光が続き、みんなが歩きやすいからだよ。"),
+      ],
+    },
+    en: {
+      moon: [
+        q("In this sentence, which word is the predicate? Noa walked quietly on the moon path.", "walked", ["Noa", "quietly", "moon path"], "Look for what Noa did.", "The action is walked."),
+        q("What is the main idea? A small light at the forest entrance gently showed the path.", "The light showed the path", ["The entrance disappeared", "The path became dark", "There was no light"], "Find the most important action.", "The small light showed the path."),
+        q("Which word is close to the opposite of bright?", "dark", ["wide", "near", "round"], "Think about light.", "Dark is close to the opposite of bright."),
+      ],
+      comet: [
+        q("Mira lit the path slowly so everyone could feel calm. What feeling does this show?", "caring for everyone", ["wanting to hurry", "wanting to play alone", "hiding the path"], "Think about why Mira lit the path.", "Mira is caring for everyone."),
+        q("Which word connects ideas in a contrasting way like however?", "but", ["and", "so", "for example"], "Look for a turn in meaning.", "But shows contrast."),
+        reading("Mira found two paths in the forest square. One was short but full of stones. The other was longer, but flower lights lined the way. Mira chose the flower path so everyone could walk easily.", "Why did Mira choose the flower path?", "everyone could walk easily", ["it was shortest", "it had many stones", "Mira wanted to go back"], "Compare the paths.", "The flower path was easier for everyone to walk."),
+      ],
+    },
+  };
+
+  Object.entries(middleSchoolLanguageQuestions).forEach(([languageId, groups]) => {
+    Object.entries(groups).forEach(([difficultyId, questions]) => {
+      if (languageBanks[languageId]) {
+        languageBanks[languageId][difficultyId] = questions;
+      }
+    });
+  });
+
   const languageSupplements = {
     ja: {
       seed: [
@@ -735,8 +808,8 @@
       description: translated[4],
       reward: translated[5],
       subjectLabels: { math: translated[2], japanese: translated[3] },
-      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : difficultyId === "star" ? ["linearEquation", "quadratic", "functionValue", "pythagorean"] : ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : difficultyId === "sky" ? upperMathTypes : difficultyId === "star" ? juniorHighMathTypes : advancedMathTypes,
+      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : difficultyId === "moon" ? ["signedNumber", "simpleEquation", "algebraValue", "proportional"] : difficultyId === "comet" ? ["simultaneous", "linearFunction", "angle", "expressionExpand"] : difficultyId === "star" ? ["linearEquation", "quadratic", "functionValue", "pythagorean"] : ["largeMultiply", "largeDivide", "mixed"],
+      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : difficultyId === "sky" ? upperMathTypes : difficultyId === "moon" ? juniorHighFirstMathTypes : difficultyId === "comet" ? juniorHighSecondMathTypes : difficultyId === "star" ? juniorHighThirdMathTypes : advancedMathTypes,
     };
   }
 
@@ -839,6 +912,130 @@
 
   function makeSpecialMathQuestion(type, languageId, randomFn) {
     const lang = getLanguage(languageId).id;
+    if (type === "signedNumber") {
+      const first = 3 + Math.floor(randomFn() * 10);
+      const second = 2 + Math.floor(randomFn() * 9);
+      const useMinus = randomFn() < 0.5;
+      const answer = useMinus ? first - second * 2 : -first + second;
+      const text = useMinus ? `${first} - ${second * 2}` : `-${first} + ${second}`;
+      const story = localSet(lang, {
+        ja: `ノアが月の石をならべているよ。${text} を計算すると、光の数はいくつ？`,
+        en: `Noa lines up moon stones. What is ${text}?`,
+      });
+      const hint = localSet(lang, {
+        ja: "正の数と負の数の向きを考えよう。",
+        en: "Think about positive and negative directions.",
+      });
+      return { left: first, right: second, answer, text, operation: "signedNumber", type, story, hint, explanation: `${text} = ${answer}.`, hintText: text, choiceTraps: [answer + 1, answer - 1, -answer] };
+    }
+
+    if (type === "simpleEquation") {
+      const answer = 2 + Math.floor(randomFn() * 9);
+      const constant = 2 + Math.floor(randomFn() * 8);
+      const total = answer + constant;
+      const story = localSet(lang, {
+        ja: `ノアが月のとびらに「x + ${constant} = ${total}」と書かれた式を見つけたよ。xはいくつ？`,
+        en: `Noa found x + ${constant} = ${total} on a moon gate. What is x?`,
+      });
+      const hint = localSet(lang, {
+        ja: `${total}から${constant}をひくと x がわかるよ。`,
+        en: `Subtract ${constant} from ${total}.`,
+      });
+      return { left: total, right: constant, answer, text: `x + ${constant} = ${total}`, operation: "simpleEquation", type, story, hint, explanation: `${total} - ${constant} = ${answer}.`, hintText: `x + ${constant} = ${total}`, choiceTraps: [answer + 1, Math.max(0, answer - 1), total + constant] };
+    }
+
+    if (type === "algebraValue") {
+      const coefficient = 2 + Math.floor(randomFn() * 5);
+      const constant = 1 + Math.floor(randomFn() * 6);
+      const x = 2 + Math.floor(randomFn() * 7);
+      const answer = coefficient * x + constant;
+      const story = localSet(lang, {
+        ja: `ノアの月あかりは ${coefficient}x + ${constant} で強くなるよ。x = ${x} のとき、いくつになる？`,
+        en: `Noa's moonlight follows ${coefficient}x + ${constant}. When x = ${x}, what is it?`,
+      });
+      const hint = localSet(lang, {
+        ja: `xに${x}を入れて、かけ算から計算しよう。`,
+        en: `Put ${x} in for x, then multiply first.`,
+      });
+      return { left: coefficient, right: x, answer, text: `${coefficient}x + ${constant}, x = ${x}`, operation: "algebraValue", type, story, hint, explanation: `${coefficient} × ${x} + ${constant} = ${answer}.`, hintText: `${coefficient}x + ${constant}`, choiceTraps: [answer + coefficient, Math.max(0, answer - coefficient), coefficient + x + constant] };
+    }
+
+    if (type === "proportional") {
+      const rate = 2 + Math.floor(randomFn() * 5);
+      const x = 3 + Math.floor(randomFn() * 6);
+      const answer = rate * x;
+      const story = localSet(lang, {
+        ja: `月の道では x が1ふえると光が ${rate}こ ふえるよ。x = ${x} のとき、光は何こ？`,
+        en: `On the moon path, light is y = ${rate}x. When x = ${x}, what is y?`,
+      });
+      const hint = localSet(lang, {
+        ja: `${rate} × ${x} を計算しよう。`,
+        en: `Calculate ${rate} × ${x}.`,
+      });
+      return { left: rate, right: x, answer, text: `y = ${rate}x, x = ${x}`, operation: "proportional", type, story, hint, explanation: `${rate} × ${x} = ${answer}.`, hintText: `y = ${rate}x`, choiceTraps: [answer + rate, Math.max(0, answer - rate), rate + x] };
+    }
+
+    if (type === "simultaneous") {
+      const x = 2 + Math.floor(randomFn() * 7);
+      const y = 1 + Math.floor(randomFn() * 6);
+      const sum = x + y;
+      const diff = x - y;
+      const story = localSet(lang, {
+        ja: `ミラがほうき星のメモを見つけたよ。x + y = ${sum}、x - y = ${diff} のとき、xはいくつ？`,
+        en: `Mira found a comet note: x + y = ${sum}, x - y = ${diff}. What is x?`,
+      });
+      const hint = localSet(lang, {
+        ja: `2つの式をたすと 2x がわかるよ。`,
+        en: `Add the two equations to find 2x.`,
+      });
+      return { left: sum, right: diff, answer: x, text: `x + y = ${sum}, x - y = ${diff}`, operation: "simultaneous", type, story, hint, explanation: `${sum} + ${diff} = ${x * 2}, so x = ${x}.`, hintText: `x + y = ${sum} / x - y = ${diff}`, choiceTraps: [y, sum, diff] };
+    }
+
+    if (type === "linearFunction") {
+      const slope = 1 + Math.floor(randomFn() * 5);
+      const intercept = Math.floor(randomFn() * 6);
+      const x = 2 + Math.floor(randomFn() * 6);
+      const answer = slope * x + intercept;
+      const story = localSet(lang, {
+        ja: `ミラのほうき星は y = ${slope}x + ${intercept} の道を進むよ。x = ${x} のとき y はいくつ？`,
+        en: `Mira's comet follows y = ${slope}x + ${intercept}. When x = ${x}, what is y?`,
+      });
+      const hint = localSet(lang, {
+        ja: `xに${x}を入れて計算しよう。`,
+        en: `Put ${x} in for x and calculate.`,
+      });
+      return { left: slope, right: x, answer, text: `y = ${slope}x + ${intercept}, x = ${x}`, operation: "linearFunction", type, story, hint, explanation: `${slope} × ${x} + ${intercept} = ${answer}.`, hintText: `y = ${slope}x + ${intercept}`, choiceTraps: [answer + slope, Math.max(0, answer - slope), slope + x + intercept] };
+    }
+
+    if (type === "angle") {
+      const known = 35 + Math.floor(randomFn() * 50);
+      const answer = 180 - known;
+      const story = localSet(lang, {
+        ja: `ミラがまっすぐな星の橋を見つけたよ。片方の角が ${known}° のとき、となりの角は何度？`,
+        en: `Mira found a straight star bridge. If one angle is ${known}°, what is the next angle?`,
+      });
+      const hint = localSet(lang, {
+        ja: `一直線の角は合わせて180°だよ。`,
+        en: `Angles on a straight line add to 180°.`,
+      });
+      return { left: 180, right: known, answer, text: `180 - ${known}`, operation: "angle", type, story, hint, explanation: `180 - ${known} = ${answer}.`, hintText: `180° - ${known}°`, choiceTraps: [known, answer + 10, Math.max(0, answer - 10)] };
+    }
+
+    if (type === "expressionExpand") {
+      const multiplier = 2 + Math.floor(randomFn() * 5);
+      const constant = 1 + Math.floor(randomFn() * 7);
+      const answer = `${multiplier}x + ${multiplier * constant}`;
+      const story = localSet(lang, {
+        ja: `ミラの星の羽に ${multiplier}(x + ${constant}) と書いてあるよ。広げるとどれ？`,
+        en: `Mira's comet feather shows ${multiplier}(x + ${constant}). Which expanded form matches?`,
+      });
+      const hint = localSet(lang, {
+        ja: `${multiplier}を x と ${constant} の両方にかけよう。`,
+        en: `Multiply both x and ${constant} by ${multiplier}.`,
+      });
+      return { left: multiplier, right: constant, answer, text: `${multiplier}(x + ${constant})`, operation: "expressionExpand", type, story, hint, explanation: `${multiplier} × x と ${multiplier} × ${constant} で ${answer}.`, hintText: `${multiplier}(x + ${constant})`, choiceTraps: [`${multiplier}x + ${constant}`, `x + ${multiplier * constant}`, `${multiplier + constant}x`] };
+    }
+
     if (type === "linearEquation") {
       const coefficient = 2 + Math.floor(randomFn() * 5);
       const answer = 2 + Math.floor(randomFn() * 9);

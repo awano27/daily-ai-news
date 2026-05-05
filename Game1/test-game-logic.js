@@ -1,7 +1,7 @@
 const assert = require("assert");
 const GameLogic = require("./game-logic");
 
-assert.strictEqual(GameLogic.difficulties.length, 5);
+assert.strictEqual(GameLogic.difficulties.length, 7);
 assert.strictEqual(GameLogic.subjects.length, 2);
 assert.strictEqual(GameLogic.languages.length, 7);
 assert.strictEqual(GameLogic.getSubject("math").name, "算数");
@@ -13,6 +13,8 @@ const seed = GameLogic.getDifficulty("seed");
 const grass = GameLogic.getDifficulty("grass");
 const flower = GameLogic.getDifficulty("flower");
 const sky = GameLogic.getDifficulty("sky");
+const moon = GameLogic.getDifficulty("moon");
+const comet = GameLogic.getDifficulty("comet");
 const star = GameLogic.getDifficulty("star");
 
 assert.strictEqual(seed.spiritName, "ピコ");
@@ -22,7 +24,11 @@ assert.strictEqual(sky.spiritName, "ソラ");
 assert.strictEqual(GameLogic.getDifficulty("seed", "ko").spiritName, "피코");
 assert.strictEqual(GameLogic.getDifficulty("flower", "zh").spiritName, "露米");
 assert.strictEqual(GameLogic.getDifficulty("sky", "en").spiritName, "Sora");
+assert.strictEqual(moon.id, "moon");
+assert.strictEqual(comet.id, "comet");
 assert.strictEqual(star.id, "star");
+assert.strictEqual(GameLogic.getDifficulty("moon", "en").gradeLabel, "Grade 7");
+assert.strictEqual(GameLogic.getDifficulty("comet", "en").gradeLabel, "Grade 8");
 assert.strictEqual(GameLogic.getDifficulty("star", "en").spiritName, "Sena");
 
 const seedQuestion = GameLogic.generateQuestion(seed, () => 0);
@@ -114,17 +120,27 @@ upperMathSamples.forEach(([randomValue, expectedType, answerType]) => {
 });
 
 const juniorHighMathSamples = [
-  [0, "linearEquation", "number"],
-  [0.13, "factorization", "string"],
-  [0.26, "quadratic", "number"],
-  [0.39, "pythagorean", "number"],
-  [0.51, "functionValue", "number"],
-  [0.64, "similarity", "number"],
-  [0.76, "probability", "string"],
-  [0.89, "squareRoot", "number"],
+  [moon, 0, "signedNumber", "number"],
+  [moon, 0.26, "simpleEquation", "number"],
+  [moon, 0.51, "algebraValue", "number"],
+  [moon, 0.76, "proportional", "number"],
+  [comet, 0, "simultaneous", "number"],
+  [comet, 0.17, "linearFunction", "number"],
+  [comet, 0.34, "angle", "number"],
+  [comet, 0.51, "expressionExpand", "string"],
+  [comet, 0.68, "probability", "string"],
+  [comet, 0.85, "similarity", "number"],
+  [star, 0, "linearEquation", "number"],
+  [star, 0.13, "factorization", "string"],
+  [star, 0.26, "quadratic", "number"],
+  [star, 0.39, "pythagorean", "number"],
+  [star, 0.51, "functionValue", "number"],
+  [star, 0.64, "similarity", "number"],
+  [star, 0.76, "probability", "string"],
+  [star, 0.89, "squareRoot", "number"],
 ];
-juniorHighMathSamples.forEach(([randomValue, expectedType, answerType]) => {
-  const question = GameLogic.generateQuestion(star, "math", "en", () => randomValue);
+juniorHighMathSamples.forEach(([difficulty, randomValue, expectedType, answerType]) => {
+  const question = GameLogic.generateQuestion(difficulty, "math", "en", () => randomValue);
   assert.strictEqual(question.type, expectedType);
   assert.strictEqual(typeof question.answer, answerType);
   assert.strictEqual(question.choices.length, 4);
@@ -143,6 +159,14 @@ const starLanguageQuestion = GameLogic.generateQuestion(star, "japanese", "ja", 
 assert.strictEqual(starLanguageQuestion.subject, "japanese");
 assert.ok(starLanguageQuestion.signature.startsWith("japanese:"));
 assert.ok(starLanguageQuestion.choices.includes(starLanguageQuestion.answer));
+
+const moonLanguageQuestion = GameLogic.generateQuestion(moon, "japanese", "ja", () => 0);
+assert.strictEqual(moonLanguageQuestion.subject, "japanese");
+assert.ok(moonLanguageQuestion.choices.includes(moonLanguageQuestion.answer));
+
+const cometLanguageQuestion = GameLogic.generateQuestion(comet, "japanese", "ja", () => 0);
+assert.strictEqual(cometLanguageQuestion.subject, "japanese");
+assert.ok(cometLanguageQuestion.choices.includes(cometLanguageQuestion.answer));
 
 const blankQuestion = GameLogic.generateQuestion(seed, () => 0.6);
 assert.strictEqual(blankQuestion.type, "blank");
@@ -189,6 +213,8 @@ assert.strictEqual(emptyAdventure.mapStep, 0);
 assert.deepStrictEqual(emptyAdventure.recentQuestionSignatures, []);
 assert.strictEqual(emptyAdventure.spirits.seed.met, false);
 assert.strictEqual(emptyAdventure.spirits.sky.level, 1);
+assert.strictEqual(emptyAdventure.spirits.moon.level, 1);
+assert.strictEqual(emptyAdventure.spirits.comet.level, 1);
 assert.strictEqual(emptyAdventure.spirits.star.level, 1);
 
 const adventureWithRecent = GameLogic.createEmptyAdventure({ recentQuestionSignatures: Array.from({ length: 25 }, (_, index) => `q${index}`) });
