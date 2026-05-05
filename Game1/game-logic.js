@@ -192,8 +192,8 @@
       description: "星あかりのせいれい",
       reward: "星あかりの 結晶",
       subjectLabels: { math: "式・関数・図形", japanese: "読解・文法・論理" },
-      operations: ["linearEquation", "quadratic", "functionValue", "pythagorean"],
-      questionTypes: ["linearEquation", "factorization", "quadratic", "pythagorean", "functionValue", "similarity", "probability", "squareRoot"],
+      operations: ["multiStepEquation", "quadraticFormula", "quadraticFunction", "pythagorean3d"],
+      questionTypes: ["multiStepEquation", "factorization", "quadratic", "quadraticFormula", "quadraticFunction", "similarityArea", "pythagorean3d", "squareRootSimplify", "functionValue", "probability"],
     },
   ];
 
@@ -201,7 +201,7 @@
   const upperMathTypes = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"];
   const juniorHighFirstMathTypes = ["signedNumber", "simpleEquation", "algebraValue", "proportional"];
   const juniorHighSecondMathTypes = ["simultaneous", "linearFunction", "angle", "expressionExpand", "probability", "similarity"];
-  const juniorHighThirdMathTypes = ["linearEquation", "factorization", "quadratic", "pythagorean", "functionValue", "similarity", "probability", "squareRoot"];
+  const juniorHighThirdMathTypes = ["multiStepEquation", "factorization", "quadratic", "quadraticFormula", "quadraticFunction", "similarityArea", "pythagorean3d", "squareRootSimplify", "functionValue", "probability"];
   const advancedMathTypes = ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"];
   const specialMathTypes = ["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord", ...upperMathOperations, ...juniorHighFirstMathTypes, ...juniorHighSecondMathTypes, ...juniorHighThirdMathTypes];
 
@@ -808,7 +808,7 @@
       description: translated[4],
       reward: translated[5],
       subjectLabels: { math: translated[2], japanese: translated[3] },
-      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : difficultyId === "moon" ? ["signedNumber", "simpleEquation", "algebraValue", "proportional"] : difficultyId === "comet" ? ["simultaneous", "linearFunction", "angle", "expressionExpand"] : difficultyId === "star" ? ["linearEquation", "quadratic", "functionValue", "pythagorean"] : ["largeMultiply", "largeDivide", "mixed"],
+      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : difficultyId === "moon" ? ["signedNumber", "simpleEquation", "algebraValue", "proportional"] : difficultyId === "comet" ? ["simultaneous", "linearFunction", "angle", "expressionExpand"] : difficultyId === "star" ? ["multiStepEquation", "quadraticFormula", "quadraticFunction", "pythagorean3d"] : ["largeMultiply", "largeDivide", "mixed"],
       questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : difficultyId === "sky" ? upperMathTypes : difficultyId === "moon" ? juniorHighFirstMathTypes : difficultyId === "comet" ? juniorHighSecondMathTypes : difficultyId === "star" ? juniorHighThirdMathTypes : advancedMathTypes,
     };
   }
@@ -908,6 +908,17 @@
 
   function localSet(languageId, values) {
     return values[languageId] || values.en;
+  }
+
+  function gcd(a, b) {
+    let left = Math.abs(Number(a) || 0);
+    let right = Math.abs(Number(b) || 0);
+    while (right) {
+      const next = left % right;
+      left = right;
+      right = next;
+    }
+    return left || 1;
   }
 
   function makeSpecialMathQuestion(type, languageId, randomFn) {
@@ -1036,6 +1047,23 @@
       return { left: multiplier, right: constant, answer, text: `${multiplier}(x + ${constant})`, operation: "expressionExpand", type, story, hint, explanation: `${multiplier} × x と ${multiplier} × ${constant} で ${answer}.`, hintText: `${multiplier}(x + ${constant})`, choiceTraps: [`${multiplier}x + ${constant}`, `x + ${multiplier * constant}`, `${multiplier + constant}x`] };
     }
 
+    if (type === "multiStepEquation") {
+      const coefficient = 2 + Math.floor(randomFn() * 5);
+      const answer = 3 + Math.floor(randomFn() * 8);
+      const leftConstant = 1 + Math.floor(randomFn() * 7);
+      const rightConstant = 2 + Math.floor(randomFn() * 8);
+      const total = coefficient * answer + leftConstant - rightConstant;
+      const story = localSet(lang, {
+        ja: `セナが星の暗号を見つけたよ。${coefficient}x + ${leftConstant} = ${total} + ${rightConstant} のとき、xはいくつ？`,
+        en: `Sena found a star code: ${coefficient}x + ${leftConstant} = ${total} + ${rightConstant}. What is x?`,
+      });
+      const hint = localSet(lang, {
+        ja: "右辺を先に計算してから、左の数を移して考えよう。",
+        en: "Simplify the right side first, then move the constant.",
+      });
+      return { left: coefficient, right: leftConstant, answer, text: `${coefficient}x + ${leftConstant} = ${total} + ${rightConstant}`, operation: "multiStepEquation", type, story, hint, explanation: `${total} + ${rightConstant} = ${total + rightConstant}, ${total + rightConstant} - ${leftConstant} = ${coefficient * answer}, ${coefficient * answer} ÷ ${coefficient} = ${answer}.`, hintText: `${coefficient}x + ${leftConstant} = ${total} + ${rightConstant}`, choiceTraps: [answer + 1, Math.max(0, answer - 1), answer + coefficient] };
+    }
+
     if (type === "linearEquation") {
       const coefficient = 2 + Math.floor(randomFn() * 5);
       const answer = 2 + Math.floor(randomFn() * 9);
@@ -1053,34 +1081,55 @@
     }
 
     if (type === "factorization") {
-      const first = 1 + Math.floor(randomFn() * 6);
+      const first = 2 + Math.floor(randomFn() * 7);
       const second = 1 + Math.floor(randomFn() * 6);
-      const sum = first + second;
+      const middle = first - second;
       const product = first * second;
-      const answer = `(x + ${first})(x + ${second})`;
+      const answer = `(x + ${first})(x - ${second})`;
+      const middleText = middle === 0 ? "" : middle > 0 ? ` + ${middle}x` : ` - ${Math.abs(middle)}x`;
       const story = localSet(lang, {
-        ja: `星のかけらをならべる式だよ。x² + ${sum}x + ${product} を因数分解するとどれ？`,
-        en: `Factor this starlight expression: x² + ${sum}x + ${product}.`,
+        ja: `星のかけらをならべる式だよ。x²${middleText} - ${product} を因数分解するとどれ？`,
+        en: `Factor this starlight expression: x²${middleText} - ${product}.`,
+      });
+      const hint = localSet(lang, {
+        ja: `かけて -${product}、たして ${middle} になる2つの数を探そう。`,
+        en: `Find two numbers that multiply to -${product} and add to ${middle}.`,
+      });
+      return { left: middle, right: product, answer, text: `x²${middleText} - ${product}`, operation: "factorization", type, story, hint, explanation: `${first} × -${second} = -${product}, ${first} + -${second} = ${middle}.`, hintText: `x²${middleText} - ${product}`, choiceTraps: [`(x + ${first})(x + ${second})`, `(x - ${first})(x + ${second})`, `(x - ${first})(x - ${second})`, `(x + ${product})(x - 1)`] };
+    }
+
+    if (type === "quadratic") {
+      const rootA = 2 + Math.floor(randomFn() * 6);
+      const rootB = 1 + Math.floor(randomFn() * 5);
+      const sum = rootA + rootB;
+      const product = rootA * rootB;
+      const answer = rootA;
+      const story = localSet(lang, {
+        ja: `セナの星あかりに x² - ${sum}x + ${product} = 0 と出たよ。大きいほうの解はどれ？`,
+        en: `Sena's starlight shows x² - ${sum}x + ${product} = 0. Which is the larger solution?`,
       });
       const hint = localSet(lang, {
         ja: `たして ${sum}、かけて ${product} になる2つの数を探そう。`,
         en: `Find two numbers that add to ${sum} and multiply to ${product}.`,
       });
-      return { left: sum, right: product, answer, text: `x² + ${sum}x + ${product}`, operation: "factorization", type, story, hint, explanation: `${first} + ${second} = ${sum}, ${first} × ${second} = ${product}.`, hintText: `x² + ${sum}x + ${product}`, choiceTraps: [`(x + ${sum})(x + 1)`, `(x + ${product})(x + 1)`, `(x - ${first})(x - ${second})`, `(x + ${first + 1})(x + ${second + 1})`] };
+      return { left: sum, right: product, answer, text: `x² - ${sum}x + ${product} = 0`, operation: "quadratic", type, story, hint, explanation: `(x - ${rootA})(x - ${rootB}) = 0 なので、解は ${rootA} と ${rootB}。大きいほうは ${answer}.`, hintText: `x² - ${sum}x + ${product} = 0`, choiceTraps: [rootB, sum, product] };
     }
 
-    if (type === "quadratic") {
-      const answer = 3 + Math.floor(randomFn() * 8);
-      const square = answer * answer;
+    if (type === "quadraticFormula") {
+      const coefficient = 1;
+      const b = 2 + Math.floor(randomFn() * 6);
+      const c = 1 + Math.floor(randomFn() * 5);
+      const discriminant = b * b + 4 * c;
+      const answer = `(-${b} + √${discriminant}) / 2`;
       const story = localSet(lang, {
-        ja: `セナの星あかりが x² = ${square} と光ったよ。正の数の x はいくつ？`,
-        en: `Sena's starlight shows x² = ${square}. What positive number is x?`,
+        ja: `セナが少しむずかしい二次方程式を見つけたよ。x² + ${b}x - ${c} = 0 の解のひとつはどれ？`,
+        en: `Sena found a tougher quadratic: x² + ${b}x - ${c} = 0. Which is one solution?`,
       });
       const hint = localSet(lang, {
-        ja: `同じ数を2回かけて ${square} になる数を探そう。`,
-        en: `Find the number that times itself equals ${square}.`,
+        ja: `解の公式で、b² - 4ac を考えよう。`,
+        en: `Use the quadratic formula and b² - 4ac.`,
       });
-      return { left: square, right: answer, answer, text: `x² = ${square}`, operation: "quadratic", type, story, hint, explanation: `${answer} × ${answer} = ${square}.`, hintText: `x² = ${square}`, choiceTraps: [answer + 1, Math.max(1, answer - 1), square] };
+      return { left: b, right: c, answer, text: `x² + ${b}x - ${c} = 0`, operation: "quadraticFormula", type, story, hint, explanation: `x = (-${b} ± √(${b}² + ${4 * coefficient * c})) / 2 なので、ひとつは ${answer}.`, hintText: `x² + ${b}x - ${c} = 0`, choiceTraps: [`(${b} + √${discriminant}) / 2`, `(-${b} + √${b * b - c}) / 2`, `(-${b} - ${discriminant}) / 2`, `${c}/${b}`] };
     }
 
     if (type === "pythagorean") {
@@ -1096,6 +1145,21 @@
         en: `Use a² + b² = c² for a right triangle.`,
       });
       return { left: a, right: b, answer, text: `${a}² + ${b}² = ?²`, operation: "pythagorean", type, story, hint, explanation: `${a}² + ${b}² = ${answer}², so ${answer}m.`, hintText: `${a}² + ${b}² = ?²`, choiceTraps: [answer + 1, answer - 1, a + b] };
+    }
+
+    if (type === "pythagorean3d") {
+      const triples = [[3, 4, 12, 13], [6, 8, 24, 26], [5, 12, 84, 85]];
+      const [width, depth, height, answer] = triples[Math.floor(randomFn() * triples.length)];
+      const baseDiagonal = Math.sqrt(width * width + depth * depth);
+      const story = localSet(lang, {
+        ja: `セナが立体の星箱を見つけたよ。たて ${width}cm、よこ ${depth}cm、高さ ${height}cm の箱の対角線は何cm？`,
+        en: `Sena found a star box: ${width} cm by ${depth} cm by ${height} cm. How long is the space diagonal?`,
+      });
+      const hint = localSet(lang, {
+        ja: "底面の対角線を出してから、高さともう一度三平方で考えよう。",
+        en: "Find the base diagonal first, then use Pythagorean theorem again with height.",
+      });
+      return { left: width, right: height, answer, text: `${width}² + ${depth}² + ${height}²`, operation: "pythagorean3d", type, story, hint, explanation: `底面は ${baseDiagonal}cm。${baseDiagonal}² + ${height}² = ${answer}² なので ${answer}cm.`, hintText: `${width}² + ${depth}² + ${height}²`, choiceTraps: [answer - 1, answer + 1, width + depth + height] };
     }
 
     if (type === "functionValue") {
@@ -1114,6 +1178,21 @@
       return { left: slope, right: x, answer, text: `y = ${slope}x + ${intercept}, x = ${x}`, operation: "functionValue", type, story, hint, explanation: `${slope} × ${x} + ${intercept} = ${answer}.`, hintText: `y = ${slope}x + ${intercept}`, choiceTraps: [answer + slope, Math.max(0, answer - slope), slope + x + intercept] };
     }
 
+    if (type === "quadraticFunction") {
+      const coefficient = 1 + Math.floor(randomFn() * 4);
+      const x = 2 + Math.floor(randomFn() * 5);
+      const answer = coefficient * x * x;
+      const story = localSet(lang, {
+        ja: `星の道は y = ${coefficient}x² で光るよ。x = ${x} のとき、yはいくつ？`,
+        en: `The star path follows y = ${coefficient}x². When x = ${x}, what is y?`,
+      });
+      const hint = localSet(lang, {
+        ja: `先に ${x}² を計算してから、${coefficient}をかけよう。`,
+        en: `Calculate ${x}² first, then multiply by ${coefficient}.`,
+      });
+      return { left: coefficient, right: x, answer, text: `y = ${coefficient}x², x = ${x}`, operation: "quadraticFunction", type, story, hint, explanation: `${x}² = ${x * x}, ${coefficient} × ${x * x} = ${answer}.`, hintText: `y = ${coefficient}x²`, choiceTraps: [coefficient * x, answer + coefficient, Math.max(0, answer - coefficient)] };
+    }
+
     if (type === "similarity") {
       const small = 3 + Math.floor(randomFn() * 6);
       const scale = 2 + Math.floor(randomFn() * 4);
@@ -1129,20 +1208,38 @@
       return { left: small, right: scale, answer, text: `${small} × ${scale}`, operation: "similarity", type, story, hint, explanation: `${small} × ${scale} = ${answer}.`, hintText: `${scale}倍`, choiceTraps: [answer + scale, Math.max(1, answer - scale), small + scale] };
     }
 
-    if (type === "probability") {
-      const blue = 2 + Math.floor(randomFn() * 5);
-      const yellow = 2 + Math.floor(randomFn() * 5);
-      const total = blue + yellow;
-      const answer = `${blue}/${total}`;
+    if (type === "similarityArea") {
+      const smallArea = 6 + Math.floor(randomFn() * 10);
+      const scale = 2 + Math.floor(randomFn() * 4);
+      const answer = smallArea * scale * scale;
       const story = localSet(lang, {
-        ja: `ふくろに青い星 ${blue}こ、黄色い星 ${yellow}こがあるよ。青い星を1こ選ぶ確率は？`,
-        en: `A bag has ${blue} blue stars and ${yellow} yellow stars. What is the chance of choosing a blue star?`,
+        ja: `小さな星形の面積は ${smallArea}cm²。相似な星形の辺を ${scale}倍にすると、面積は何cm²？`,
+        en: `A small star has area ${smallArea} cm². A similar star has side lengths ${scale} times as large. What is its area?`,
       });
       const hint = localSet(lang, {
-        ja: `青い星の数を、ぜんぶの星の数でわろう。`,
-        en: `Put blue stars over all stars.`,
+        ja: `面積は ${scale}倍ではなく、${scale}²倍になるよ。`,
+        en: `Area grows by ${scale}², not just ${scale}.`,
       });
-      return { left: blue, right: total, answer, text: `${blue}/${total}`, operation: "probability", type, story, hint, explanation: `blue ${blue}, total ${total}, so ${answer}.`, hintText: `${blue} / ${total}`, choiceTraps: [`${yellow}/${total}`, `${blue}/${yellow}`, `${total}/${blue}`, `${blue + 1}/${total + 1}`] };
+      return { left: smallArea, right: scale, answer, text: `${smallArea} × ${scale}²`, operation: "similarityArea", type, story, hint, explanation: `${scale}² = ${scale * scale}, ${smallArea} × ${scale * scale} = ${answer}.`, hintText: `${smallArea}cm² / ${scale}倍`, choiceTraps: [smallArea * scale, answer + scale, Math.max(1, answer - scale * scale)] };
+    }
+
+    if (type === "probability") {
+      const blue = 3 + Math.floor(randomFn() * 5);
+      const yellow = 3 + Math.floor(randomFn() * 5);
+      const total = blue + yellow;
+      const numerator = blue * (blue - 1);
+      const denominator = total * (total - 1);
+      const divisor = gcd(numerator, denominator);
+      const answer = `${numerator / divisor}/${denominator / divisor}`;
+      const story = localSet(lang, {
+        ja: `ふくろに青い星 ${blue}こ、黄色い星 ${yellow}こがあるよ。もどさず2こ選んで、どちらも青い星になる確率は？`,
+        en: `A bag has ${blue} blue stars and ${yellow} yellow stars. Choose 2 without replacing. What is the chance both are blue?`,
+      });
+      const hint = localSet(lang, {
+        ja: `1こ目が青、2こ目も青になる確率をかけよう。`,
+        en: `Multiply the chance of blue first and blue second.`,
+      });
+      return { left: blue, right: total, answer, text: `${blue}/${total} × ${blue - 1}/${total - 1}`, operation: "probability", type, story, hint, explanation: `${blue}/${total} × ${blue - 1}/${total - 1} = ${answer}.`, hintText: `${blue}/${total} × ${blue - 1}/${total - 1}`, choiceTraps: [`${blue}/${total}`, `${yellow}/${total}`, `${numerator}/${denominator}`, `${blue - 1}/${total - 1}`] };
     }
 
     if (type === "squareRoot") {
@@ -1157,6 +1254,23 @@
         en: `Find the number that times itself equals ${square}.`,
       });
       return { left: square, right: answer, answer, text: `√${square}`, operation: "squareRoot", type, story, hint, explanation: `${answer} × ${answer} = ${square}, so √${square} = ${answer}.`, hintText: `√${square}`, choiceTraps: [answer + 1, answer - 1, square] };
+    }
+
+    if (type === "squareRootSimplify") {
+      const outside = 2 + Math.floor(randomFn() * 5);
+      const insideOptions = [2, 3, 5, 6, 7];
+      const inside = insideOptions[Math.floor(randomFn() * insideOptions.length)];
+      const radicand = outside * outside * inside;
+      const answer = `${outside}√${inside}`;
+      const story = localSet(lang, {
+        ja: `星の結晶に √${radicand} と書いてあるよ。できるだけ簡単にするとどれ？`,
+        en: `A star crystal shows √${radicand}. Which is the simplified form?`,
+      });
+      const hint = localSet(lang, {
+        ja: `平方数を外に出そう。${radicand} の中に ${outside * outside} があるよ。`,
+        en: `Take out the square factor ${outside * outside}.`,
+      });
+      return { left: radicand, right: outside, answer, text: `√${radicand}`, operation: "squareRootSimplify", type, story, hint, explanation: `${radicand} = ${outside * outside} × ${inside} なので、√${radicand} = ${answer}.`, hintText: `√${radicand}`, choiceTraps: [`√${inside}`, `${outside}√${outside}`, `${inside}√${outside}`, `${outside * inside}`] };
     }
 
     if (type === "parentheses") {
