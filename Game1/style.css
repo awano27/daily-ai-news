@@ -230,25 +230,153 @@ button {
 }
 
 .question-panel {
-  padding: 22px 16px;
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
   text-align: center;
+}
+
+.quest-panel {
+  display: grid;
+  gap: 12px;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(255, 232, 143, 0.42), transparent 28%),
+    radial-gradient(circle at 92% 4%, rgba(135, 199, 255, 0.22), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(248, 255, 241, 0.9));
+}
+
+.quest-panel::before,
+.quest-panel::after {
+  content: "";
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  border-radius: 38% 62% 44% 56%;
+  background: rgba(91, 155, 91, 0.08);
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+
+.quest-panel::before {
+  left: -38px;
+  top: 48px;
+}
+
+.quest-panel::after {
+  right: -44px;
+  bottom: 18px;
+  transform: rotate(24deg);
+}
+
+.quest-ribbon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 246, 204, 0.98), rgba(255, 226, 142, 0.82));
+  color: var(--soil);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 7px 14px rgba(121, 81, 0, 0.12);
+}
+
+.quest-ribbon span {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.quest-ribbon strong {
+  font-size: clamp(13px, 4vw, 16px);
+  line-height: 1.2;
+}
+
+.quest-scroll {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
+  padding: 14px 12px;
+  border: 2px solid rgba(124, 91, 47, 0.13);
+  border-radius: 22px;
+  background:
+    linear-gradient(90deg, rgba(255, 245, 209, 0.52), transparent 13%, transparent 87%, rgba(255, 245, 209, 0.52)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 253, 239, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.quest-type {
+  justify-self: center;
+  max-width: 100%;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(91, 155, 91, 0.12);
+  color: var(--leaf-dark);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.quest-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
 }
 
 .story-question {
   max-width: 100%;
-  font-size: clamp(20px, 6.8vw, 28px);
-  line-height: 1.35;
+  font-size: clamp(18px, 5.7vw, 25px);
+  line-height: 1.42;
+}
+
+.clue-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.clue-row span,
+.answer-callout {
+  color: var(--leaf-dark);
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .equation-hint {
-  width: fit-content;
-  margin: 12px auto 0;
+  display: inline-block;
+  max-width: 100%;
   padding: 7px 12px;
   border-radius: 999px;
   background: rgba(255, 209, 102, 0.36);
   color: var(--soil);
-  font-size: 20px;
+  font-size: clamp(15px, 5vw, 20px);
   font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.reward-tease {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  justify-self: center;
+  max-width: 100%;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(135, 199, 255, 0.16);
+  color: #28436f;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
 }
 
 .tiny-label,
@@ -267,8 +395,15 @@ h1,
 }
 
 h1.story-question {
-  font-size: clamp(20px, 6.8vw, 28px);
-  line-height: 1.35;
+  font-size: clamp(18px, 5.7vw, 25px);
+  line-height: 1.42;
+}
+
+.question-panel .quest-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
 }
 
 .page-title {
@@ -2382,6 +2517,14 @@ h1.story-question {
   gap: 12px;
 }
 
+.answer-callout {
+  justify-self: center;
+  margin: -2px 0 -2px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
 .answer-button {
   min-height: 76px;
   padding: 8px;
@@ -2394,9 +2537,9 @@ h1.story-question {
     0 7px 0 rgba(32, 48, 58, 0.1),
     0 16px 25px rgba(32, 48, 58, 0.08);
   color: var(--ink);
-  font-size: clamp(16px, 7vw, 30px);
+  font-size: clamp(16px, 5.7vw, 30px);
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.18;
   overflow-wrap: anywhere;
   transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
 }
@@ -3009,12 +3152,11 @@ h1.story-question {
   }
 
   .story-question {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .equation-hint {
-    margin-top: 7px;
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .feedback {
@@ -3025,7 +3167,7 @@ h1.story-question {
 
   .answer-button {
     min-height: 58px;
-    font-size: 26px;
+    font-size: clamp(15px, 5vw, 24px);
   }
 
   .starter-card {

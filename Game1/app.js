@@ -56,6 +56,12 @@
       spiritReady: "「チャレンジ、どうかな？」",
       spiritGood: "「わあ、なかよし！」",
       challengeCount: "{spirit}の {challenge}・{count}かいめ",
+      questLabel: "森ミッション",
+      questMath: "光る式を ととのえよう",
+      questJapanese: "ことばの手がかりを 読もう",
+      questClue: "てがかり",
+      questReward: "クリアで {reward} がきらり",
+      questPick: "こたえを えらぼう",
       next: "つぎへ",
       result: "けっかへ",
       resultLabel: "けっか",
@@ -128,6 +134,12 @@
       spiritReady: "\"Ready for the challenge?\"",
       spiritGood: "\"Wow, friends!\"",
       challengeCount: "{spirit}'s {challenge} {count}",
+      questLabel: "Forest mission",
+      questMath: "Shape the glowing clue",
+      questJapanese: "Read the word clue",
+      questClue: "Clue",
+      questReward: "Clear for {reward}",
+      questPick: "Choose an answer",
       next: "Next",
       result: "Result",
       resultLabel: "Result",
@@ -914,6 +926,48 @@
     return `<div class="growth-notice ${levelUp ? "level-up" : ""}"><strong>${text}</strong><span>${nextCount > 0 ? t("nextLevelLine", { count: nextCount }) : t("maxLevelLine")}</span></div>`;
   }
 
+  function questTypeLabel(question, subjectId) {
+    if (subjectId === "japanese") {
+      if (question.type === "reading") return activeLanguageId === "ja" ? "読解の森" : "Reading trail";
+      return activeLanguageId === "ja" ? "ことばの星" : "Word star";
+    }
+    const labels = {
+      compare: "くらべる道",
+      blank: "□のとびら",
+      probability: "確率の星袋",
+      factorization: "因数のかけら",
+      quadratic: "二次の門",
+      quadraticFormula: "公式の星図",
+      quadraticFunction: "放物線の道",
+      similarityArea: "相似の広場",
+      pythagorean3d: "立体の橋",
+      squareRootSimplify: "平方根の結晶",
+    };
+    return labels[question.type] || (activeLanguageId === "ja" ? "数のてがかり" : "Number clue");
+  }
+
+  function renderQuestPanel(round, difficulty, questionNumber) {
+    const clue = round.question.hintText || `${round.question.text} = ?`;
+    const missionText = round.subject.id === "math" ? t("questMath") : t("questJapanese");
+    return `
+      <div class="question-panel quest-panel subject-${round.subject.id}">
+        <div class="quest-ribbon">
+          <span>${t("questLabel")}</span>
+          <strong>${t("challengeCount", { spirit: difficulty.spiritName, challenge: round.subject.challengeLabel, count: questionNumber })}</strong>
+        </div>
+        <div class="quest-scroll">
+          <div class="quest-type">${questTypeLabel(round.question, round.subject.id)}</div>
+          <p class="quest-intro">${missionText}</p>
+          <h1 class="story-question">${escapeHtml(round.question.story).replaceAll("\n", "<br />")}</h1>
+        </div>
+        <div class="clue-row">
+          <span>${t("questClue")}</span>
+          <strong class="equation-hint">${escapeHtml(clue)}</strong>
+        </div>
+        <div class="reward-tease">${t("questReward", { reward: difficulty.reward })}</div>
+      </div>`;
+  }
+
   function renderBattle() {
     const round = state.round;
     const questionNumber = Math.min(round.currentIndex + 1, GameLogic.QUESTION_COUNT);
@@ -956,14 +1010,11 @@
       </section>
       ${renderBattleGrowthNotice(round, lastAnswer, difficulty, spiritLevel)}
       <section class="battle-scene">
-        <div class="question-panel">
-          <p>${t("challengeCount", { spirit: difficulty.spiritName, challenge: round.subject.challengeLabel, count: questionNumber })}</p>
-          <h1 class="story-question">${escapeHtml(round.question.story).replaceAll("\n", "<br />")}</h1>
-          <div class="equation-hint">${escapeHtml(round.question.hintText || `${round.question.text} = ?`)}</div>
-        </div>
+        ${renderQuestPanel(round, difficulty, questionNumber)}
       </section>
       <p class="feedback ${round.answered ? feedbackClass : ""}">${feedbackText}</p>
       ${supportText ? `<p class="question-support ${round.answered ? "answer-note" : ""}">${escapeHtml(supportText)}</p>` : ""}
+      <div class="answer-callout">${t("questPick")}</div>
       <div class="answer-grid">${choices}</div>
       ${round.answered ? `<button class="primary-button" data-action="next">${round.currentIndex + 1 >= GameLogic.QUESTION_COUNT ? t("result") : t("next")}</button>` : ""}
     `, `battle-screen ${round.answered && lastAnswer?.correct ? "success-screen" : ""} ${isCombo ? "combo-screen" : ""}`);
