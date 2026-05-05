@@ -685,7 +685,7 @@
 
   function mapFocusSpirit(index, adventure = state.adventure) {
     const safeAdventure = GameLogic.createEmptyAdventure(adventure);
-    const focusIds = ["seed", "grass", "flower", "sky", "sky"];
+    const focusIds = ["seed", "grass", "flower", "sky", "star"];
     const focusId = focusIds[Math.max(0, Math.min(focusIds.length - 1, index))] || "seed";
     const difficulty = GameLogic.getDifficulty(focusId, state.languageId);
     const spirit = safeAdventure.spirits[focusId] || { growth: 0 };

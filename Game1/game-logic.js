@@ -52,42 +52,49 @@
       grass: ["モコ", "小3", "かけ算中心", "反対語・文づくり", "ふわふわの花のせいれい", "ふわふわ 花びら"],
       flower: ["ルミ", "小4", "大きめ計算", "読解・意味", "光る木の葉のせいれい", "ひかる 木の葉"],
       sky: ["ソラ", "小5〜6", "小数・分数・割合", "読解・文のしくみ", "空色のしずくのせいれい", "空色の しずく"],
+      star: ["セナ", "中3", "式・関数・図形", "読解・文法・論理", "星あかりのせいれい", "星あかりの 結晶"],
     },
     en: {
       seed: ["Pico", "Grade 1-2", "Add/Subtract", "Reading words", "tiny seed spirit", "sparkly seed"],
       grass: ["Moko", "Grade 3", "Multiplication", "Opposites/Sentences", "fluffy flower spirit", "fluffy petal"],
       flower: ["Lumi", "Grade 4", "Bigger numbers", "Reading/Meaning", "glowing leaf spirit", "glowing leaf"],
       sky: ["Sora", "Grade 5-6", "Decimals/Fractions/Percent", "Reading/Grammar", "sky-blue drop spirit", "sky-blue drop"],
+      star: ["Sena", "Grade 9", "Equations/Functions/Geometry", "Reading/Logic", "starlight spirit", "starlight crystal"],
     },
     ko: {
       seed: ["피코", "1-2학년", "덧셈・뺄셈", "읽기・낱말", "작은 씨앗 정령", "반짝 씨앗"],
       grass: ["모코", "3학년", "곱셈 중심", "반대말・문장", "폭신한 꽃 정령", "폭신 꽃잎"],
       flower: ["루미", "4학년", "조금 큰 계산", "읽기・뜻", "빛나는 잎 정령", "빛나는 잎"],
       sky: ["소라", "5-6학년", "소수・분수・비율", "읽기・문장 구조", "하늘빛 물방울 정령", "하늘빛 물방울"],
+      star: ["세나", "중3", "방정식・함수・도형", "읽기・논리", "별빛 정령", "별빛 결정"],
     },
     zh: {
       seed: ["皮可", "1-2年级", "加法・减法", "认读・词语", "小小种子精灵", "闪亮种子"],
       grass: ["莫可", "3年级", "乘法为主", "反义词・句子", "软软花精灵", "软软花瓣"],
       flower: ["露米", "4年级", "稍大的数", "阅读・意思", "发光叶子精灵", "发光叶子"],
       sky: ["索拉", "5-6年级", "小数・分数・百分比", "阅读・句子结构", "天蓝水滴精灵", "天蓝水滴"],
+      star: ["赛娜", "初三", "方程・函数・图形", "阅读・逻辑", "星光精灵", "星光结晶"],
     },
     fr: {
       seed: ["Pico", "CE1-CE2", "Addition/Soustraction", "Lecture/Mots", "petit esprit graine", "graine brillante"],
       grass: ["Moko", "CE2-CM1", "Multiplication", "Contraires/Phrases", "esprit fleur tout doux", "pétale doux"],
       flower: ["Lumi", "CM1-CM2", "Grands nombres", "Lecture/Sens", "esprit feuille lumineuse", "feuille lumineuse"],
       sky: ["Sora", "CM2-6e", "Décimaux/Fractions/%", "Lecture/Grammaire", "esprit goutte bleu ciel", "goutte bleu ciel"],
+      star: ["Sena", "3e", "Équations/Fonctions/Géométrie", "Lecture/Logique", "esprit lumière d'étoile", "cristal d'étoile"],
     },
     de: {
       seed: ["Pico", "Kl. 1-2", "Plus/Minus", "Lesen/Wörter", "kleiner Samen-Geist", "glitzernder Samen"],
       grass: ["Moko", "Kl. 3", "Malnehmen", "Gegenteile/Sätze", "flauschiger Blumen-Geist", "flauschiges Blütenblatt"],
       flower: ["Lumi", "Kl. 4", "Größere Zahlen", "Lesen/Bedeutung", "leuchtender Blatt-Geist", "leuchtendes Blatt"],
       sky: ["Sora", "Kl. 5-6", "Dezimal/Fraction/Prozent", "Lesen/Grammatik", "himmelblauer Tropfen-Geist", "himmelblauer Tropfen"],
+      star: ["Sena", "Kl. 9", "Gleichungen/Funktionen/Geometrie", "Lesen/Logik", "Sternlicht-Geist", "Sternlicht-Kristall"],
     },
     es: {
       seed: ["Pico", "1.º-2.º", "Sumar/Restar", "Lectura/Palabras", "pequeño espíritu semilla", "semilla brillante"],
       grass: ["Moko", "3.º", "Multiplicación", "Contrarios/Frases", "espíritu flor suave", "pétalo suave"],
       flower: ["Lumi", "4.º", "Números grandes", "Lectura/Significado", "espíritu hoja brillante", "hoja brillante"],
       sky: ["Sora", "5.º-6.º", "Decimales/Fracciones/%", "Lectura/Gramática", "espíritu gota azul cielo", "gota azul cielo"],
+      star: ["Sena", "3.º ESO", "Ecuaciones/Funciones/Geometría", "Lectura/Lógica", "espíritu luz de estrella", "cristal estelar"],
     },
   };
 
@@ -141,12 +148,24 @@
       operations: ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio"],
       questionTypes: ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"],
     },
+    {
+      id: "star",
+      spiritName: "セナ",
+      gradeLabel: "中3",
+      label: "式・関数・図形",
+      description: "星あかりのせいれい",
+      reward: "星あかりの 結晶",
+      subjectLabels: { math: "式・関数・図形", japanese: "読解・文法・論理" },
+      operations: ["linearEquation", "quadratic", "functionValue", "pythagorean"],
+      questionTypes: ["linearEquation", "factorization", "quadratic", "pythagorean", "functionValue", "similarity", "probability", "squareRoot"],
+    },
   ];
 
   const upperMathOperations = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio"];
   const upperMathTypes = ["decimal", "fractionAdd", "percent", "average", "speed", "volume", "ratio", "compare", "multiStepWord"];
+  const juniorHighMathTypes = ["linearEquation", "factorization", "quadratic", "pythagorean", "functionValue", "similarity", "probability", "squareRoot"];
   const advancedMathTypes = ["twoStep", "word", "compare", "blank", "straight", "parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord"];
-  const specialMathTypes = ["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord", ...upperMathOperations];
+  const specialMathTypes = ["parentheses", "remainder", "time", "money", "unit", "fraction", "area", "perimeter", "sequence", "rounding", "multiStepWord", ...upperMathOperations, ...juniorHighMathTypes];
 
   const compareWords = {
     ja: ["左", "右", "おなじ"],
@@ -506,6 +525,27 @@
     }
   });
 
+  const juniorHighLanguageQuestions = {
+    ja: [
+      q("次の文で、筆者の考えとしていちばん合うものは？「森の道は遠回りに見えた。しかし、仲間と歩く時間が、せいれいを知る手がかりになった。」", "遠回りにも大切な意味がある", ["近道だけが大切である", "仲間と歩く必要はない", "せいれいを知る手がかりはない"], "文の後半で何が大切だと言っているか考えよう。", "仲間と歩く時間が手がかりになったので、遠回りにも意味があると読めるよ。"),
+      q("「星明かりが道を照らす。」の主語はどれ？", "星明かりが", ["道を", "照らす", "星"], "何が照らすのかを考えよう。", "照らすのは星明かりだよ。"),
+      q("「慎重」に近い意味はどれ？", "よく考えて気をつけること", ["急いで動くこと", "強く光ること", "声を大きくすること"], "あわてず確かめる様子を考えよう。", "慎重は、よく考えて気をつけることだよ。"),
+      reading("セナは星あかりをたよりに、古い地図を読みました。地図には、泉へ向かう道が二つありました。短い道は暗く、遠い道には小さな光が続いていました。セナは、みんなが安心して進める遠い道を選びました。", "セナが遠い道を選んだ理由は？", "安心して進めるから", ["いちばん短いから", "地図がなかったから", "泉へ行きたくなかったから"], "道の様子とセナの選び方を見よう。", "遠い道には光が続いていて、みんなが安心して進めるからだよ。"),
+    ],
+    en: [
+      q("Which idea best matches the sentence? The path looked long, but walking together helped the spirits understand the forest.", "The long path had value", ["Only short paths matter", "Friends should not walk together", "The forest had no clues"], "Look for what helped the spirits.", "Walking together helped, so the long path had value."),
+      q("What is the subject? Starlight shows the hidden path.", "Starlight", ["the hidden path", "shows", "hidden"], "Ask what shows the path.", "Starlight shows the path."),
+      q("What is close to \"careful\"?", "acting with thought", ["moving too fast", "shining loudly", "forgetting clues"], "Think about checking before acting.", "Careful means acting with thought."),
+      reading("Sena read an old map by starlight. Two paths led to the spring. The short path was dark, but the longer path had tiny lights. Sena chose the longer path so everyone could walk calmly.", "Why did Sena choose the longer path?", "everyone could walk calmly", ["it was the shortest", "there was no map", "Sena disliked the spring"], "Look at the last sentence.", "Sena chose it so everyone could walk calmly."),
+    ],
+  };
+
+  Object.entries(juniorHighLanguageQuestions).forEach(([languageId, questions]) => {
+    if (languageBanks[languageId]) {
+      languageBanks[languageId].star = questions;
+    }
+  });
+
   const languageSupplements = {
     ja: {
       seed: [
@@ -695,8 +735,8 @@
       description: translated[4],
       reward: translated[5],
       subjectLabels: { math: translated[2], japanese: translated[3] },
-      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : ["largeMultiply", "largeDivide", "mixed"],
-      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : difficultyId === "sky" ? upperMathTypes : advancedMathTypes,
+      operations: difficultyId === "seed" ? ["add", "subtract"] : difficultyId === "grass" ? ["multiply", "multiply", "divide"] : difficultyId === "sky" ? upperMathOperations : difficultyId === "star" ? ["linearEquation", "quadratic", "functionValue", "pythagorean"] : ["largeMultiply", "largeDivide", "mixed"],
+      questionTypes: difficultyId === "seed" ? ["straight", "straight", "blank", "word"] : difficultyId === "grass" ? ["word", "compare", "blank", "twoStep", "straight"] : difficultyId === "sky" ? upperMathTypes : difficultyId === "star" ? juniorHighMathTypes : advancedMathTypes,
     };
   }
 
@@ -799,6 +839,129 @@
 
   function makeSpecialMathQuestion(type, languageId, randomFn) {
     const lang = getLanguage(languageId).id;
+    if (type === "linearEquation") {
+      const coefficient = 2 + Math.floor(randomFn() * 5);
+      const answer = 2 + Math.floor(randomFn() * 9);
+      const constant = 1 + Math.floor(randomFn() * 8);
+      const total = coefficient * answer + constant;
+      const story = localSet(lang, {
+        ja: `セナが星の門を開く式を見つけたよ。${coefficient}x + ${constant} = ${total} のとき、xはいくつ？`,
+        en: `Sena found a gate equation: ${coefficient}x + ${constant} = ${total}. What is x?`,
+      });
+      const hint = localSet(lang, {
+        ja: `まず ${constant} をひいてから、${coefficient}でわろう。`,
+        en: `Subtract ${constant} first, then divide by ${coefficient}.`,
+      });
+      return { left: coefficient, right: constant, answer, text: `${coefficient}x + ${constant} = ${total}`, operation: "linearEquation", type, story, hint, explanation: `${total} - ${constant} = ${total - constant}, ${total - constant} ÷ ${coefficient} = ${answer}.`, hintText: `${coefficient}x + ${constant} = ${total}`, choiceTraps: [answer + 1, Math.max(0, answer - 1), answer + coefficient] };
+    }
+
+    if (type === "factorization") {
+      const first = 1 + Math.floor(randomFn() * 6);
+      const second = 1 + Math.floor(randomFn() * 6);
+      const sum = first + second;
+      const product = first * second;
+      const answer = `(x + ${first})(x + ${second})`;
+      const story = localSet(lang, {
+        ja: `星のかけらをならべる式だよ。x² + ${sum}x + ${product} を因数分解するとどれ？`,
+        en: `Factor this starlight expression: x² + ${sum}x + ${product}.`,
+      });
+      const hint = localSet(lang, {
+        ja: `たして ${sum}、かけて ${product} になる2つの数を探そう。`,
+        en: `Find two numbers that add to ${sum} and multiply to ${product}.`,
+      });
+      return { left: sum, right: product, answer, text: `x² + ${sum}x + ${product}`, operation: "factorization", type, story, hint, explanation: `${first} + ${second} = ${sum}, ${first} × ${second} = ${product}.`, hintText: `x² + ${sum}x + ${product}`, choiceTraps: [`(x + ${sum})(x + 1)`, `(x + ${product})(x + 1)`, `(x - ${first})(x - ${second})`, `(x + ${first + 1})(x + ${second + 1})`] };
+    }
+
+    if (type === "quadratic") {
+      const answer = 3 + Math.floor(randomFn() * 8);
+      const square = answer * answer;
+      const story = localSet(lang, {
+        ja: `セナの星あかりが x² = ${square} と光ったよ。正の数の x はいくつ？`,
+        en: `Sena's starlight shows x² = ${square}. What positive number is x?`,
+      });
+      const hint = localSet(lang, {
+        ja: `同じ数を2回かけて ${square} になる数を探そう。`,
+        en: `Find the number that times itself equals ${square}.`,
+      });
+      return { left: square, right: answer, answer, text: `x² = ${square}`, operation: "quadratic", type, story, hint, explanation: `${answer} × ${answer} = ${square}.`, hintText: `x² = ${square}`, choiceTraps: [answer + 1, Math.max(1, answer - 1), square] };
+    }
+
+    if (type === "pythagorean") {
+      const triples = [[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17]];
+      const triple = triples[Math.floor(randomFn() * triples.length)];
+      const [a, b, answer] = triple;
+      const story = localSet(lang, {
+        ja: `直角に曲がる星の橋があるよ。短い道が ${a}m と ${b}m のとき、ななめの道は何m？`,
+        en: `A right-triangle star bridge has sides ${a} m and ${b} m. How long is the diagonal?`,
+      });
+      const hint = localSet(lang, {
+        ja: `直角三角形では a² + b² = c² を使えるよ。`,
+        en: `Use a² + b² = c² for a right triangle.`,
+      });
+      return { left: a, right: b, answer, text: `${a}² + ${b}² = ?²`, operation: "pythagorean", type, story, hint, explanation: `${a}² + ${b}² = ${answer}², so ${answer}m.`, hintText: `${a}² + ${b}² = ?²`, choiceTraps: [answer + 1, answer - 1, a + b] };
+    }
+
+    if (type === "functionValue") {
+      const slope = 2 + Math.floor(randomFn() * 5);
+      const intercept = 1 + Math.floor(randomFn() * 6);
+      const x = 1 + Math.floor(randomFn() * 6);
+      const answer = slope * x + intercept;
+      const story = localSet(lang, {
+        ja: `星の道は y = ${slope}x + ${intercept} で光るよ。x = ${x} のとき、yはいくつ？`,
+        en: `The star path follows y = ${slope}x + ${intercept}. When x = ${x}, what is y?`,
+      });
+      const hint = localSet(lang, {
+        ja: `xに ${x} を入れて計算しよう。`,
+        en: `Put ${x} in for x and calculate.`,
+      });
+      return { left: slope, right: x, answer, text: `y = ${slope}x + ${intercept}, x = ${x}`, operation: "functionValue", type, story, hint, explanation: `${slope} × ${x} + ${intercept} = ${answer}.`, hintText: `y = ${slope}x + ${intercept}`, choiceTraps: [answer + slope, Math.max(0, answer - slope), slope + x + intercept] };
+    }
+
+    if (type === "similarity") {
+      const small = 3 + Math.floor(randomFn() * 6);
+      const scale = 2 + Math.floor(randomFn() * 4);
+      const answer = small * scale;
+      const story = localSet(lang, {
+        ja: `小さな星のしるしを ${scale}倍にして、大きな道しるべを作るよ。もとの辺が ${small}cm なら、大きい辺は何cm？`,
+        en: `A small star mark is enlarged ${scale} times. If one side is ${small} cm, how long is the larger side?`,
+      });
+      const hint = localSet(lang, {
+        ja: `${scale}倍なので、${small}に${scale}をかけよう。`,
+        en: `It is ${scale} times larger, so multiply ${small} by ${scale}.`,
+      });
+      return { left: small, right: scale, answer, text: `${small} × ${scale}`, operation: "similarity", type, story, hint, explanation: `${small} × ${scale} = ${answer}.`, hintText: `${scale}倍`, choiceTraps: [answer + scale, Math.max(1, answer - scale), small + scale] };
+    }
+
+    if (type === "probability") {
+      const blue = 2 + Math.floor(randomFn() * 5);
+      const yellow = 2 + Math.floor(randomFn() * 5);
+      const total = blue + yellow;
+      const answer = `${blue}/${total}`;
+      const story = localSet(lang, {
+        ja: `ふくろに青い星 ${blue}こ、黄色い星 ${yellow}こがあるよ。青い星を1こ選ぶ確率は？`,
+        en: `A bag has ${blue} blue stars and ${yellow} yellow stars. What is the chance of choosing a blue star?`,
+      });
+      const hint = localSet(lang, {
+        ja: `青い星の数を、ぜんぶの星の数でわろう。`,
+        en: `Put blue stars over all stars.`,
+      });
+      return { left: blue, right: total, answer, text: `${blue}/${total}`, operation: "probability", type, story, hint, explanation: `blue ${blue}, total ${total}, so ${answer}.`, hintText: `${blue} / ${total}`, choiceTraps: [`${yellow}/${total}`, `${blue}/${yellow}`, `${total}/${blue}`, `${blue + 1}/${total + 1}`] };
+    }
+
+    if (type === "squareRoot") {
+      const answer = 4 + Math.floor(randomFn() * 9);
+      const square = answer * answer;
+      const story = localSet(lang, {
+        ja: `星の結晶に √${square} と書いてあるよ。これはいくつ？`,
+        en: `A star crystal shows √${square}. What number is it?`,
+      });
+      const hint = localSet(lang, {
+        ja: `同じ数を2回かけて ${square} になる数を探そう。`,
+        en: `Find the number that times itself equals ${square}.`,
+      });
+      return { left: square, right: answer, answer, text: `√${square}`, operation: "squareRoot", type, story, hint, explanation: `${answer} × ${answer} = ${square}, so √${square} = ${answer}.`, hintText: `√${square}`, choiceTraps: [answer + 1, answer - 1, square] };
+    }
+
     if (type === "parentheses") {
       const left = 3 + Math.floor(randomFn() * 12);
       const right = 2 + Math.floor(randomFn() * 9);
