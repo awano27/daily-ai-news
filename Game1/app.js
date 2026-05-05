@@ -62,6 +62,7 @@
       questClue: "てがかり",
       questReward: "クリアで {reward} がきらり",
       questPick: "こたえを えらぼう",
+      questSolved: "やったね、道がひらいたよ",
       next: "つぎへ",
       result: "けっかへ",
       resultLabel: "けっか",
@@ -140,6 +141,7 @@
       questClue: "Clue",
       questReward: "Clear for {reward}",
       questPick: "Choose an answer",
+      questSolved: "Nice, the path opened",
       next: "Next",
       result: "Result",
       resultLabel: "Result",
@@ -946,6 +948,78 @@
     return labels[question.type] || (activeLanguageId === "ja" ? "数のてがかり" : "Number clue");
   }
 
+  function questSceneData(question, subjectId) {
+    const ja = activeLanguageId === "ja";
+    if (subjectId === "japanese") {
+      if (question.type === "reading") {
+        return {
+          id: "reading",
+          icon: "book",
+          title: ja ? "森の記録を読みとこう" : "Read the forest record",
+          action: ja ? "大事な一文を探しているよ" : "is finding the key sentence",
+          done: ja ? "記録の光が道しるべになったよ" : "turned the record into a guide",
+          items: ["文", "心", "理由", "要点", "光"],
+        };
+      }
+      return {
+        id: "words",
+        icon: "word",
+        title: ja ? "ことばの結晶をそろえよう" : "Match the word crystals",
+        action: ja ? "ことばの手がかりを集めているよ" : "is gathering word clues",
+        done: ja ? "ことばの結晶がそろったよ" : "matched the word crystals",
+        items: ["語", "文", "意", "手", "星"],
+      };
+    }
+
+    const scenes = {
+      add: ["stones", "小川の石をならべよう", "川をわたる石を探しているよ", "石の道がつながったよ", ["1", "2", "3", "4", "5"]],
+      subtract: ["fruit", "木の実をわけよう", "森の友だちに木の実をわけているよ", "みんなでちょうどよく分けられたよ", ["実", "実", "実", "実", "実"]],
+      multiply: ["lanterns", "ランタンを灯そう", "花のランタンをならべているよ", "ランタンがいっせいに光ったよ", ["灯", "灯", "灯", "灯", "灯"]],
+      divide: ["seeds", "たねをまこう", "草むらにたねを分けているよ", "草むらが元気に育ったよ", ["種", "種", "種", "種", "種"]],
+      compare: ["fork", "明るい道を選ぼう", "左右の光をくらべているよ", "進む道がきらっと決まったよ", ["左", "?", "右", "?", "光"]],
+      blank: ["gate", "□の門を開けよう", "ぴったり合う数を探しているよ", "森の門が開いたよ", ["□", "鍵", "□", "鍵", "光"]],
+      probability: ["bag", "星袋のひみつを調べよう", "星袋の中をそっと調べているよ", "星の出方が見えてきたよ", ["青", "黄", "青", "?", "星"]],
+      factorization: ["crystal", "式の結晶を分けよう", "式のかけらを組み合わせているよ", "結晶がきれいに分かれたよ", ["x", "+", "□", "×", "星"]],
+      quadratic: ["gate", "二次の門を開けよう", "二つの解の手がかりを探しているよ", "二次の門が光ったよ", ["x²", "0", "解", "解", "星"]],
+      quadraticFormula: ["scroll", "公式の星図を読もう", "公式に数をあてはめているよ", "星図の答えが浮かんだよ", ["式", "√", "±", "2", "光"]],
+      quadraticFunction: ["path", "放物線の道を進もう", "星の道の高さを調べているよ", "放物線の光が伸びたよ", ["0", "1", "2", "3", "y"]],
+      similarityArea: ["flower", "相似の広場を広げよう", "大きくなった面積を調べているよ", "広場の花が大きく開いたよ", ["小", "×", "倍", "面", "大"]],
+      pythagorean3d: ["bridge", "立体の橋をかけよう", "ななめの道を測っているよ", "星箱の橋がつながったよ", ["たて", "よこ", "高", "斜", "光"]],
+      squareRootSimplify: ["crystal", "平方根の結晶をみがこう", "外に出せる数を探しているよ", "結晶がすっきり光ったよ", ["√", "□", "√", "光", "星"]],
+    };
+    const scene = scenes[question.type] || scenes[question.operation] || ["path", "森の道を進もう", "次の一歩を探しているよ", "森の道が少し進んだよ", ["1", "2", "3", "4", "光"]];
+    if (!ja) {
+      return {
+        id: scene[0],
+        icon: scene[0],
+        title: "Help the spirit move on",
+        action: "is looking for the next clue",
+        done: "made the next path shine",
+        items: scene[4],
+      };
+    }
+    return { id: scene[0], icon: scene[0], title: scene[1], action: scene[2], done: scene[3], items: scene[4] };
+  }
+
+  function renderQuestVisual(round, difficulty) {
+    const scene = questSceneData(round.question, round.subject.id);
+    const lastAnswer = round.answers.at(-1);
+    const solved = Boolean(round.answered && lastAnswer?.correct);
+    const itemMarkup = scene.items.map((item, index) => `<span class="${solved || index < 2 ? "lit" : ""}">${escapeHtml(item)}</span>`).join("");
+    return `
+      <div class="quest-visual scene-${scene.id} ${solved ? "solved" : ""}">
+        <div class="quest-visual-stage">
+          <div class="quest-mini-spirit">${spiritMarkup(solved ? "shine" : "ready", difficulty.id)}</div>
+          <div class="quest-items">${itemMarkup}</div>
+          <i class="quest-light" aria-hidden="true"></i>
+        </div>
+        <div class="quest-visual-copy">
+          <strong>${scene.title}</strong>
+          <span>${difficulty.spiritName}が ${solved ? scene.done : scene.action}</span>
+        </div>
+      </div>`;
+  }
+
   function renderQuestPanel(round, difficulty, questionNumber) {
     const clue = round.question.hintText || `${round.question.text} = ?`;
     const missionText = round.subject.id === "math" ? t("questMath") : t("questJapanese");
@@ -955,6 +1029,7 @@
           <span>${t("questLabel")}</span>
           <strong>${t("challengeCount", { spirit: difficulty.spiritName, challenge: round.subject.challengeLabel, count: questionNumber })}</strong>
         </div>
+        ${renderQuestVisual(round, difficulty)}
         <div class="quest-scroll">
           <div class="quest-type">${questTypeLabel(round.question, round.subject.id)}</div>
           <p class="quest-intro">${missionText}</p>
