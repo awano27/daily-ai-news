@@ -565,16 +565,24 @@
 
   const juniorHighLanguageQuestions = {
     ja: [
-      q("次の文で、筆者の考えとしていちばん合うものは？「森の道は遠回りに見えた。しかし、仲間と歩く時間が、せいれいを知る手がかりになった。」", "遠回りにも大切な意味がある", ["近道だけが大切である", "仲間と歩く必要はない", "せいれいを知る手がかりはない"], "文の後半で何が大切だと言っているか考えよう。", "仲間と歩く時間が手がかりになったので、遠回りにも意味があると読めるよ。"),
-      q("「星明かりが道を照らす。」の主語はどれ？", "星明かりが", ["道を", "照らす", "星"], "何が照らすのかを考えよう。", "照らすのは星明かりだよ。"),
-      q("「慎重」に近い意味はどれ？", "よく考えて気をつけること", ["急いで動くこと", "強く光ること", "声を大きくすること"], "あわてず確かめる様子を考えよう。", "慎重は、よく考えて気をつけることだよ。"),
-      reading("セナは星あかりをたよりに、古い地図を読みました。地図には、泉へ向かう道が二つありました。短い道は暗く、遠い道には小さな光が続いていました。セナは、みんなが安心して進める遠い道を選びました。", "セナが遠い道を選んだ理由は？", "安心して進めるから", ["いちばん短いから", "地図がなかったから", "泉へ行きたくなかったから"], "道の様子とセナの選び方を見よう。", "遠い道には光が続いていて、みんなが安心して進めるからだよ。"),
+      reading("森を進むとき、近道だけを探すと見落とすものがあります。遠回りの道には、季節ごとの花や小さなせいれいの足あとが残っています。時間はかかりますが、その道で得た手がかりが、あとで大きな助けになることもあります。だからセナは、速さよりもよく見ることを大切にしました。", "この文章の要旨として最も合うものは？", "遠回りにも発見や意味がある", ["近道を選ぶことだけが大切である", "花を見るために冒険をやめるべきである", "時間をかけることはいつもよくない"], "最後の文で筆者が何を大切にしているか見よう。", "速さよりもよく見ることを大切にしているので、遠回りにも意味があると読めるよ。"),
+      reading("セナは、光る地図に書かれたしるしを見つめました。そのしるしは、道の先を示すものではなく、これまで歩いた場所を示していました。セナは少し考えてから、来た道をふり返りました。すると、さっきは気づかなかった小さな星の芽が並んでいました。", "セナが来た道をふり返った理由として最も合うものは？", "しるしが歩いてきた場所を示していたから", ["道の先に大きな門が見えたから", "地図をなくしてしまったから", "星の芽を数えたくなかったから"], "「そのしるし」が何を示していたかを確認しよう。", "しるしはこれまで歩いた場所を示していたので、セナは来た道をふり返ったんだね。"),
+      q("次の文の「それ」が指す内容はどれ？「セナは古い地図を読み直した。それが、迷いを小さくする一番の方法だと考えた。」", "古い地図を読み直すこと", ["迷いそのもの", "一番の方法", "小さな星の光"], "指示語の前にある行動を探そう。", "「それ」は直前の「古い地図を読み直した」ことを指しているよ。"),
+      q("「静かに光る星を見上げる。」の「静かに」と同じ品詞はどれ？", "ゆっくり", ["明るい", "星", "見上げる"], "動きの様子を表す言葉を選ぼう。", "「静かに」は動作の様子を表す副詞で、「ゆっくり」も副詞だよ。"),
+      q("次の敬語表現として正しいものはどれ？「先生が星の地図を ___。」", "ご覧になる", ["拝見する", "見るでございます", "見られますです"], "先生の動作を高める言い方を選ぼう。", "相手や先生の動作には尊敬語の「ご覧になる」が合うよ。"),
+      q("熟語「読解」と同じ組み立ての熟語はどれ？", "調査", ["大小", "山川", "上下"], "二つの漢字が似た意味や動作を重ねているものを探そう。", "読解は「読む・解く」、調査は「調べる・査べる」のように近い働きの漢字が並ぶ熟語だよ。"),
+      q("「彼は、星の位置を確かめた。」を受け身の文に直すと自然なのはどれ？", "星の位置が彼によって確かめられた。", ["彼が星の位置を確かめさせた。", "彼は星の位置に確かめられた。", "星の位置は彼を確かめた。"], "動作を受けるものを主語にして考えよう。", "確かめられるのは星の位置なので、「星の位置が彼によって確かめられた」が自然だよ。"),
+      q("古文の言葉「いと明るし」に近い意味はどれ？", "とても明るい", ["少し暗い", "すぐに歩く", "なぜ明るい"], "「いと」は強く表す言葉だよ。", "古文の「いと」は「とても」の意味で使われることが多いよ。"),
+      q("次の俳句の季語として最も合うものはどれ？「春風や 星のしずくの 光る森」", "春風", ["星", "しずく", "森"], "季節を直接表す言葉を探そう。", "春の季節を表す「春風」が季語だよ。"),
+      reading("セナは、森の記録を読むうちに、同じ出来事でも書き手によって見え方が変わることに気づきました。ある記録では「遠い道」と書かれ、別の記録では「手がかりの多い道」と書かれていました。セナは、言葉を読むときには、何が書かれているかだけでなく、どのような見方で書かれているかも考えようと思いました。", "この文章でセナが気づいたこととして最も合うものは？", "書き手の見方によって表し方が変わる", ["どの記録も同じ言葉で書かれる", "遠い道には手がかりがない", "記録は読まないほうがよい"], "二つの記録の書き方の違いに注目しよう。", "同じ道でも書き手の見方で表し方が変わることに気づいたんだね。"),
     ],
     en: [
-      q("Which idea best matches the sentence? The path looked long, but walking together helped the spirits understand the forest.", "The long path had value", ["Only short paths matter", "Friends should not walk together", "The forest had no clues"], "Look for what helped the spirits.", "Walking together helped, so the long path had value."),
-      q("What is the subject? Starlight shows the hidden path.", "Starlight", ["the hidden path", "shows", "hidden"], "Ask what shows the path.", "Starlight shows the path."),
-      q("What is close to \"careful\"?", "acting with thought", ["moving too fast", "shining loudly", "forgetting clues"], "Think about checking before acting.", "Careful means acting with thought."),
-      reading("Sena read an old map by starlight. Two paths led to the spring. The short path was dark, but the longer path had tiny lights. Sena chose the longer path so everyone could walk calmly.", "Why did Sena choose the longer path?", "everyone could walk calmly", ["it was the shortest", "there was no map", "Sena disliked the spring"], "Look at the last sentence.", "Sena chose it so everyone could walk calmly."),
+      reading("When exploring the forest, looking only for shortcuts can make you miss important signs. A longer path may hold flowers, footprints, and clues that help later. Sena chose to look carefully rather than move quickly.", "Which main idea best matches the passage?", "A longer path can have value", ["Only shortcuts matter", "Exploration should stop", "Clues never help"], "Look at what Sena values at the end.", "Sena values careful observation, so the longer path has meaning."),
+      reading("Sena saw a mark on an old map. It did not show the road ahead; it showed the path already taken. Sena looked back and found small star buds she had missed.", "Why did Sena look back?", "the mark showed the path already taken", ["a gate was ahead", "the map was lost", "Sena disliked star buds"], "Check what the mark showed.", "The mark showed the path already taken."),
+      q("What does \"that\" refer to? Sena reread the old map. That was the best way to reduce confusion.", "rereading the old map", ["confusion itself", "the best way", "a small light"], "Look at the action just before the pronoun.", "That refers to rereading the old map."),
+      q("Which word has the same role as \"quietly\" in \"The star quietly shone\"?", "slowly", ["bright", "star", "shine"], "Choose a word that describes how an action happens.", "Quietly and slowly are adverbs."),
+      q("Which statement best describes the writer's viewpoint?", "words change with the writer's perspective", ["all records use the same words", "long paths have no clues", "records should not be read"], "Compare the two descriptions of the same path.", "The same path is described differently depending on viewpoint."),
+      q("Which phrase means almost the same as \"careful interpretation\"?", "reading while checking reasons", ["reading as fast as possible", "counting only letters", "ignoring context"], "Think about reading with evidence.", "Careful interpretation means checking reasons and context."),
     ],
   };
 

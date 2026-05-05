@@ -161,6 +161,26 @@ const starLanguageQuestion = GameLogic.generateQuestion(star, "japanese", "ja", 
 assert.strictEqual(starLanguageQuestion.subject, "japanese");
 assert.ok(starLanguageQuestion.signature.startsWith("japanese:"));
 assert.ok(starLanguageQuestion.choices.includes(starLanguageQuestion.answer));
+assert.ok(starLanguageQuestion.story.includes("要旨"));
+
+const examLanguageSamples = [
+  [0.2, "それ"],
+  [0.3, "品詞"],
+  [0.4, "敬語"],
+  [0.5, "熟語"],
+  [0.7, "古文"],
+  [0.8, "俳句"],
+  [0.9, "書き手"],
+];
+examLanguageSamples.forEach(([randomValue, expectedText]) => {
+  const question = GameLogic.generateQuestion(star, "japanese", "ja", () => randomValue);
+  assert.strictEqual(question.subject, "japanese");
+  assert.strictEqual(question.choices.length, 4);
+  assert.ok(question.choices.includes(question.answer));
+  assert.ok(question.story.includes(expectedText));
+  assert.ok(question.hint);
+  assert.ok(question.explanation);
+});
 
 const moonLanguageQuestion = GameLogic.generateQuestion(moon, "japanese", "ja", () => 0);
 assert.strictEqual(moonLanguageQuestion.subject, "japanese");
