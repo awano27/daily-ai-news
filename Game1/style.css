@@ -2717,6 +2717,26 @@ h1.story-question {
   gap: 12px;
 }
 
+.answer-grid.compare-answer-grid {
+  grid-template-areas:
+    "left right"
+    "same same";
+}
+
+.compare-answer-grid .position-choice-1 {
+  grid-area: left;
+}
+
+.compare-answer-grid .position-choice-2 {
+  grid-area: right;
+}
+
+.compare-answer-grid .position-choice-3 {
+  grid-area: same;
+  width: min(100%, 320px);
+  justify-self: center;
+}
+
 .answer-callout {
   justify-self: center;
   margin: -2px 0 -2px;

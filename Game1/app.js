@@ -1065,10 +1065,11 @@
     const justLeveledUp = Boolean(round.answered && lastAnswer?.correct && spiritLevel > previousSpiritLevel);
     const isFirstMeeting = !GameLogic.createEmptyAdventure(round.startAdventure || state.adventure).spirits[difficulty.id]?.met;
     const supportText = round.answered ? round.question.explanation : round.question.hint;
-    const choices = round.question.choices.map((choice) => {
+    const isCompareQuestion = round.question.type === "compare";
+    const choices = round.question.choices.map((choice, index) => {
       const selected = round.answered && String(choice) === String(lastAnswer?.selectedAnswer);
       const correct = round.answered && String(choice) === String(round.question.answer);
-      return `<button class="answer-button ${selected ? "selected-answer" : ""} ${correct ? "correct-answer" : ""} ${correct && lastAnswer?.correct ? "win-pop" : ""}" data-action="answer" data-answer="${escapeHtml(choice)}" ${round.answered ? "disabled" : ""}>${escapeHtml(choice)}</button>`;
+      return `<button class="answer-button ${isCompareQuestion ? `position-choice-${index + 1}` : ""} ${selected ? "selected-answer" : ""} ${correct ? "correct-answer" : ""} ${correct && lastAnswer?.correct ? "win-pop" : ""}" data-action="answer" data-answer="${escapeHtml(choice)}" ${round.answered ? "disabled" : ""}>${escapeHtml(choice)}</button>`;
     }).join("");
 
     return screenShell(`
@@ -1090,7 +1091,7 @@
       <p class="feedback ${round.answered ? feedbackClass : ""}">${feedbackText}</p>
       ${supportText ? `<p class="question-support ${round.answered ? "answer-note" : ""}">${escapeHtml(supportText)}</p>` : ""}
       <div class="answer-callout">${t("questPick")}</div>
-      <div class="answer-grid">${choices}</div>
+      <div class="answer-grid ${isCompareQuestion ? "compare-answer-grid" : ""}">${choices}</div>
       ${round.answered ? `<button class="primary-button" data-action="next">${round.currentIndex + 1 >= GameLogic.QUESTION_COUNT ? t("result") : t("next")}</button>` : ""}
     `, `battle-screen ${round.answered && lastAnswer?.correct ? "success-screen" : ""} ${isCombo ? "combo-screen" : ""}`);
   }
