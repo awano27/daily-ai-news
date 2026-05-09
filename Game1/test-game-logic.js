@@ -197,7 +197,11 @@ assert.ok(blankQuestion.hintText.includes("□"));
 const compareQuestion = GameLogic.generateQuestion(grass, "math", "en", () => 0.25);
 assert.strictEqual(compareQuestion.type, "compare");
 assert.ok(["Left", "Right", "Same"].includes(compareQuestion.answer));
-assert.deepStrictEqual(compareQuestion.choices.slice().sort(), ["Left", "Right", "Same"].sort());
+assert.deepStrictEqual(compareQuestion.choices, ["Left", "Right", "Same"]);
+
+const japaneseCompareQuestion = GameLogic.generateQuestion(grass, "math", "ja", () => 0.25);
+assert.strictEqual(japaneseCompareQuestion.type, "compare");
+assert.deepStrictEqual(japaneseCompareQuestion.choices, ["左", "右", "おなじ"]);
 
 const japaneseQuestion = GameLogic.generateQuestion(seed, "japanese", "ja", () => 0);
 assert.strictEqual(japaneseQuestion.subject, "japanese");

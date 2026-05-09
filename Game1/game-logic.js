@@ -215,6 +215,10 @@
     es: ["Izquierda", "Derecha", "Igual"],
   };
 
+  function orderedCompareChoices(languageId) {
+    return [...(compareWords[languageId] || compareWords.en)];
+  }
+
   const mathText = {
     ja: {
       add: (q) => [`このせいれいが たねを ${q.left}こ もっていたよ。${q.right}こ 見つけたら、ぜんぶで なんこ？`, "2つの数を あわせてみよう。", `${q.left} + ${q.right} = ${q.answer} だよ。`],
@@ -1810,7 +1814,7 @@
       id: `${fullDifficulty.id}-${question.type}-${question.operation}-${Date.now()}-${Math.round(safeRandom() * 10000)}`,
       ...question,
       subject: subject.id,
-      choices: buildChoices(question.answer, safeRandom, traps),
+      choices: question.type === "compare" ? orderedCompareChoices(safeLanguageId) : buildChoices(question.answer, safeRandom, traps),
     };
     return { ...builtQuestion, signature: getQuestionSignature(builtQuestion) };
   }
