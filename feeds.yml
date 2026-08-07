@@ -15,11 +15,11 @@ Business:
   url: https://www.deepmind.com/blog/rss.xml
 - name: AWS AI Blog
   url: https://aws.amazon.com/blogs/machine-learning/feed/
-- name: Reuters Tech
-  url: https://feeds.reuters.com/reuters/technologyNews
+- name: Reuters AI & Tech
+  url: https://www.reuters.com/world/us/technology/rss
   general: true
-- name: Bloomberg Technology
-  url: https://www.bloomberg.com/feeds/technology.rss
+- name: Financial Times AI
+  url: https://www.ft.com/artificial-intelligence?format=rss
   general: true
 # - name: 'Google News: AI企業・投資 (日本語)'
 #   url: https://news.google.com/rss/search?q=AI&hl=ja&gl=JP
@@ -30,9 +30,14 @@ Business:
 - name: 'AI News Japan'
   url: https://www.itmedia.co.jp/news/subtop/aitech/
   general: true
+  business_category: japan_business
+- name: 'Ledge.ai'
+  url: https://ledge.ai/feed/
+  general: true
 - name: 'Nikkei AI News'
   url: https://www.nikkei.com/theme/DGXZQOCC140VF0U1A011C2000000.rss
   general: true
+  business_category: japan_business
 
 - name: Hacker News
   url: https://hnrss.org/frontpage
@@ -49,21 +54,22 @@ Business:
 - name: MIT Technology Review AI
   url: https://www.technologyreview.com/feed/
   general: true
-- name: 日経新聞 AI・テクノロジー
-  url: https://www.nikkei.com/theme/DGXZQOCC140VF0U1A011C2000000.rss
-  general: true
 - name: ITmedia AI・機械学習
   url: https://rss.itmedia.co.jp/rss/2.0/ait.xml
   general: true
+  business_category: japan_business
 - name: ZDNET Japan AI
   url: https://japan.zdnet.com/rss/
   general: true
+  business_category: japan_business
 - name: ASCII.jp AI・IoT
   url: https://ascii.jp/rss.xml
   general: true
+  business_category: japan_business
 - name: TechCrunch Japan
   url: https://techcrunch.com/category/artificial-intelligence/feed/
   general: true
+  business_category: japan_business
 
 # ビジネス戦略・経営系（経営層向け価値提供）
 - name: Harvard Business Review AI
@@ -166,6 +172,10 @@ Business:
   url: https://blog.salesforce.com/tag/artificial-intelligence/feed/
   general: true
   business_category: implementation
+- name: Synced Review
+  url: https://syncedreview.com/feed/
+  general: true
+  business_category: implementation
 # - name: 'Google News: 日本AI企業ニュース'
 #   url: https://news.google.com/rss/search?q=AI+%E6%97%A5%E6%9C%AC&hl=ja&gl=JP
 #   general: true
@@ -233,10 +243,6 @@ Tools:
   business_category: tools_immediate
 - name: Microsoft AI for Business
   url: https://blogs.microsoft.com/ai/feed/
-  general: true
-  business_category: implementation
-- name: Salesforce AI Updates
-  url: https://blog.salesforce.com/tag/artificial-intelligence/feed/
   general: true
   business_category: implementation
 
