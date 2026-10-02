@@ -264,7 +264,7 @@ jobs:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           external_repository: awano27/ai-news-site
           publish_branch: main
-          destination_dir: daily-news
+          destination_dir: daily-news-csv
           publish_dir: ./outputs
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
@@ -281,7 +281,7 @@ jobs:
 
           for attempt in 1 2 3 4 5; do
             response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/awano27/ai-news-site/commits/gh-pages")
+              "https://api.github.com/repos/awano27/ai-news-site/commits?sha=main&path=daily-news-csv&per_page=1")
 
             latest_commit=$(printf '%s' "$response" | grep '"sha"' | head -1 | cut -d'"' -f4)
             commit_message=$(printf '%s' "$response" | grep '"message"' | head -1 | cut -d'"' -f4)
@@ -334,7 +334,7 @@ jobs:
         if: success()
         run: |
           echo "✅ Deployment completed successfully!"
-          echo "🌐 Public site: https://awano27.github.io/ai-news-site/daily-news/"
+          echo "🌐 Public site: https://visionhub.jp/daily-news-csv/"
           echo "📊 Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - name: Report failure
@@ -348,4 +348,3 @@ jobs:
           echo "  - CSV file temporarily unavailable"
           echo "  - Network connectivity issues"
           echo "  - Deployment token expired"
-
